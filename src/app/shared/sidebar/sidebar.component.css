@@ -1,0 +1,101 @@
+.sidebar {
+   
+  background-color: #224273;
+  
+  direction: rtl; 
+ 
+}
+
+/* Class to show the sidebar */
+.sidebar.active {
+  right: 0; /* Move into view */
+}
+
+/* Additional styles for sidebar links */
+.nav-item a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 15px; /* Adjust padding as needed */
+  color: #fff; /* Text color */
+  text-decoration: none; /* Remove underline */
+}
+
+.nav-item a:hover {
+  /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
+  background-color: #f7fbff;
+  color: #224273;
+  border: 1px solid #f7fbff;
+  border-radius: 10px;
+}
+.sub-item2 a:hover {
+  /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
+  background-color: #f7fbff;
+  color: #224273;
+  border: 1px solid #f7fbff;
+  border-radius: 10px;
+}
+
+.sidebar .nav-section {
+  padding: 10px 15px; /* Padding for section headers */
+  color: #fff; /* Section header color */
+}
+
+/* Collapse/Expand caret styling */
+.caret {
+  margin-left: auto; /* Align caret to the right */
+  transition: transform 0.3s;
+}
+
+.collapse.show + .caret {
+  transform: rotate(90deg); /* Rotate caret when expanded */
+}
+
+
+/* for collaps */
+.toggle-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.sub-item {
+  cursor: pointer;
+}
+
+ul .sub-nav a{
+  transition: color 0.3s ease;
+}
+ul .sub-nav a:hover{
+  color: #224273;
+}
+ul .sub-nav a:active{
+  color: #224273;
+}
+
+  /* font */
+  h2,
+  h3,
+a,
+h4,
+p,
+label,
+input,
+button,
+tr, th, tr {
+    font-family: "Cairo", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+
+}
+/* for sub-item2 */
+.sidebar .nav-collapse li a:hover .sub-item2,
+.sidebar[data-background-color=white] .nav-collapse li a:hover .sub-item2 {
+   /* opacity: 1 */
+   color: #224273;
+}
+.sub-item2 a:hover, .sub-item2 a:active{
+  background-color: #f7fbff;
+  color: #224273;
+}
