@@ -1,7 +1,7 @@
 export enum InvoiceType
 {
-    SalesInvoice,        // فاتورة مبيعات
-    PurchaseInvoice,     // فاتورة مشتريات
-    ReturnInvoice        // فاتورة مرتجعات
+    SalesInvoice='SalesInvoice',        // فاتورة مبيعات
+    PurchaseInvoice='PurchaseInvoice',     // فاتورة مشتريات
+    ReturnInvoice='ReturnInvoice'        // فاتورة مرتجعات
     
 }

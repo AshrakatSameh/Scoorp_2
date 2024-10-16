@@ -19,6 +19,9 @@ import { WarehouseCatService } from 'src/app/services/getAllServices/WarehouseCa
 })
 export class SalesComponent implements OnInit {
 
+  pageNumber: number = 1;
+  pageSize: number = 10;
+  
   saleOfferForm:FormGroup;
 
   paymentType = PaymentType;  // Access the PaymentType enum
@@ -151,7 +154,7 @@ requestStageList: { key: string, value: string }[] = [];
 
   salesOffers:any[]=[];
   getAllSaleOffers() {
-    this.salesService.getSalesOffers().subscribe(response => {
+    this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response => {
       this.salesOffers = response;
       //console.log(this.salesOffers);
     }, error => {
@@ -204,7 +207,7 @@ priceLists:any[]=[];
   getAllPriceLists() {
     this.pricelistService.getAllPriceLists().subscribe(response => {
       this.priceLists = response.data;
-      console.log(this.priceLists);
+      //console.log(this.priceLists);
     }, error => {
       console.error('Error fetching price lists data:', error)
     })
@@ -214,12 +217,26 @@ priceLists:any[]=[];
   costCenters:any[]=[];
   getcostCenters() {
     this.costService.getAllCostCaners().subscribe(response => {
-      this.costCenters = response.data;
-      console.log(this.costCenters);
+      this.costCenters = response.costCenters;
+      //console.log(this.costCenters);
     }, error => {
       console.error('Error fetching costs data:', error)
     })
   }
 
+  onSubmit() {
+
+    if (this.saleOfferForm.valid) {
+      this.salesService.postSaleOffer(this.saleOfferForm.value).subscribe(
+        response => {
+          console.log('Form successfully submitted', response);
+        },
+        error => {
+          console.error('Error submitting form', error);
+        }
+      );
+    } else {
+      console.log('Form is invalid');
+    }}
 
 }

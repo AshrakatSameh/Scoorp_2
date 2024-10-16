@@ -6,12 +6,12 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root'
 })
-export class PaymentPeriodsService {
+export class ItemsService {
 
   apiUrl= environment.apiUrl;
-  constructor(private http:HttpClient) { }
-  
-  getAllPaymentPeriods(): Observable<any> {
+  constructor(private http: HttpClient) { }
+
+  getAllItems(): Observable<any> {
     // Get tenantId from localStorage
     const tenantId = localStorage.getItem('tenant');
 
@@ -22,7 +22,7 @@ export class PaymentPeriodsService {
     });
 
     // Send the GET request with headers
-    return this.http.get(`${this.apiUrl}PaymentPeriods`, { headers });
+    return this.http.get(`${this.apiUrl}Items`, { headers });
 
   }
 }

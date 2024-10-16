@@ -264,6 +264,7 @@ tr, th, td {
   }
   
 
-  select.form-select{
-    background-position: left;
-  }
+  /* select arrow */
+.form-select{
+  background-position: left;
+}

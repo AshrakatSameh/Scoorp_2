@@ -123,11 +123,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr *ngFor="let item of salesIvoices">
                         <td> </td>
-                      <td>Fiona Green</td>
-                      <td>Chief Operating Officer (COO)</td>
-                      <td>San Francisco</td>
+                      <td>{{representatives[item.id]}}</td>
+                      <td>{{clients[item.clientId]?.userName}}</td>
+                      <td>Chief Operating</td>
                       <td>48</td>
                       <td>2010/03/11</td>
                       <td> <input type="checkbox" class="large-checkbox" />
@@ -167,15 +167,15 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form>
+        <form [formGroup]="salesForm" (ngSubmit)="onSubmit()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                    <label for="location" class="form-label">المنشأ</label>
+                    <label for="location" class="form-label" >المنشأ</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
+                    <select class="form-control" disabled id="location">
                         <option selected>قم بإختيار المنشأ</option>
                         <option value="1">الموقع 1</option>
                         <option value="2">الموقع 2</option>
@@ -189,7 +189,7 @@
                 <div class="form-group">
                   <label for="field2 text-end" class="form-label">تاريخ الانشاء
                   </label>
-                  <input type="date" id="field2"  class="form-control"
+                  <input type="date" id="field2" disabled class="form-control"
                     placeholder="قم باختيار التاريخ" />
                 </div>
               </div>
@@ -198,8 +198,8 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field4 text-end" class="form-label"> رقم الطلب</label>
-                  <input type="text" id="field3"  class="form-control"
+                  <label for="text-end" class="form-label"> رقم الطلب</label>
+                  <input type="text" id="code" formControlName="code"  class="form-control"
                     placeholder="رقم الطلب" />
                 </div>
               </div>
@@ -207,11 +207,10 @@
                 <div class="form-group">
                     <label for="location" class="form-label">العميل</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
+                    <select class="form-control" formControlName="clientId" id="location">
                         <option selected>قم بإختيار العميل</option>
-                        <option value="1">العميل 1</option>
-                        <option value="2">العميل 2</option>
-                        <option value="3">العميل 3</option>
+                        <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
+                     
                     </select>
                 </div>
                 </div>
@@ -223,11 +222,10 @@
                 <div class="form-group">
                     <label for="location" class="form-label">المندوب</label>
                 <div class="input-group">
-                    <select class="form-select form-control" id="location">
+                    <select class="form-select form-control" formControlName="representativeId" >
                         <option selected>قم بإختيار المندوب</option>
-                        <option value="1">المندوب 1</option>
-                        <option value="2">المندوب 2</option>
-                        <option value="3">المندوب 3</option>
+                        <option *ngFor="let item of representatives" [value]="item.id">{{item.userName}}</option>
+                       
                     </select>
                 </div>
                 </div>
@@ -236,20 +234,19 @@
                 <div class="form-group">
                     <label for="location" class="form-label">فريق البيع</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
-                        <option selected>قم بإختيار فريق البيع</option>
-                        <option value="1">فريق 1</option>
-                        <option value="2">فريق 2</option>
-                        <option value="3">فريق 3</option>
+                    <select class="form-select form-control" formControlName="teamId">
+                        <option selected disabled>قم بإختيار فريق البيع</option>
+                        <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
+                        
                     </select>
                 </div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
-                  <label for="field7 text-end" class="form-label">رقم فاتورة العميل
+                  <label for=" text-end" class="form-label">رقم فاتورة العميل
                   </label>
-                  <input type="date" id="field7"  class="form-control"
+                  <input type="text" id="invoiceNumber" formControlName="invoiceNumber"  class="form-control"
                     placeholder="رقم طلب شراء العميل" />
                 </div>
               </div>
@@ -260,11 +257,11 @@
                 <div class="form-group">
                     <label for="location" class="form-label">حالة الفاتورة</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
+                    <select class="form-select form-control" disabled >
                         <option selected>قم بإختيار حالة الفاتورة</option>
-                        <option value="1">حالة 1</option>
-                        <option value="2">حالة 2</option>
-                        <option value="3">حالة 3</option>
+                        <option *ngFor="let type of invoiceStatusList" [value]="type.key">
+                           {{type.value}}</option>
+                        
                     </select>
                 </div>
                 </div>
@@ -273,11 +270,10 @@
                 <div class="form-group">
                     <label for="location" class="form-label">الأصناف</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
-                        <option selected>قم بإختيار الأصناف</option>
+                    <select class="form-control" disabled  id="location">
+                        <option selected disabled>قم بإختيار الأصناف</option>
                         <option value="1">صنف 1</option>
-                        <option value="2">صنف 2</option>
-                        <option value="3">صنف 3</option>
+                       
                     </select>
                 </div>
                 </div>
@@ -290,11 +286,10 @@
                 <div class="form-group">
                     <label for="location" class="form-label">قائمة أسعار العميل</label>
                 <div class="input-group">
-                    <select class="form-control" id="location">
-                        <option selected>قم بإختيار قائمة أسعار العميل</option>
-                        <option value="1">قائمة 1</option>
-                        <option value="2">قائمة 2</option>
-                        <option value="3">قائمة 3</option>
+                    <select class="form-select form-control" formControlName="priceListId">
+                        <option selected disabled>قم بإختيار قائمة أسعار العميل</option>
+                        <option *ngFor="let item of priceLists" [value]="item.id">{{item.name}}</option>
+                        
                     </select>
                 </div>
                 </div>
@@ -303,24 +298,25 @@
             <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                        <label for="field7 text-end" class="form-label">فترة الدفع
-                        </label>
-                        <div class="input-group">
-                            <input type="date" id="field7"  class="form-control"
-                          placeholder="فترة الدفع" />
-                        </div>
-                      </div>
+                    <label for="location" class="form-label">فترة الدفع</label>
+                <div class="input-group">
+                    <select class="form-select form-control" formControlName="paymentPeriodId">
+                        <option selected >قم بإختيار فترة الدفع</option>
+                        <option *ngFor="let item of payPeriods" [value]="item.id">{{item.name}}</option>
+                        
+                    </select>
+                </div>
+                </div>
                   
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                       <label for="location" class="form-label">نوع الفاتورة</label>
                   <div class="input-group">
-                      <select class="form-control" id="location">
-                          <option selected>قم بإختيار نوع الفاتورة</option>
-                          <option value="1">نوع 1</option>
-                          <option value="2">نوع 2</option>
-                          <option value="3">نوع 3</option>
+                      <select class="form-select form-control" formControlName="invoiceType">
+                          <option disabled selected>قم بإختيار نوع الفاتورة</option>
+                          <option *ngFor="let item of invoiceTypeList" [value]="item.key">{{item.value}}</option>
+                          
                       </select>
                   </div>
                   </div>
@@ -331,11 +327,10 @@
                     <div class="form-group">
                         <label for="location" class="form-label">مركز التكلفة</label>
                     <div class="input-group">
-                        <select class="form-select form-control" id="location">
-                            <option selected>قم بإختيار مركز التكلفة</option>
-                            <option value="1">مركز 1</option>
-                            <option value="2">مركز 2</option>
-                            <option value="3">مركز 3</option>
+                        <select class="form-select form-control" formControlName="costCenterId">
+                            <option disabled selected>قم بإختيار مركز التكلفة</option>
+                            <option *ngFor="let item of priceLists" [value]="item.id">{{item.name}}</option>
+                            
                         </select>
                     </div>
                     </div>
@@ -343,10 +338,10 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="field7 text-end" class="form-label">السائق 
+                        <label for=" text-end" class="form-label">السائق 
                         </label>
                         <div class="input-group">
-                            <input type="text" id="field7"  class="form-control"
+                            <input type="text" id="driver" formControlName="driver"  class="form-control"
                           placeholder="قم بكتابه السائق" />
                         </div>
                   </div>
@@ -550,7 +545,7 @@
             </div>
 
             <div class="col-md-6 mx-auto ">
-              <button type="button" class="btn my-button3">
+              <button type="submit" class="btn my-button3">
                 اضافه
                 <i class="fa-solid fa-plus"></i>
               </button>

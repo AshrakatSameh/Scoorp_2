@@ -126,7 +126,7 @@
                   <tbody>
                     <tr *ngFor="let item of salesOffers; let i =index">
                       <td>{{representatives[item.id]?.userName}}</td>
-                      <td>{{clients[item.id]?.name}}</td>
+                      <td>{{clients[item.clientId]?.name}}</td>
                       <td>{{teams[item.id]?.name}}</td>
                       <td>{{warehouses[item.id]?.name}}</td>
                       <td>{{item.code}}</td>
@@ -159,7 +159,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form  [formGroup]="saleOfferForm">
+        <form  [formGroup]="saleOfferForm" (ngSubmit)="onSubmit()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -231,7 +231,7 @@
                 <div class="form-group">
                   <label for="field7 text-end">رقم طلب شراء العميل
                   </label>
-                  <input type="date" id="field7" class="form-control" formControlName="purchaseOrderNumber" placeholder="رقم طلب شراء العميل" />
+                  <input type="text" id="purchaseOrderNumber" class="form-control" formControlName="purchaseOrderNumber" placeholder="رقم طلب شراء العميل" />
                 </div>
               </div>
             </div>
@@ -240,7 +240,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field8 text-end"> حالة الطلب</label>
-                  <input type="text" disabled id="field8" class="form-control" placeholder="قم باختيار حالة الطلب" />
+                  <input type="text" disabled  class="form-control" placeholder="قم باختيار حالة الطلب" />
                 </div>
               </div>
               <div class="col-md-6">
@@ -307,13 +307,13 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="field13">تاريخ انتهاء العرض</label>
-                  <input type="date" id="field13" class="form-control" placeholder="قم باختيار التاريخ" />
+                  <input type="date" id="offerExpiryDate" formControlName="offerExpiryDate" class="form-control" placeholder="قم باختيار التاريخ" />
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="field14">فترة الدفع</label>
-                  <input type="text" id="field14" class="form-control" placeholder="قم باختيار فترة الدفع" />
+                  <input type="text" id="paymentPeriod" class="form-control" formControlName="paymentPeriod" placeholder="قم باختيار فترة الدفع" />
                 </div>
               </div>
               <div class="col-md-4">
@@ -533,7 +533,7 @@
             </div>
 
             <div class="col-md-6 mx-auto ">
-              <button type="button" class="btn my-button3">
+              <button type="submit" class="btn my-button3">
                 اضافه
                 <i class="fa-solid fa-plus"></i>
               </button>

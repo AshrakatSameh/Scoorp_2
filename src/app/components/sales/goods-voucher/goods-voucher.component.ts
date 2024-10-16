@@ -19,8 +19,9 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 })
 export class GoodsVoucherComponent implements OnInit {
 
-  toppings = new FormControl('');
-  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+  pageNumber: number = 1;
+  pageSize: number = 10; 
+
   
   apiUrl= environment.apiUrl +'DeliveryNotes/Create';
   clientData:any;
@@ -88,9 +89,9 @@ export class GoodsVoucherComponent implements OnInit {
 
   deliveryVouchers:any[]=[]
   getAllDeliveryVouchers() {
-    this.salesService.getDeliveryVoucher().subscribe(response => {
+    this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe(response => {
       this.deliveryVouchers = response;
-     // console.log(this.deliveryVouchers);
+   
     }, error => {
       console.error('Error fetching delivery vouchers data:', error)
     })
@@ -103,15 +104,15 @@ export class GoodsVoucherComponent implements OnInit {
       (data) => {
         this.clientData = data; // Assign response data to trainer variable
         console.log('client details:', this.clientData);
-        //localStorage.setItem('trainEmail', JSON.stringify(this.trainerData));
-        // this.router.navigate(['/booking']);
-
       },
       (error) => {
         console.error('Error fetching client:', error);
       }
     );
 }
+
+
+
 
 
 

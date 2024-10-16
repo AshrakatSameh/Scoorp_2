@@ -28,10 +28,18 @@ export class ClientsService {
   }
 
   getClietById(id:number){
-    return this.http.get(`${this.apiUrl}DeliveryNotes/GetById/${id}`);
+    const tenantId = localStorage.getItem('tenant');
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    return this.http.get(`${this.apiUrl}Clients/GetClientById/${id}`,{headers});
   }
 
-
+//  // Method to get a client by ID
+//  getClientById(id: number): Observable<any> {
+//   return this.http.get<any>(`${this.apiUrl}Clients/GetClientById/${id}`);
+// }
 
   createClient(clientData: any): Observable<any> {
     const tenantId = localStorage.getItem('tenant');
