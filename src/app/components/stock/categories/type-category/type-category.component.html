@@ -198,7 +198,7 @@
           </h5>
         </div>
         <div class="modal-body">
-          <form>
+          <form [formGroup]="TypeCatForm" (ngSubmit)="onSubmitAdd()">
             <div class="container">
               <!-- Row with two fields -->
               <div class="row">
@@ -208,7 +208,8 @@
                     <input
                       type="text"
                       id="field1"
-                      
+                      formControlName="name"
+
                       class="form-control custom-input"
                       placeholder="اسم فئه الصنف"
                     />
@@ -221,6 +222,8 @@
                     </label>
                     <input
                       type="text"
+                      formControlName="localName"
+
                       id="field2"
                       ="field2"
                       class="form-control custom-input"
@@ -286,6 +289,8 @@
                     <label for="field1 text-end">وصف فئه الصنف</label>
                     <textarea
                       class="form-control custom-input"
+                      formControlName="note"
+
                       id="Textarea1"
                       rows="3"
                     ></textarea>

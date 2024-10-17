@@ -91,6 +91,10 @@ export class ContractsComponent {
     })
   }
 
+
+
+
+
   onSubmitAdd() {
     const formData = new FormData();
     const name = this.contractForm.get('name')!.value;

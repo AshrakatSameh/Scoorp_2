@@ -314,7 +314,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+        <form [formGroup]="contractForm" (ngSubmit)="onSubmitAdd()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -352,6 +352,9 @@
                     <option  value=""  disabled selected>قم باختيار العميل</option>
                     <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
                   </select>
+                  <!-- <select formControlName="userIds" multiple>
+                    <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
+                  </select> -->
                 </div>
               </div>
             </div>
