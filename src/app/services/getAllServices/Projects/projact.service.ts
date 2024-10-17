@@ -29,4 +29,29 @@ export class ProjactService {
       return this.http.get(`${this.apiUrl}Project/GetProjects`, { headers, params });
       
     }
+
+
+    api= environment.apiUrl+'Project/CreateProject' ;
+
+    createData(data: any): Observable<any> {
+      const headers = new HttpHeaders({
+        'tenant': 'ash'  // Required tenant header
+      });
+  
+      const formData = new FormData();
+      formData.append('Name', data.name);
+      formData.append('LocalName', data.localName || '');
+      //formData.append('Description', data.description || '');
+      formData.append('clientId', data.clientId || '');
+      formData.append('userIds', data.userIds || '');
+      formData.append('assignedToId', data.assignedToId || '');
+      formData.append('teamId', data.teamId || '');
+      formData.append('startDate', data.startDate || '');
+      formData.append('endDate', data.endDate || '');
+      formData.append('size', data.size || '');
+      formData.append('priority', data.priority || '');
+
+      return this.http.post(this.api, formData, { headers });
+    }
+
 }

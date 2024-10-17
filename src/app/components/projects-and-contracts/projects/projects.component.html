@@ -200,9 +200,8 @@
                       <tr *ngFor="let item of try">
                         <td> </td>
                         <td>{{item.name}}</td>
-                        <td>{{item.name}}</td>
-                        <td>{{item.name}}</td>
-                        <td>{{item.name}}</td>
+                        <td>{{item.startDate}}</td>
+                        <td>{{item.localName}}</td>
                         <td>{{item.name}}</td>
                         <th class="firstcolright">
                           <input type="checkbox" class="large-checkbox" />
@@ -211,6 +210,41 @@
                       </tr>
                    
                   </table>
+
+                  <!-- paging -->
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end">
+                      <!-- Previous Button -->
+                      <li class="page-item" [class.disabled]="pageNumber === 1">
+                        <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1" [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                      </li>
+                  
+                      <!-- Page Numbers -->
+                      <li class="page-item" [class.active]="pageNumber === 1">
+                        <a class="page-link" (click)="changePage(1)">1</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 2">
+                        <a class="page-link" (click)="changePage(2)">2</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 3">
+                        <a class="page-link" (click)="changePage(3)">3</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 4">
+                        <a class="page-link" (click)="changePage(4)">4</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 5">
+                        <a class="page-link" (click)="changePage(5)">5</a>
+                      </li>
+                  
+                      <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                      <li class="page-item"><a class="page-link">...</a></li>
+                  
+                      <!-- Next Button -->
+                      <li class="page-item">
+                        <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
               </div>
 
@@ -304,7 +338,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form>
+        <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)" enctype="multipart/form-data">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -313,8 +347,8 @@
                   <label for="field1 text-end"> اسم المشروع</label>
                   <input
                     type="text"
-                    id="field1"
-                   
+                    
+                    id="name" name="name" ngModel required
                     class="form-control custom-input"
                     placeholder="اسم المشروع"
                   />
@@ -325,8 +359,7 @@
                   <label for="field2 text-end">اسم المشروع باللغه المحليه </label>
                   <input
                     type="text"
-                    id="field2"
-                   
+                    id="localName" name="localName" ngModel required
                     class="form-control custom-input"
                     placeholder="Project "
                   />
@@ -340,8 +373,8 @@
                   <label for="field1 text-end">العميل </label>
                   <input
                     type="text"
-                    id="field3"
-                  
+                    id="clientId" name="clientId" ngModel required
+
                     class="form-control custom-input"
                     placeholder="قم باختيار العميل "
                   />
@@ -355,8 +388,8 @@
                   <label for="field1 text-end">موكل إلي</label>
                   <input
                     type="text"
-                    id="field1"
-                  
+                    id="assignedToId" name="assignedToId" ngModel required
+
                     class="form-control custom-input"
                     placeholder="قم باختيار المستخدم"
                   />
@@ -367,8 +400,9 @@
                   <label for="field2 text-end">فريق</label>
                   <input
                     type="text"
-                    id="field2"
                    
+                    id="teamId" name="teamId" ngModel required
+
                     class="form-control custom-input"
                     placeholder="قم باختيار الفريق"
                   />
@@ -382,8 +416,8 @@
                   <label for="field1 text-end">المستخدمين</label>
                   <input
                     type="text"
-                    id="field3"
-                 
+                    
+                    id="userIds" name="userIds" ngModel required
                     class="form-control custom-input"
                     placeholder="قم باختيار المستخدم"
                   />
@@ -397,8 +431,7 @@
                   <label for="field1 text-end">تاريخ البدء</label>
                   <input
                     type="date"
-                    id="field2"
-                  
+                    id="startDate" name="startDate" ngModel required
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -409,8 +442,9 @@
                   <label for="field2 text-end"> تاريخ الانتهاء </label>
                   <input
                     type="date"
-                    id="field2"
-                
+                   
+                    id="endDate" name="endDate" ngModel required
+
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -418,7 +452,7 @@
               </div>
             </div>
 
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field1 text-end">حاله المشروع</label>
@@ -442,7 +476,7 @@
                   />
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="scroll-buttons-container">
               <button
@@ -595,7 +629,8 @@
                       <label for="field1 text-end">اولويه المشروع</label>
                       <input
                         type="text"
-                        id="field1"
+                        id="priority" name="priority" ngModel required
+
                         class="form-control custom-input"
                         placeholder="قم باختبار اولويه المشروع"
                       />
@@ -606,7 +641,8 @@
                       <label for="field2 text-end"> حجم المشروع</label>
                       <input
                         type="text"
-                        id="field2"
+                        id="size" name="size" ngModel required
+
                         class="form-control custom-input"
                         placeholder="قم باختيار حجم المشروع"
                       />

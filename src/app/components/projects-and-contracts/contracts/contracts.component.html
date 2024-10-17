@@ -221,6 +221,40 @@
                   
                     </tbody>
                   </table>
+                  <!-- paging -->
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end">
+                      <!-- Previous Button -->
+                      <li class="page-item" [class.disabled]="pageNumber === 1">
+                        <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1" [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                      </li>
+                  
+                      <!-- Page Numbers -->
+                      <li class="page-item" [class.active]="pageNumber === 1">
+                        <a class="page-link" (click)="changePage(1)">1</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 2">
+                        <a class="page-link" (click)="changePage(2)">2</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 3">
+                        <a class="page-link" (click)="changePage(3)">3</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 4">
+                        <a class="page-link" (click)="changePage(4)">4</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 5">
+                        <a class="page-link" (click)="changePage(5)">5</a>
+                      </li>
+                  
+                      <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                      <li class="page-item"><a class="page-link">...</a></li>
+                  
+                      <!-- Next Button -->
+                      <li class="page-item">
+                        <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
               </div>
 
@@ -314,19 +348,19 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
+        <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)" enctype="multipart/form-data">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="name text-end"> اسم العقد</label>
+                  <label for=" text-end"> اسم العقد</label>
                   <input
                     type="text"
-                    id="name"
-                    formControlName="name"
+                    id="name" name="name" ngModel required
                     class="form-control custom-input"
                     placeholder="اسم العقد"
+                    name="name"
                   />
                 </div>
               </div>
@@ -335,10 +369,10 @@
                   <label for="field2 text-end">اسم العقد باللغه المحليه </label>
                   <input
                     type="text"
-                    id="localName"
-                    formControlName="localName"
+                    id="localName" name="localName" ngModel required
                     class="form-control custom-input"
                     placeholder="Contract Name"
+                    
                   />
                 </div>
               </div>
@@ -348,7 +382,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="clientId">العميل</label>
-                  <select id="clientId" formControlName="clientId" class="form-select form-control">
+                  <select id="clientId" name="clientId" ngModel required class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار العميل</option>
                     <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
                   </select>
@@ -360,7 +394,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="assignedToId">موكل الى </label>
-                  <select id="assignedToId" formControlName="assignedToId" class="form-select form-control">
+                  <select id="assignedToId" name="assignedToId" ngModel required class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار موكل الى </option>
                     <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
                   </select>
@@ -369,7 +403,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="teamId">الفريق </label>
-                  <select id="teamId" formControlName="teamId" class="form-select form-control">
+                  <select id="teamId" name="teamId" ngModel required class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار الفريق </option>
                     <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
                   </select>
@@ -381,7 +415,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="userIds">المستخدمين </label>
-                  <select id="userIds" formControlName="userIds" class="form-select form-control">
+                  <select id="userIds" name="userIds" ngModel required class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار المستخدمين </option>
                     <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
                   </select>
@@ -395,8 +429,7 @@
                   <label for="startDate text-end">تاريخ البدء</label>
                   <input
                     type="date"
-                    id="startDate"
-                    formControlName="startDate"
+                    id="startDate" name="startDate" ngModel required
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -407,8 +440,7 @@
                   <label for="endDate text-end"> تاريخ الانتهاء </label>
                   <input
                     type="date"
-                    id="endDate"
-                    formControlName="endDate"
+                    id="endDate" name="endDate" ngModel required
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -422,8 +454,7 @@
                   <label for="code text-end">رقم العقد</label>
                   <input
                     type="text"
-                    id="code"
-                    formControlName="code"
+                    id="code" name="code" ngModel required
                     class="form-control custom-input"
                     placeholder="قم باختبار رقم العقد"
                   />

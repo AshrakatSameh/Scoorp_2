@@ -24,7 +24,7 @@ export class ContractsComponent {
   pageNumber: number = 1;
   pageSize: number = 10;
   contracts:any[]=[];
-  contractForm:FormGroup;
+  contractForm!:FormGroup;
   apiUrl= environment.apiUrl;
   clients:any[]=[];
   users:any[]=[];
@@ -91,76 +91,32 @@ export class ContractsComponent {
     })
   }
 
-  onSubmitAdd() {
-    const formData = new FormData();
-    const name = this.contractForm.get('name')!.value;
-    const localName = this.contractForm.get('localName')!.value;
-    const clientId = this.contractForm.get('clientId')!.value;
-    const assignedToId = this.contractForm.get('assignedToId')!.value;
-    const teamId = this.contractForm.get('teamId')!.value;
-    const userIds = this.contractForm.get('userIds')!.value;
-    const startDate = this.contractForm.get('startDate')!.value;
-    const endDate = this.contractForm.get('endDate')!.value;
-    const code = this.contractForm.get('code')!.value;
-    if (name) {
-      formData.append('name', name);
-      formData.append('localName', localName);
-      formData.append('clientId', clientId);
-      formData.append('assignedToId', assignedToId);
-      formData.append('teamId', teamId);
-      formData.append('userIds', userIds);
-      formData.append('startDate', startDate);
-      formData.append('endDate', endDate);
-      formData.append('code', code);
-      
-    } else {
-      console.error('One or more form fields are null');
-      return;
+  onSubmit(form: any) {
+    if (form.valid) {
+      const formData = {
+        name: form.value.name,
+        localName: form.value.localName,
+        code: form.value.code,
+        startDate: form.value.startDate,
+        endDate: form.value.endDate,
+        clientId: form.value.clientId,
+        assignedToId: form.value.assignedToId,
+        teamId: form.value.teamId,
+        userIds: form.value.userIds,
+       
+      };
+
+      this.cnotractService.createData(formData).subscribe(response => {
+        console.log('Data submitted successfully', response);
+        alert('Data submitted successfully')
+      }, error => {
+        console.error('Error occurred while submitting data', error);
+      });
     }
 
-    const tenantId = localStorage.getItem('tenant');
-    const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
-    });
-    const url = `${this.apiUrl}Contract/CreateContract`;
-    this.http.post<any>(url, formData,{headers}).subscribe(
-      (response) => {
-        alert('Done');
-        console.log('contract created successfully:', response);
-        // Reset form after successful submission
-        this.contractForm.reset();
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error creating contract:', error.error);
-        // Handle error
-      }
-    );
-  }
-
-  onSubmit(): void {
-   
-    if (this.contractForm.valid) {
-      // Call the service to post the data
-      const formData = this.contractForm.value; // Get the form data
-      this.cnotractService.createContracts(formData).subscribe(
-        response => {
-          console.log('Units created successfully!', response);
-          // Handle success, show notification, etc.
-        },
-        error => {
-          console.error('Error creating Units :', error);
-          console.log(formData)
-          // Handle error, show notification, etc.
-        }
-      );
-    } else {
-      console.log(this.contractForm);
-      console.log('Form is not valid');
-      // Handle form validation errors
-    }
-  }
-
+}
+  
+  
   toggleMap(){
     this.isMapView = true
   }
@@ -208,6 +164,12 @@ export class ContractsComponent {
   // Method to handle button click and show content
   showContent(index: number): void {
     this.selectedButton = index;
+  }
+
+  changePage(newPageNumber: number): void {
+    this.pageNumber = newPageNumber;
+    console.log(this.pageNumber)
+    this.getcontracts();
   }
 
 }

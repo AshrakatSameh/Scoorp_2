@@ -45,13 +45,36 @@ export class ContractService {
     
   }
 
-  createContracts(unit: any): Observable<any> {
-    const tenantId = localStorage.getItem('tenant');
+  createContract(formData: FormData): Observable<any> {
+    const tenantId = localStorage.getItem('tenant') || '';
     const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
+      tenant: tenantId, // Add tenant header if needed
     });
-    console.log(unit)
-    return this.http.post(`${this.apiUrl}Contract/CreateContract`, unit, { headers });
+
+    return this.http.post<any>(`${this.apiUrl}Contract/CreateContract`, formData, { headers });
   }
+
+
+
+
+  api= environment.apiUrl+'Contract/CreateContract' ;
+
+    createData(data: any): Observable<any> {
+      const headers = new HttpHeaders({
+        'tenant': 'ash'  // Required tenant header
+      });
+  
+      const formData = new FormData();
+      formData.append('Name', data.name);
+      formData.append('LocalName', data.localName || '');
+      formData.append('clientId', data.clientId || '');
+      formData.append('userIds', data.userIds || '');
+      formData.append('assignedToId', data.assignedToId || '');
+      formData.append('teamId', data.teamId || '');
+      formData.append('startDate', data.startDate || '');
+      formData.append('endDate', data.endDate || '');
+      formData.append('code', data.code || '');
+
+      return this.http.post(this.api, formData, { headers });
+    }
 }
