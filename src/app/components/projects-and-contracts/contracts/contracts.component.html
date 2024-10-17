@@ -386,6 +386,9 @@
                     <option  value=""  disabled selected>قم باختيار العميل</option>
                     <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
                   </select>
+                  <!-- <select formControlName="userIds" multiple>
+                    <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
+                  </select> -->
                 </div>
               </div>
             </div>
