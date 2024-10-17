@@ -93,8 +93,6 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
     })
 
   }
-
-
   getAllManagers() {
     this.managerService.getAllManagers().subscribe(response => {
       this.managers = response;

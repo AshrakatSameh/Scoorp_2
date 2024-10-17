@@ -96,4 +96,13 @@ export class SalesService {
     return this.http.post(`${this.apiUrl}SalesInvoice`, data, { headers });
   }
  
+  createSalesInvoice(data: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    console.log(data)
+    return this.http.post('https://lawersys-001-site1.etempurl.com/api/SalesInvoice', data, { headers });
+  }
 }

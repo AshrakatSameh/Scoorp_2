@@ -133,18 +133,44 @@
                       <td> <input type="checkbox" class="large-checkbox" />
                       </td>
                     </tr>
-                    <tr>
-                        <td> </td>
-                      <td>Shou Itou</td>
-                      <td>Regional Marketing</td>
-                      <td>Tokyo</td>
-                      <td>20</td>
-                      <td>2011/08/14</td>
-                      <td> <input type="checkbox" class="large-checkbox" />
-                      </td>
-                    </tr>
+                 
                   </tbody>
                 </table>
+
+                 <!-- paging -->
+                 <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-end">
+                    <!-- Previous Button -->
+                    <li class="page-item" [class.disabled]="pageNumber === 1">
+                      <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1" [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                    </li>
+                
+                    <!-- Page Numbers -->
+                    <li class="page-item" [class.active]="pageNumber === 1">
+                      <a class="page-link" (click)="changePage(1)">1</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 2">
+                      <a class="page-link" (click)="changePage(2)">2</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 3">
+                      <a class="page-link" (click)="changePage(3)">3</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 4">
+                      <a class="page-link" (click)="changePage(4)">4</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 5">
+                      <a class="page-link" (click)="changePage(5)">5</a>
+                    </li>
+                
+                    <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                    <li class="page-item"><a class="page-link">...</a></li>
+                
+                    <!-- Next Button -->
+                    <li class="page-item">
+                      <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
 
@@ -254,7 +280,7 @@
 
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="location" class="form-label">حالة الفاتورة</label>
                 <div class="input-group">
                     <select class="form-select form-control" disabled >
@@ -264,10 +290,10 @@
                         
                     </select>
                 </div>
-                </div>
+                </div> -->
               </div>
               <div class="col-md-6">
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="location" class="form-label">الأصناف</label>
                 <div class="input-group">
                     <select class="form-control" disabled  id="location">
@@ -276,7 +302,7 @@
                        
                     </select>
                 </div>
-                </div>
+                </div> -->
               </div>
             </div>
         

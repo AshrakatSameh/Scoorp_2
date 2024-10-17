@@ -159,7 +159,7 @@
 }
 
  /* font */
- h2,
+ h2,h1,
  h3,
  h5,
 a,
@@ -168,7 +168,7 @@ p,
 label,
 input,
 button,
-tr, th, tr {
+tr, th, tr, input, select {
    font-family: "Cairo", sans-serif;
    font-optical-sizing: auto;
    font-weight: 600;
@@ -408,4 +408,38 @@ tr, th, tr {
 
 .customButton{
   margin-top: 2.2rem;
+}
+
+.my-button3{
+  background-color: #224273;
+  color:#F7fBFF;
+  width: 13rem;
+  margin-left: 3%;
+}
+
+
+.closebutton{
+  color:#224273;
+  border: 1px solid #224273;
+  background-color:#F7fBFF;
+  width: 13rem;
+}
+
+.form-select{
+  background-position: left;
+}
+.custom-input {
+  background-color: #E7E7EA;
+  border-radius: 10px;
+}
+ 
+.custom-input:focus {
+  outline: none; /* Removes the default outline */
+  border-color: initial; /* Resets the border color */
+  background-color: initial; /* Resets the background color */
+}
+
+.custom-input:focus {
+  border-color: #E7E7EA; /* Your custom border color */
+  background-color: #ffff; /* Your custom background color */
 }

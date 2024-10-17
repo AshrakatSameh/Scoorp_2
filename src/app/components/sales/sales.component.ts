@@ -22,6 +22,15 @@ export class SalesComponent implements OnInit {
   pageNumber: number = 1;
   pageSize: number = 10;
   
+  costCenters:any[]=[];
+  salesOffers:any[]=[];
+  clients:any[]=[];
+  warehouses:any[]=[];
+  representatives:any[]=[]
+  teams:any[]=[];
+  priceLists:any[]=[];
+
+
   saleOfferForm:FormGroup;
 
   paymentType = PaymentType;  // Access the PaymentType enum
@@ -96,15 +105,6 @@ requestStageList: { key: string, value: string }[] = [];
   }
 
 
-
-
-
-
-
-
-
-
-
   // Handle file selection via input click
   onFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -112,7 +112,6 @@ requestStageList: { key: string, value: string }[] = [];
       this.handleFile(file);
     }
   }
-
   // Handle file dropped via drag-and-drop
   onFileDropped(event: DragEvent): void {
     event.preventDefault();
@@ -121,13 +120,11 @@ requestStageList: { key: string, value: string }[] = [];
       this.handleFile(file);
     }
   }
-
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     const target = event.target as HTMLElement;  // Cast to HTMLElement
     target.classList.add('drag-over');
   }
-
   onDragLeave(event: DragEvent): void {
     // Remove the hover effect class on drag leave
     event.preventDefault();
@@ -152,7 +149,6 @@ requestStageList: { key: string, value: string }[] = [];
     // You could upload the file to the server here using an API service
   }
 
-  salesOffers:any[]=[];
   getAllSaleOffers() {
     this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response => {
       this.salesOffers = response;
@@ -161,7 +157,6 @@ requestStageList: { key: string, value: string }[] = [];
       console.error('Error fetching sales data:', error)
     })
   }
-  clients:any[]=[]
 
 getAllClients() {
   this.clientService.getCliensts().subscribe(response => {
@@ -172,7 +167,6 @@ getAllClients() {
   })
 }
 
-warehouses:any[]=[]
 getAllWarehouses() {
   this.wareService.getAllWarehouses().subscribe(response => {
     this.warehouses = response.data;
@@ -182,7 +176,6 @@ getAllWarehouses() {
   })
 }
 
-representatives:any[]=[]
 getAllRepresentatives() {
   this.representative.getAllRepresentative().subscribe(response => {
     this.representatives = response;
@@ -192,7 +185,6 @@ getAllRepresentatives() {
   })
 }
 
-teams:any[]=[];
 getAllTeams() {
   this.teamService.getTeams().subscribe(response => {
     this.teams = response.teams;
@@ -203,7 +195,6 @@ getAllTeams() {
 }
 
 
-priceLists:any[]=[];
   getAllPriceLists() {
     this.pricelistService.getAllPriceLists().subscribe(response => {
       this.priceLists = response.data;
@@ -214,7 +205,7 @@ priceLists:any[]=[];
   }
 
 
-  costCenters:any[]=[];
+
   getcostCenters() {
     this.costService.getAllCostCaners().subscribe(response => {
       this.costCenters = response.costCenters;

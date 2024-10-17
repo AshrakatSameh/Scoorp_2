@@ -230,6 +230,7 @@ tr, th, tr {
   overflow-x: auto;
   white-space: nowrap;
   padding: 15px 0;
+  justify-content: center;
 }
 
 .scroll-button {
@@ -396,4 +397,19 @@ input.form-control {
 
 .text-center {
   text-align: center;
+}
+
+.my-button3{
+  background-color: #224273;
+  color:#F7fBFF;
+  width: 13rem;
+  margin-left: 3%;
+}
+
+
+.closebutton{
+  color:#224273;
+  border: 1px solid #224273;
+  background-color:#F7fBFF;
+  width: 13rem;
 }

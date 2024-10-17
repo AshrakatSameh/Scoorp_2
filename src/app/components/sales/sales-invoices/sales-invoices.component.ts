@@ -11,6 +11,8 @@ import { ItemsService } from 'src/app/services/getAllServices/Items/items.servic
 import { CostCenterService } from 'src/app/services/getAllServices/CostCenter/cost-center.service';
 import { InvoiceType } from 'src/app/enums/InvoiceType';
 import { PriceListService } from 'src/app/services/getAllServices/PriceList/price-list.service';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-sales-invoices',
@@ -22,6 +24,16 @@ export class SalesInvoicesComponent implements OnInit {
   pageNumber: number = 1;
   pageSize: number = 10;
   salesForm:FormGroup;
+
+  priceLists:any[]=[];
+  salesIvoices:any[]=[];
+  representatives:any[]=[]
+  clients:any[]=[];
+  payPeriods:any[]=[];
+  teams:any[]=[];
+  items:any[]=[];
+  costCenters:any[]=[];
+
 
   invoiceStatus = InvoiceStatus;  // Access the PaymentType enum
   // Convert enum to an array for dropdown
@@ -35,7 +47,8 @@ export class SalesInvoicesComponent implements OnInit {
   constructor(private salesInvoiceService: SalesService, private clientService:ClientsService,
     private representService: RepresentativeService, private fb:FormBuilder, private payService:PaymentPeriodsService,
     private teamService:TeamsService, private itemServices:ItemsService,
-    private costService:CostCenterService,private priceService:PriceListService
+    private costService:CostCenterService,private priceService:PriceListService,
+    private http:HttpClient
   ){
     this.salesForm= this.fb.group({
       code: ['', Validators.required],
@@ -89,7 +102,6 @@ export class SalesInvoicesComponent implements OnInit {
     this.selectedButton = index;
   }
 
-  salesIvoices:any[]=[];
   getAllSaleIncoices() {
     this.salesInvoiceService.getSalesInvoices(this.pageNumber, this.pageSize).subscribe(response => {
       this.salesIvoices = response.salesInvoices;
@@ -99,7 +111,6 @@ export class SalesInvoicesComponent implements OnInit {
     })
   }
 
-  representatives:any[]=[]
 
 getAllRepresentatives() {
   this.representService.getAllRepresentative().subscribe(response => {
@@ -110,7 +121,6 @@ getAllRepresentatives() {
   })
 }
 
-clients:any[]=[];
 getAllClients() {
   this.clientService.getCliensts().subscribe(response => {
     this.clients = response.data;
@@ -120,7 +130,6 @@ getAllClients() {
   })
 }
 
-payPeriods:any[]=[];
 getAllPayPeriods() {
   this.payService.getAllPaymentPeriods().subscribe(response => {
     this.payPeriods = response.paymentPeriods;
@@ -130,7 +139,6 @@ getAllPayPeriods() {
   })
 }
 
-teams:any[]=[];
 getAllTeams() {
   this.teamService.getTeams().subscribe(response => {
     this.teams = response.teams;
@@ -141,7 +149,6 @@ getAllTeams() {
 }
 
 
-items:any[]=[];
 getAllItems() {
   this.itemServices.getAllItems().subscribe(response => {
     this.items = response;
@@ -151,7 +158,6 @@ getAllItems() {
   })
 }
 
-costCenters:any[]=[];
 getAllCostcenters() {
   this.costService.getAllCostCaners().subscribe(response => {
     this.costCenters = response.costCenters;
@@ -161,7 +167,7 @@ getAllCostcenters() {
   })
 }
 
-priceLists:any[]=[];
+
 getAllPriceLists() {
   this.priceService.getAllPriceLists().subscribe(response => {
     this.priceLists = response.data;
@@ -185,4 +191,60 @@ onSubmit() {
   } else {
     console.log('Form is invalid');
   }}
+  onSubmitAdd() {
+    const formData = new FormData();
+    const code = this.salesForm.get('code')!.value;
+    const clientId = this.salesForm.get('clientId')!.value;
+    const representativeId = this.salesForm.get('representativeId')!.value;
+    const teamId = this.salesForm.get('teamId')!.value;
+    const invoiceNumber = this.salesForm.get('invoiceNumber')!.value;
+    const priceListId = this.salesForm.get('priceListId')!.value;
+    const paymentPeriodId = this.salesForm.get('paymentPeriodId')!.value;
+    const invoiceType = this.salesForm.get('invoiceType')!.value;
+    const costCenterId = this.salesForm.get('costCenterId')!.value;
+    const driver = this.salesForm.get('driver')!.value;
+    if (code) {
+      formData.append('code', code);
+      formData.append('clientId', clientId);
+      formData.append('representativeId', representativeId);
+      formData.append('teamId', teamId);
+      formData.append('invoiceNumber', invoiceNumber);
+      formData.append('priceListId', priceListId);
+      formData.append('paymentPeriodId', paymentPeriodId);
+      formData.append('invoiceType', invoiceType);
+      formData.append('costCenterId', costCenterId);
+      formData.append('driver', driver);
+      
+    } else {
+      console.error('One or more form fields are null');
+      return;
+    }
+
+    const tenantId = localStorage.getItem('tenant');
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    const url = `${this.apiUrl}SalesInvoice`;
+    this.http.post<any>(url, formData,{headers}).subscribe(
+      (response) => {
+        alert('Done');
+        console.log('Employee created successfully:', response);
+        // Reset form after successful submission
+        this.salesForm.reset();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error creating Employee:', error.error);
+        // Handle error
+      }
+    );
+  }
+
+  apiUrl=environment.apiUrl;
+
+  changePage(newPageNumber: number): void {
+    this.pageNumber = newPageNumber;
+    console.log(this.pageNumber)
+    this.getAllSaleIncoices();
+  }
 }

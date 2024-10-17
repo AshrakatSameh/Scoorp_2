@@ -15,12 +15,18 @@ import { RepresentativeService } from 'src/app/services/getAllServices/Represent
 })
 export class CollectionsComponent implements OnInit {
 
+
+  pageNumber: number = 1;
+  pageSize: number = 10;
+
   costCenters: any[] = [];
   convenants: any[] = [];
   representatives:any[]=[];
   contracts:any[]=[];
   paymentMethods:any[]=[];
   clients:any[]=[];
+  collections:any[]=[];
+
 
   collectionForm!: FormGroup;
   constructor(private costCenterService: CostCenterService, private representService:RepresentativeService,
@@ -35,6 +41,8 @@ export class CollectionsComponent implements OnInit {
     this.getAllContracts();
     this.getAllPaymentMethods();
     this.getAllClients();
+    this.getAllCollections();
+
   }
 
 
@@ -57,8 +65,6 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-
-
   getAllConvenants() {
     this.convenantService.getAllConvenant2().subscribe(response => {
       this.convenants = response.data;
@@ -68,8 +74,6 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-
-
   getAllRepresentative() {
     this.representService.getAllRepresentative().subscribe(response => {
       this.representatives = response;
@@ -79,7 +83,6 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-
   getAllContracts() {
     this.contractService.getAllContracts().subscribe(response => {
       this.contracts = response.contracts;
@@ -89,8 +92,6 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-
- 
   getAllPaymentMethods() {
     this.paymentService.getAllPaymentMethods().subscribe(response => {
       this.paymentMethods = response.paymentMethods;
@@ -100,7 +101,6 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-
   getAllClients() {
     this.clientService.getCliensts().subscribe(response => {
       this.clients = response.data;
@@ -111,14 +111,14 @@ export class CollectionsComponent implements OnInit {
 
   }
 
-  // getAllCollects() {
-  //   this.collectionService.getall().subscribe(response => {
-  //     this.clients = response.data;
-  //     console.log(this.clients);
-  //   }, error => {
-  //     console.error('Error fetching clients data:', error)
-  //   })
+  getAllCollections() {
+    this.collectionService.getAllCollections(this.pageNumber, this.pageSize).subscribe(response => {
+      this.collections = response.data;
+    //  console.log(this.collections);
+    }, error => {
+      console.error('Error fetching clients data:', error)
+    })
 
-  // }
+  }
 
 }

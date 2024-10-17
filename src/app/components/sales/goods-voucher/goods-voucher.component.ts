@@ -21,6 +21,7 @@ export class GoodsVoucherComponent implements OnInit {
 
   pageNumber: number = 1;
   pageSize: number = 10; 
+  deliveryVouchers:any[]=[]
 
   
   apiUrl= environment.apiUrl +'DeliveryNotes/Create';
@@ -86,24 +87,30 @@ export class GoodsVoucherComponent implements OnInit {
 
 
 
-
-  deliveryVouchers:any[]=[]
+  clientN: any[] = [];  //arrNames:any ;
+  clientName:any;
   getAllDeliveryVouchers() {
     this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe(response => {
       this.deliveryVouchers = response;
-   
+      const x =this.deliveryVouchers.map(dVouche=> 
+      {
+        this.ClientById(dVouche.clientId);
+      }
+      );
     }, error => {
       console.error('Error fetching delivery vouchers data:', error)
     })
   }
 
 
- 
+  cliName:any;
   ClientById(id: number){
     this.clientService.getClietById(id).subscribe(
       (data) => {
-        this.clientData = data; // Assign response data to trainer variable
-        console.log('client details:', this.clientData);
+        this.clientData = data;
+        this.cliName = this.clientData.name;
+      return this.cliName;
+      
       },
       (error) => {
         console.error('Error fetching client:', error);
