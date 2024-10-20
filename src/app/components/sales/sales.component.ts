@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PaymentType } from 'src/app/enums/PaymentType';
@@ -11,6 +12,7 @@ import { SalesService } from 'src/app/services/getAllServices/Sales/sales.servic
 import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.service';
 import { WarehouseService } from 'src/app/services/getAllServices/Warehouse/warehouse.service';
 import { WarehouseCatService } from 'src/app/services/getAllServices/WarehouseCategories/warehouse-cat.service';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-sales',
@@ -20,7 +22,7 @@ import { WarehouseCatService } from 'src/app/services/getAllServices/WarehouseCa
 export class SalesComponent implements OnInit {
 
   pageNumber: number = 1;
-  pageSize: number = 10;
+  pageSize: number = 3;
   
   costCenters:any[]=[];
   salesOffers:any[]=[];
@@ -44,10 +46,12 @@ requestStageList: { key: string, value: string }[] = [];
 
 
 
+apiUrl=environment.apiUrl;
   constructor(private salesService:SalesService,private clientService:ClientsService,
     private teamService:TeamsService,private representative:RepresentativeService,
      private wareService:WarehouseService, private fb:FormBuilder,
-     private pricelistService:PriceListService, private costService:CostCenterService
+     private pricelistService:PriceListService, private costService:CostCenterService,
+     private http:HttpClient
   ){
 
     this.saleOfferForm= this.fb.group({
@@ -55,14 +59,14 @@ requestStageList: { key: string, value: string }[] = [];
       representativeId: ['', Validators.required],
       code: ['', Validators.required],
       teamId: ['', Validators.required],
-      purchaseOrderNumber: ['', Validators.required],
+      clientPurchaseOrder: ['', Validators.required],
       costCenterId: ['', Validators.required],
       warehouseId: ['', Validators.required],
-      priceListId:['',Validators.required],
+      // priceListId:['',Validators.required],
       offerExpiryDate:['',Validators.required],
       paymentPeriod:['',Validators.required],
       paymentType:['',Validators.required],
-      requestStage:['',Validators.required],
+      // requestStage:['',Validators.required],
 
       // clientPurchaseOrder:['',Validators.required],
       // priceOfferTemplate:['',Validators.required],
@@ -149,14 +153,23 @@ requestStageList: { key: string, value: string }[] = [];
     // You could upload the file to the server here using an API service
   }
 
-  getAllSaleOffers() {
-    this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response => {
-      this.salesOffers = response;
-      //console.log(this.salesOffers);
-    }, error => {
-      console.error('Error fetching sales data:', error)
-    })
-  }
+  // getAllSaleOffers() {
+  //   this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response => {
+  //     this.salesOffers = response;
+  //     console.log(this.salesOffers);
+  //   }, error => {
+  //     console.error('Error fetching sales data:', error)
+  //   })
+  // }
+  getAllSaleOffers(){
+    this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response=>{
+        this.salesOffers= response;
+        console.log(this.salesOffers);
+      }, error =>{
+        console.error('Error fetching salesOffers data:' , error)
+      })
+      
+    }
 
 getAllClients() {
   this.clientService.getCliensts().subscribe(response => {
@@ -217,17 +230,31 @@ getAllTeams() {
 
   onSubmit() {
 
-    if (this.saleOfferForm.valid) {
-      this.salesService.postSaleOffer(this.saleOfferForm.value).subscribe(
-        response => {
-          console.log('Form successfully submitted', response);
-        },
-        error => {
-          console.error('Error submitting form', error);
-        }
-      );
-    } else {
-      console.log('Form is invalid');
-    }}
 
+if (this.saleOfferForm.valid) {
+  // Call the service to post the data
+  const formData = this.saleOfferForm.value; // Get the form data
+  this.salesService.postSaleOffer(formData).subscribe(
+    response => {
+      console.log('sales offer created successfully!', response);
+      alert('sales offer created successfully!')
+      // Handle success, show notification, etc.
+    },
+    error => {
+      console.error('Error creating sales offer:', error);
+      console.log(formData)
+      // Handle error, show notification, etc.
+    }
+  );
+} else {
+  console.log(this.saleOfferForm);
+  console.log('Form is not valid');
+  // Handle form validation errors
+}
+}
+changePage(newPageNumber: number): void {
+  this.pageNumber = newPageNumber;
+  console.log(this.pageNumber)
+  this.getAllSaleOffers();
+}
 }

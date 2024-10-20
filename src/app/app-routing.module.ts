@@ -62,7 +62,7 @@ const routes: Routes = [
   {path:'approval',component:EmployeeRequestsComponent,canActivate:[authGuard]},
   {path:'typeRequest',component:TypeEmployeeRequestsComponent,canActivate:[authGuard]},
   {path:'categoryResquest',component:CategoryEmployeeRequestsComponent,canActivate:[authGuard]},
-  {path:'description',component:DescriptionsComponent,canActivate:[authGuard]},
+  // {path:'description',component:DescriptionsComponent,canActivate:[authGuard]},
   {path:'goodsVoucher' , component: GoodsVoucherComponent,canActivate:[authGuard]},
   {path:'projects',component:ProjectsComponent,canActivate:[authGuard]},
   {path:'projectType', component:TypeOfProjectsComponent,canActivate:[authGuard]},

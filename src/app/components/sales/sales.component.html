@@ -114,9 +114,11 @@
                     <tr class="firstcol">
                       <th class="firstcolleft">مدير القسم</th>
                       <th>المندوب</th>
+                      <th>الكود</th>
                       <th>العميل</th>
+                      <th>الفريق</th>
                       <th>تاريخ الانشاء</th>
-                      <th>المنشأ</th>
+                     
                       <th>مسلسل</th>
                       <th class="firstcolright">
                         <input type="checkbox" class="large-checkbox" />
@@ -125,11 +127,12 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of salesOffers; let i =index">
-                      <td>{{representatives[item.id]?.userName}}</td>
-                      <td>{{clients[item.clientId]?.name}}</td>
-                      <td>{{teams[item.id]?.name}}</td>
-                      <td>{{warehouses[item.id]?.name}}</td>
+                      <td> </td>
+                      <td>{{item.representativeName}}</td>
                       <td>{{item.code}}</td>
+                      <td>{{item.clientName}}</td>
+                      <td>{{item.teamName}}</td>
+                      <td>11/11/2024</td>
                       <td>{{i + 1}}</td>
                       <td> <input type="checkbox" class="large-checkbox" />
                       </td>
@@ -138,6 +141,40 @@
                   </tbody>
                 </table>
 
+                <!-- paging -->
+                <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-end">
+                    <!-- Previous Button -->
+                    <li class="page-item" [class.disabled]="pageNumber === 1">
+                      <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1" [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                    </li>
+                
+                    <!-- Page Numbers -->
+                    <li class="page-item" [class.active]="pageNumber === 1">
+                      <a class="page-link" (click)="changePage(1)">1</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 2">
+                      <a class="page-link" (click)="changePage(2)">2</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 3">
+                      <a class="page-link" (click)="changePage(3)">3</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 4">
+                      <a class="page-link" (click)="changePage(4)">4</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 5">
+                      <a class="page-link" (click)="changePage(5)">5</a>
+                    </li>
+                
+                    <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                    <li class="page-item"><a class="page-link">...</a></li>
+                
+                    <!-- Next Button -->
+                    <li class="page-item">
+                      <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
                 
               </div>
             </div>
@@ -233,7 +270,7 @@
                 <div class="form-group">
                   <label for="field7 text-end">رقم طلب شراء العميل
                   </label>
-                  <input type="text" id="purchaseOrderNumber" class="form-control" formControlName="purchaseOrderNumber" placeholder="رقم طلب شراء العميل" />
+                  <input type="text" id="clientPurchaseOrder" class="form-control" formControlName="clientPurchaseOrder" placeholder="رقم طلب شراء العميل" />
                 </div>
               </div>
             </div>
@@ -261,7 +298,7 @@
             </div>
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label  class="form-label">مراحل الطلب</label>
                   <div class="input-group" >
                       <select class="form-select form-control custom-input" formControlName="requestStage" >
@@ -271,20 +308,20 @@
                          
                       </select>
                   </div>
-              </div>
+              </div> -->
               </div>
               <div class="col-md-6">
-                <div class="form-group">
+                <!-- <div class="form-group">
                   <label  class="form-label">عرض الأسعار</label>
                   <div class="input-group" >
                       <select class="form-select form-control custom-input" formControlName="priceListId" >
                           <option value="" disabled selected>قم باختيار عرض الأسعار</option>
-                          <option *ngFor="let item of priceLists" [value]="item.id"
+                          <option *ngFor="let item of priceLists" [value]="item.priceListId"
                           >{{ item.name }}</option>
                          
                       </select>
                   </div>
-              </div>
+              </div> -->
               </div>
             </div>
 

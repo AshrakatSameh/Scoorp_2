@@ -128,28 +128,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <tr *ngFor="let item of convenantBoxes">
                                             
                                             <td> </td>
-                                            <td>48</td>
+                                            <td>{{item.code}}</td>
                                             <td>San Francisco</td>
                                             <td>Chief Operating Officer (COO)</td>
-                                            <td>2010/03/11</td>
-                                            <td>Fiona Green</td>
+                                            <td>{{item.covenantBoxName}}</td>
+                                            <td>{{item.covenantBoxName}}</td>
                                             <td> <input type="checkbox" class="large-checkbox" />
                                             </td>
 
                                         </tr>
-                                        <tr>
-                                            <td> </td>
-                                            <td>48</td>
-                                            <td>San Francisco</td>
-                                            <td>Chief Operating Officer (COO)</td>
-                                            <td>2010/03/11</td>
-                                            <td>Fiona Green</td>
-                                            <td> <input type="checkbox" class="large-checkbox" />
-                                            </td>
-                                        </tr>
+                                      
                                     </tbody>
                                 </table>
                             </div>
@@ -174,25 +165,25 @@
                 </h5>
             </div>
             <div class="modal-body">
-                <form>
+                <form [formGroup]="convBoxForm" (ngSubmit)="onSubmit()">
                     <div class="container">
                         <!-- Row with two fields -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="field4 text-end"> اسم العهده</label>
-                                    <input type="text" id="field3"  class="form-control"
+                                    <input type="text" id="covenantBoxName" formControlName="covenantBoxName" name="covenantBoxName"  class="form-control"
                                         placeholder="اسم العهده" />
                                 </div>
                             </div>
                        
                         </div>
 
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end"> اسم العهده</label>
-                                    <input type="text" id="field3"  class="form-control"
+                                    <input type="text" id="code"   class="form-control"
                                         placeholder="اسم العهده" />
                                 </div>
                                
@@ -204,8 +195,8 @@
                                         placeholder="اسم العهده باللغة المحلية" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
+                        </div> -->
+                        <!-- <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end"> المنشأ</label>
@@ -221,12 +212,12 @@
                                         placeholder="تاريخ الإنشاء" />
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="field4 text-end">كود العهده</label>
-                                    <input type="text" id="field3"  class="form-control"
+                                    <input type="text" id="code" formControlName="code" name="code" class="form-control"
                                         placeholder="كود العهده" />
                                 </div>
                             </div>
@@ -234,7 +225,7 @@
                           <div class="row mb-3">
                             <div class="col-md-12 ">
                               <label for="Textarea1">وصف العهده</label>
-                              <textarea class="form-control" id="Textarea1" rows="3"></textarea>
+                              <textarea class="form-control" name="description" formControlName="description" id="description" rows="3"></textarea>
                             </div>
                           </div>
 
@@ -257,7 +248,7 @@
                           <!-- show table button 1 -->
                           
                         <div class="col-md-6 mx-auto ">
-                            <button type="button" class="btn my-button3">
+                            <button type="submit" class="btn my-button3" >
                                 اضافه
                                 <i class="fa-solid fa-plus"></i>
                             </button>

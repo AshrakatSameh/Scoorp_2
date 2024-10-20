@@ -199,21 +199,23 @@
                         <th>موقع العقد</th>
                         <th>اسم العقد باللغه المحليه</th>
                         <th>اسم العقد</th>
+                        <th>المسلسل</th>
                         <th class="firstcolright">
                           <input type="checkbox" class="large-checkbox" />
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of contracts">
+                      <tr *ngFor="let item of contracts, let i=index">
                         <td></td>
 
                         <td>{{item.teamId}}</td>
-                        <td>{{item.assignedToId}}</td>
-                        <td>{{item.clientId}}</td>
+                        <td>{{item.assignedToName}}</td>
+                        <td>{{item.clientName}}</td>
                         <td>{{item.singleInstallments}}</td>
                         <td>{{item.localName}}</td>
                         <td>{{item.name}}</td>
+                        <td>{{i+1}}</td>
                         <td class="firstcolright">
                           <input type="checkbox" class="large-checkbox" />
                         </td>
@@ -348,7 +350,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)" enctype="multipart/form-data">
+        <form [formGroup]="contractForm" (ngSubmit)="onSubmit()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -357,7 +359,7 @@
                   <label for=" text-end"> اسم العقد</label>
                   <input
                     type="text"
-                    id="name" name="name" ngModel required
+                    id="name" name="name" formControlName="name" 
                     class="form-control custom-input"
                     placeholder="اسم العقد"
                     name="name"
@@ -369,7 +371,7 @@
                   <label for="field2 text-end">اسم العقد باللغه المحليه </label>
                   <input
                     type="text"
-                    id="localName" name="localName" ngModel required
+                    id="localName" name="localName" formControlName="localName" 
                     class="form-control custom-input"
                     placeholder="Contract Name"
                     
@@ -382,7 +384,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="clientId">العميل</label>
-                  <select id="clientId" name="clientId" ngModel required class="form-select form-control">
+                  <select id="clientId" name="clientId" formControlName="clientId" class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار العميل</option>
                     <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
                   </select>
@@ -397,7 +399,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="assignedToId">موكل الى </label>
-                  <select id="assignedToId" name="assignedToId" ngModel required class="form-select form-control">
+                  <select id="assignedToId" name="assignedToId" formControlName="assignedToId" class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار موكل الى </option>
                     <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
                   </select>
@@ -406,7 +408,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="teamId">الفريق </label>
-                  <select id="teamId" name="teamId" ngModel required class="form-select form-control">
+                  <select id="teamId" name="teamId" formControlName="teamId" class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار الفريق </option>
                     <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
                   </select>
@@ -418,7 +420,7 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="userIds">المستخدمين </label>
-                  <select id="userIds" name="userIds" ngModel required class="form-select form-control">
+                  <select id="userIds" name="userIds" formControlName="userIds" class="form-select form-control">
                     <option  value=""  disabled selected>قم باختيار المستخدمين </option>
                     <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
                   </select>
@@ -432,7 +434,7 @@
                   <label for="startDate text-end">تاريخ البدء</label>
                   <input
                     type="date"
-                    id="startDate" name="startDate" ngModel required
+                    id="startDate" name="startDate" formControlName="startDate"
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -443,7 +445,7 @@
                   <label for="endDate text-end"> تاريخ الانتهاء </label>
                   <input
                     type="date"
-                    id="endDate" name="endDate" ngModel required
+                    id="endDate" name="endDate" formControlName="endDate"
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -457,7 +459,7 @@
                   <label for="code text-end">رقم العقد</label>
                   <input
                     type="text"
-                    id="code" name="code" ngModel required
+                    id="code" name="code" formControlName="code"
                     class="form-control custom-input"
                     placeholder="قم باختبار رقم العقد"
                   />
@@ -515,17 +517,30 @@
 
                 <div class="row align-items-center">
                   <div class="col-md-9">
-                    <label for="location" class="form-label">الموقع</label>
+                    <!-- <label for="location" class="form-label">الموقع</label>
                     <div class="input-group">
-                      <input
-                        type="text"
-                        id="field3"
-                        
-                        class="form-control custom-input"
-                        placeholder="قم باختيار الموقع"
-                      />
+                        <select class="form-select" id="location"  name="code" ngModel required>
+                            <option selected>قم بإختيار الموقع</option>
+                            <option *ngFor="let item of locations" [value]="item.id">{{item.locationName}},{{item.locationAddress}},{{item.latitude}},{{item.longitude}}</option>
+                           
+                        </select>
+                    </div> -->
+                    <label for="locationLinks" class="form-label">Location Links:</label>
+                    <div *ngFor="let location of locationLinks; let i = index" class="input-group mb-2">
+                      <select 
+                        class="form-select" 
+                        [(ngModel)]="locationLinks[i]" 
+                        name="locationLink{{i}}" 
+                        required
+                      >
+                        <option value="" disabled selected>قم بلإختيار المواقع</option>
+                        <option *ngFor="let link of locations" [value]="link">{{ link.locationName }}</option>
+                      </select>
+                      <button type="button" class="btn btn-danger" (click)="removeLocationLink(i)">Remove</button>
                     </div>
-                  </div>
+                    <button type="button" class="btn btn-secondary" (click)="addLocationLink()">Add Location</button>
+                  
+                </div>
                   <div
                     class="col-md-3 d-flex justify-content-start mt-3 mt-md-0"
                   >
@@ -542,7 +557,7 @@
                 <!-- Map Viewing -->
 
                
-
+          <!-- <form>
                 <div *ngIf="isMapView">
                 <div class="row align-items-center">
                     <div class="col-md-9">
@@ -552,12 +567,12 @@
                     <div
                       class="col-md-3 d-flex justify-content-start mt-3 mt-md-0"
                     >
-                    <button class="btn btn-outline-primary m-2">الغاء</button>
+                    <button (click)="toggleMapClose()" class="btn btn-outline-primary m-2">الغاء</button>
                     <button class="btn btn-primary m-2">حفظ</button>
                     </div>
                   </div>
 
-                <!-- Input Fields for Site Information -->
+              
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <label for="siteName" class="form-label">اسم الموقع</label>
@@ -578,7 +593,7 @@
                     </div>
                 </div>
 
-                <!-- Map Display Section -->
+                
                 <div class="row mb-4">
                     <div class="col-md-12 text-center">
                         <h5 class="mb-4">عرض الخريطة</h5>
@@ -594,6 +609,60 @@
                 </div>
 
             </div>
+          </form> -->
+
+
+          <!-- try map input -->
+          <form (ngSubmit)="onSubmitLocation(locationForm)" #locationForm="ngForm">
+            <div *ngIf="isMapView">
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <label for="location" class="form-label">عرض الخريطه</label>
+                    </div>
+                    <div class="col-md-3 d-flex justify-content-start mt-3 mt-md-0">
+                        <button (click)="toggleMapClose()" class="btn btn-outline-primary m-2">الغاء</button>
+                        <button type="submit" class="btn btn-primary m-2">حفظ</button>
+                    </div>
+                </div>
+        
+                <!-- Input Fields for Site Information -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="siteName" class="form-label">اسم الموقع</label>
+                        <input type="text" class="form-control" id="locationName" name="locationName" ngModel placeholder="قم بكتابة اسم الموقع" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="line1" class="form-label">خط الطول</label>
+                        <input type="text" class="form-control" id="longitude" name="longitude" [(ngModel)]="longitude" placeholder="قم بكتابة خط الطول" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="line2" class="form-label">خط العرض</label>
+                        <input type="text" class="form-control" id="latitude" name="latitude" [(ngModel)]="latitude" placeholder="قم بكتابة خط العرض" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="line3" class="form-label">العنوان</label>
+                        <input type="text" class="form-control" id="locationAddress" name="locationAddress" ngModel placeholder="قم بكتابة العنوان" required>
+                    </div>
+                </div>
+        
+                <!-- Map Display Section -->
+                <div class="row mb-4">
+                  <div class="col-md-12 text-center">
+                      <h5 class="mb-4">عرض الخريطة</h5>
+                      <div class="map-container"
+                          style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                          <iframe
+                              src="https://maps.google.com/maps?q=2972%20Westheimer%20Rd,%20Santa%20Ana,%20Elmas%2089846&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                              width="100%" height="400" frameborder="0" style="border:0;" allowfullscreen=""
+                              aria-hidden="false" tabindex="0">
+                          </iframe>
+                      </div>
+                  </div>
+              </div>
+            </div>
+        </form>
+        
+
 
                 <!-- End MApping View -->
 

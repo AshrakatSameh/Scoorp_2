@@ -267,7 +267,7 @@ tr, th, tr, input, select {
 }
 
 .locationButton{
-  margin-top: 2.1rem;
+  margin-top: 0rem;
 }
 
 /* comments part style */
@@ -345,7 +345,7 @@ input.form-control {
   background-color: #f0f0f0; /* Light gray background for chat bubble */
   border-radius: 15px; /* Rounded corners like a chat bubble */
   padding: 10px;
-  max-width: 60%; /* Set a maximum width for the chat bubble */
+  max-width: 100%; /* Set a maximum width for the chat bubble */
   margin-bottom: 10px; /* Space between chat bubbles */
   word-wrap: break-word; /* Prevent text overflow */
   margin-left: auto; /* Align the card to the right side */
@@ -443,3 +443,6 @@ tr, th, tr {
   border-color: #E7E7EA; /* Your custom border color */
   background-color: #ffff; /* Your custom background color */
 }
+
+
+

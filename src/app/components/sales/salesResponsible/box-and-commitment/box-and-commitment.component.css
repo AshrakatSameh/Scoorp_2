@@ -193,3 +193,29 @@ tr, th, td {
 select.form-select{
     background-position: left;
   }
+/* المرفقات */
+.custom-file-upload {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.custom-file-upload:hover {
+  border-color: #ccc;
+}
+
+.custom-file-upload {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.custom-file-upload.drag-over {
+  border-color: #007bff;
+  background-color: #f0f8ff;
+}

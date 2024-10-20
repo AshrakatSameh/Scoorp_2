@@ -117,19 +117,22 @@
                       <th>تاريخ الانشاء</th>
                       <th>المنشأ</th>
                       <th>تاريخ الانشاء</th>
+                      <th>مسلسل</th>
                       <th class="firstcolright">
                         <input type="checkbox" class="large-checkbox" />
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of salesIvoices">
+                    <tr *ngFor="let item of salesIvoices; let i =index">
                         <td> </td>
-                      <td>{{representatives[item.id]}}</td>
-                      <td>{{clients[item.clientId]?.userName}}</td>
-                      <td>Chief Operating</td>
+                      
+                      <td>{{item.representativeName}}</td>
+                      <td>{{item.clientName}}</td>
+                      <td>2024/03/11</td>
                       <td>48</td>
-                      <td>2010/03/11</td>
+                      <td>2024/03/11</td>
+                      <td>{{i + 1}}</td>
                       <td> <input type="checkbox" class="large-checkbox" />
                       </td>
                     </tr>

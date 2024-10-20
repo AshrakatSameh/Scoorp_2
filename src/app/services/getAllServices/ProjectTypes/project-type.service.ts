@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
@@ -15,7 +15,7 @@ export class ProjectTypeService {
   constructor(private http : HttpClient) { }
 
      // Method to fetch UserTags based on tenantId
-     getAllProjectTypes(): Observable<any> {
+     getAllProjectTypes(pageNumber: number, pageSize: number): Observable<any> {
       // Get tenantId from localStorage
       const tenantId = localStorage.getItem('tenant');
   
@@ -24,9 +24,21 @@ export class ProjectTypeService {
         tenant: tenantId || '', // Set tenantId header if available
         'Content-Type': 'application/json',
       });
+      let params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
   
       // Send the GET request with headers
-      return this.http.get(`${this.apiUrl}ProjectTypes/GetAllProjectTypes`, { headers });
+      return this.http.get(`${this.apiUrl}ProjectTypes/GetAllProjectTypes`, { headers ,params});
     }
 
+    createProjectType(Data: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      const headers = new HttpHeaders({
+        tenant: tenantId || '', // Set tenantId header if available
+        'Content-Type': 'application/json',
+      });
+      console.log(Data)
+      return this.http.post(`${this.apiUrl}ProjectTypes/CreateProjectType`, Data, { headers });
+    }
 }

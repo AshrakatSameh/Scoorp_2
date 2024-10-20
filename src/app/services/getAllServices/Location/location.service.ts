@@ -27,4 +27,14 @@ export class LocationService {
       // Send the GET request with headers
       return this.http.get(`${this.apiUrl}Locations`, { headers });
     }
+
+    createLocation(data: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      const headers = new HttpHeaders({
+        tenant: tenantId || '', // Set tenantId header if available
+        'Content-Type': 'application/json',
+      });
+      console.log(data)
+      return this.http.post(`${this.apiUrl}Locations`, data, { headers });
+    }
 }

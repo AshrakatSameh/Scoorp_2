@@ -284,3 +284,8 @@ background-color: #ffff; /* Your custom background color */
   width: 13rem;
   margin-left: 3%;
 }
+
+input{
+  text-align: right;
+  
+}

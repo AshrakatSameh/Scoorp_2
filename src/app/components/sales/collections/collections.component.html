@@ -129,26 +129,54 @@
                                     <tbody>
                                         <tr *ngFor="let item of collections">
                                             <td> </td>
-                                            <td>Fiona Green</td>
-                                            <td>Chief Operating Officer (COO)</td>
-                                            <td>San Francisco</td>
+                                            <td>{{item.representativeName}}</td>
+                                            <td>{{item.clientName}}</td>
+                                            <td>12/11/2024</td>
                                             <td>48</td>
-                                            <td>{{item.n}}</td>
+                                            <td>12/11/2024</td>
                                             <td> <input type="checkbox" class="large-checkbox" />
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td> </td>
-                                            <td>Shou Itou</td>
-                                            <td>Regional Marketing</td>
-                                            <td>Tokyo</td>
-                                            <td>20</td>
-                                            <td>2011/08/14</td>
-                                            <td> <input type="checkbox" class="large-checkbox" />
-                                            </td>
-                                        </tr>
+
                                     </tbody>
                                 </table>
+                                <!-- paging -->
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-end">
+                                        <!-- Previous Button -->
+                                        <li class="page-item" [class.disabled]="pageNumber === 1">
+                                            <a class="page-link" href="#" (click)="changePage(pageNumber - 1)"
+                                                tabindex="-1"
+                                                [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                                        </li>
+
+                                        <!-- Page Numbers -->
+                                        <li class="page-item" [class.active]="pageNumber === 1">
+                                            <a class="page-link" (click)="changePage(1)">1</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 2">
+                                            <a class="page-link" (click)="changePage(2)">2</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 3">
+                                            <a class="page-link" (click)="changePage(3)">3</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 4">
+                                            <a class="page-link" (click)="changePage(4)">4</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 5">
+                                            <a class="page-link" (click)="changePage(5)">5</a>
+                                        </li>
+
+                                        <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                                        <li class="page-item"><a class="page-link">...</a></li>
+
+                                        <!-- Next Button -->
+                                        <li class="page-item">
+                                            <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+
                             </div>
                         </div>
 
@@ -171,7 +199,7 @@
                 </h5>
             </div>
             <div class="modal-body">
-                <form [formGroup]="collectionForm">
+                <form [formGroup]="collectionForm" (ngSubmit)="onSubmitAdd()">
                     <div class="container">
                         <!-- Row with two fields -->
                         <!-- <div class="row">
@@ -202,18 +230,20 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end"> رقم السند</label>
-                                    <input type="text" id="code" formControlName="code"  class="form-control custom-input"
-                                        placeholder="رقم السند" />
+                                    <input type="text" id="code" formControlName="code"
+                                        class="form-control custom-input" placeholder="رقم السند" />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="location" class="form-label">العميل</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input" formControlName="clientId" id="location">
+                                        <select class="form-select form-control custom-input" formControlName="clientId"
+                                            id="location">
                                             <option selected>قم بإختيار العميل</option>
-                                            <option *ngFor="let item of clients" value="item.id" >{{item.name}}</option>
-                                            
+                                            <option *ngFor="let item of clients" [value]="item.id">{{item.name}}
+                                            </option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -225,10 +255,12 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">المندوب</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input" formControlName="representativeId" id="location">
-                                            <option selected >قم بإختيار المندوب</option>
-                                            <option *ngFor="let item of representatives" [value]="item.id">{{item.userName}}</option>
-        
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="representativeId" id="location">
+                                            <option selected>قم بإختيار المندوب</option>
+                                            <option *ngFor="let item of representatives" [value]="item.id">
+                                                {{item.userName}}</option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -238,22 +270,25 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">فريق البيع</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input" formControlName="contractId" id="location">
-                                            <option selected>قم بإختيار العقود</option>
-                                            <option *ngFor="let item of contracts" [value]="item.id">{{item.name}}</option>
-                                            
+                                        <select class="form-select form-control custom-input" formControlName="teamId"
+                                            id="location">
+                                            <option selected disabled>قم بإختيار فريق البيع</option>
+                                            <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
+
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="location" class="form-label">طريقة السداد</label>
+                                    <label class="form-label">طريقة السداد</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input" formControlName="paymentMethodId" id="location">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="paymentMethodId" id="location">
                                             <option selected disabled>قم بإختيار طريقة السداد</option>
-                                            <option *ngFor="let item of paymentMethods" [value]="item.id">{{item.name}}</option>
-                                            
+                                            <option *ngFor="let item of paymentMethods" [value]="item.id">{{item.name}}
+                                            </option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -261,19 +296,21 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="field8 text-end custom-input"> حالة الطلب</label>
-                                    <input type="text" id="field8"  class="form-control"
-                                        placeholder="قم باختيار حالة الطلب" />
-                                </div>
-                            </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field9 text-end"> رقم جوال ماليه العميل
                                     </label>
-                                    <input type="text" id="field9" class="form-control custom-input"
+                                    <input type="text" id="clientPhone" formControlName="clientPhone"
+                                        class="form-control custom-input"
                                         placeholder="قم بكتابة رقم جوال مالية العميل" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="field8 text-end custom-input"> ايميل مالية العميل</label>
+                                    <input type="text" id="clientEmail" formControlName="clientEmail"
+                                        class="form-control" placeholder="قم بادخال ايميل مالية العميل" />
                                 </div>
                             </div>
                         </div>
@@ -282,12 +319,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label  class="form-label">مركز التكلفة</label>
-                                    <div class="input-group" >
-                                        <select class="form-select form-control custom-input" formControlName="costCenterId" >
+                                    <label class="form-label">مركز التكلفة</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="costCenterId">
                                             <option value="" disabled selected>قم باختيار مركز التكلفة</option>
-                                            <option *ngFor="let item of costCenters" [value]="item.id">{{item.name}}</option>
-                                           
+                                            <option *ngFor="let item of costCenters" [value]="item.id">{{item.name}}
+                                            </option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -296,10 +335,12 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label"> العهد/الصندوق</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input" formControlName="covenantBoxId" id="location">
-                                            <option value="" disabled selected >قم بإختيار العهد/الصندوق</option>
-                                            <option *ngFor="let item of convenants" [value]="item.id">{{item.name}}</option>
-                                            
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="covenantBoxId" id="location">
+                                            <option value="" disabled selected>قم بإختيار العهد/الصندوق</option>
+                                            <option *ngFor="let item of convenants" [value]="item.id">
+                                                {{item.covenantBoxName}}</option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -462,81 +503,81 @@
                             </div>
 
                             <!-- الأرتباطات -->
-                             <div *ngIf="selectedButton === 3">
+                            <div *ngIf="selectedButton === 3">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="location" class="form-label">المشروع</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار المشروع</option>
-                                                <option value="1">المشروع 1</option>
-                                                <option value="2">المشروع 2</option>
-                                                <option value="3">المشروع 3</option>
-                                            </select>
-                                        </div>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار المشروع</option>
+                                                    <option value="1">المشروع 1</option>
+                                                    <option value="2">المشروع 2</option>
+                                                    <option value="3">المشروع 3</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="location" class="form-label">العقد</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار العقود</option>
-                                                <option value="1">العقد 1</option>
-                                                <option value="2">العقد 2</option>
-                                                <option value="3">العقد 3</option>
-                                            </select>
-                                        </div>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار العقود</option>
+                                                    <option value="1">العقد 1</option>
+                                                    <option value="2">العقد 2</option>
+                                                    <option value="3">العقد 3</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="location" class="form-label">القسط</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار القسط المسدد</option>
-                                                <option value="1">القسط 1</option>
-                                                <option value="2">القسط 2</option>
-                                                <option value="3">القسط 3</option>
-                                            </select>
-                                        </div>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار القسط المسدد</option>
+                                                    <option value="1">القسط 1</option>
+                                                    <option value="2">القسط 2</option>
+                                                    <option value="3">القسط 3</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                             </div>
-                             <div *ngIf="selectedButton === 4">
+                            </div>
+                            <div *ngIf="selectedButton === 4">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <button type="button" class="btn my-button4">
-                                             اضافة توقيع
+                                            اضافة توقيع
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
-                             </div>
-                             <div *ngIf="selectedButton === 5">
+                            </div>
+                            <div *ngIf="selectedButton === 5">
                                 <div class="row">
                                     <div class="col-md-9">
                                         <div class="form-group">
-                                            <label for="field7 text-end" class="form-label">الختم 
+                                            <label for="field7 text-end" class="form-label">الختم
                                             </label>
                                             <div class="input-group">
-                                                <input type="date" id="field7"  class="form-control"
-                                              placeholder="الختم " />
+                                                <input type="date" id="field7" class="form-control"
+                                                    placeholder="الختم " />
                                             </div>
-                                          </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
                                         <button type="button" class="btn my-button4">
                                             اضف ختم
-                                       </button>
+                                        </button>
                                     </div>
                                 </div>
-                             </div>
+                            </div>
                         </div>
                         <div class="col-md-6 mx-auto ">
-                            <button type="button" class="btn my-button3">
+                            <button type="submit" class="btn my-button3">
                                 اضافه
                                 <i class="fa-solid fa-plus"></i>
                             </button>

@@ -3,6 +3,8 @@ import { ProjactService } from 'src/app/services/getAllServices/Projects/projact
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-projects',
@@ -12,12 +14,34 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class ProjectsComponent implements OnInit {
   pageNumber: number = 1;
   pageSize: number = 10;
-  public projects:any[]=[];
+  projects:any[]=[];
   try:any[]=[];
-  names:any[]=[]
-  constructor(private projectService:ProjactService, private http: HttpClient){
+  names:any[]=[];
+  projectForm:FormGroup;
+  apiUrl= environment.apiUrl;
+
+
+  constructor(private projectService:ProjactService, private http: HttpClient,
+    private fb:FormBuilder
+  ){
 
    
+    this.projectForm = this.fb.group({
+      name: ['', Validators.required],
+      localName: ['', Validators.required],
+      clientId: ['', Validators.required],
+      assignedToId: ['', Validators.required],
+      teamId: ['', Validators.required],
+      userIds: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+     // status: ['', Validators.required],
+      priority: ['', Validators.required],
+      size: ['', Validators.required],
+
+
+
+    });
   }
 
   ngOnInit(): void {
@@ -100,28 +124,30 @@ export class ProjectsComponent implements OnInit {
       });
     }
 
-    onSubmit(form: any) {
-      if (form.valid) {
-        const formData = {
-          name: form.value.name,
-          localName: form.value.localName,
-          //code: form.value.code,
-          startDate: form.value.startDate,
-          endDate: form.value.endDate,
-          clientId: form.value.clientId,
-          assignedToId: form.value.assignedToId,
-          teamId: form.value.teamId,
-          userIds: form.value.userIds,
-          size: form.value.size,
-          priority: form.value.priority,
-        };
+    onSubmit() {
+      const formData = new FormData();
+    formData.append('name', this.projectForm.get('name')?.value);
+    formData.append('localName', this.projectForm.get('localName')?.value);
+    formData.append('clientId', this.projectForm.get('clientId')?.value);
+    formData.append('assignedToId', this.projectForm.get('assignedToId')?.value);
+    formData.append('teamId', this.projectForm.get('teamId')?.value);
+    formData.append('userIds', this.projectForm.get('userIds')?.value);
+    formData.append('startDate', this.projectForm.get('startDate')?.value);
+    formData.append('endDate', this.projectForm.get('endDate')?.value);
+    formData.append('priority', this.projectForm.get('priority')?.value);
+    formData.append('size', this.projectForm.get('size')?.value);
+
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+    });
   
-        this.projectService.createData(formData).subscribe(response => {
-          console.log('Data submitted successfully', response);
-        }, error => {
-          console.error('Error occurred while submitting data', error);
-        });
-      }
+    this.http.post('https://lawersys-001-site1.etempurl.com/api/Project/CreateProject', formData, { headers })
+      .subscribe(response => {
+        console.log('Response:', response);
+        alert('submit successfully');
+      }, error => {
+        console.error('Error:', error);
+      });
 
 }
 changePage(newPageNumber: number): void {

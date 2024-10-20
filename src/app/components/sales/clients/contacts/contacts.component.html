@@ -209,14 +209,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for=" text-end"> اسم جهه الإتصال</label>
-                                    <input type="text" id="name" formControlName="name" class="form-control custom-input" placeholder="اسم المنشأ" />
+                                    <input type="text" id="name" name="name" formControlName="name" class="form-control custom-input" placeholder="اسم المنشأ" />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for=" text-end">اسم جهه الإتصال باللغة المحلية
                                     </label>
-                                    <input type="text" id="localName" formControlName="localName" class="form-control custom-input" placeholder="contact Name  " />
+                                    <input type="text" id="localName" name="localName" formControlName="localName" class="form-control custom-input" placeholder="contact Name  " />
                                 </div>
                             </div>
                         </div>
@@ -225,14 +225,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end">رقم جوال 1 لجهه الإتصال</label>
-                                    <input type="text" id="phoneNumber1" formControlName="phoneNumber1" class="form-control custom-input" placeholder="رقم الجوال 1" />
+                                    <input type="text" id="phoneNumber1" name="phoneNumber1" formControlName="phoneNumber1" class="form-control custom-input" placeholder="رقم الجوال 1" />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for=" text-end">رقم الجوال 2 لجهه الإتصال
                                     </label>
-                                    <input type="text" id="phoneNumber2" formControlName="phoneNumber2" class="form-control custom-input" placeholder="رقم الجوال 2" />
+                                    <input type="text" id="phoneNumber2" name="phoneNumber2" formControlName="phoneNumber2"  class="form-control custom-input" placeholder="رقم الجوال 2" />
                                 </div>
                             </div>
                         </div>
@@ -242,7 +242,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for=" text-end"> وظيفة جهه التواصل</label>
-                                    <input type="text" id="jobTitle" formControlName="jobTitle" class="form-control custom-input"
+                                    <input type="text" id="jobTitle" name="jobTitle" formControlName="jobTitle" class="form-control custom-input"
                                         placeholder="وظيفة جهه التواصل" />
                                 </div>
                             </div>
@@ -250,7 +250,7 @@
                                 <div class="form-group">
                                     <label for=" text-end">ايميل جهه التواصل
                                     </label>
-                                    <input type="text" id="email" formControlName="email" class="form-control custom-input"
+                                    <input type="text" id="email" name="email" ngModel formControlName="email" class="form-control custom-input"
                                         placeholder="ايميل جهه التواصل" />
                                 </div>
                             </div>
@@ -264,7 +264,7 @@
                             <div class="col-md-9">
                                 <label for="location" class="form-label">موقع جهه التواصل</label>
                                 <div class="input-group">
-                                    <select class="form-select custom-input" id="location" formControlName="locationLinks" >
+                                    <select class="form-select custom-input"  formControlName="locationLinks" name="locationLinks" >
                                         <option selected disabled>قم بإختيار الموقع</option>
                                         <option *ngFor="let item of location" [value]="item.id">{{item.locationName}}</option>
                                         
@@ -281,9 +281,19 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="field8 text-end"> جنسية جهه التواصل</label>
-                                    <input type="text" id="field8" formControlName="nationality" class="form-control custom-input"
-                                        placeholder="جنسية جهه التواصل" />
+                                    <label for="taskField4">جنسية جهه التواصل</label>
+                                    <select id="taskField4" name="supplier" formControlName="supplier" class="form-control custom-input">
+                                        <option value="" disabled selected>قم باختيار جنسية جهه التواصل</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option> 
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+
+                                    </select> 
                                 </div>
                             </div>
                         </div>
@@ -291,7 +301,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="taskField3">العميل</label>
-                                    <select id="taskField" formControlName="clientId" class="form-control custom-input">
+                                    <select id="taskField" name="clientId" formControlName="clientId" class="form-control custom-input">
                                         <option value="" disabled selected>قم باختيار العميل</option>
                                         <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
                                         
@@ -301,12 +311,12 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="taskField4">المورد</label>
-                                    <select id="taskField4" formControlName="supplier" class="form-control custom-input">
+                                    <select id="taskField4" name="supplier" formControlName="supplier" class="form-select form-control custom-input">
                                         <option value="" disabled selected>قم باختيار المورد</option>
-                                        <option value="option1">1</option>
-                                        <option value="option2">2</option>
-                                        <option value="option3">3</option>
-                                    </select>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select> 
                                 </div>
                             </div>
                         </div>
@@ -327,7 +337,7 @@
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <label for="Textarea1">وصف جهه الإتصال</label>
-                                <textarea class="form-control" formControlName="description" id="Textarea1" rows="3"></textarea>
+                                <textarea class="form-control" name="description" formControlName="description" id="Textarea1" rows="3"></textarea>
                             </div>
                         </div>
 

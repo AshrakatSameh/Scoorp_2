@@ -6,20 +6,19 @@
     <!-- Main content section -->
     <div class="container">
       <div class="page-inner">
-        <div
-          class="page-header d-flex justify-content-between align-items-center flex-row-reverse"
-        >
+        <div class="page-header d-flex justify-content-between align-items-center flex-row-reverse">
           <h3 class="fw-bold mb-3 text-end">ادارة الموظفين</h3>
           <ul class="breadcrumbs mb-3">
             <li class="nav-item dropdown">
-              <button class="btn d-flex justify-content-start align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                  Admin
-                  <!-- Placeholder for the dropdown arrow -->
-                  <i class="fa-solid fa-caret-down"></i>
+              <button class="btn d-flex justify-content-start align-items-center" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Admin
+                <!-- Placeholder for the dropdown arrow -->
+                <i class="fa-solid fa-caret-down"></i>
               </button>
-              
-          </li>
-          
+
+            </li>
+
             <li class="nav-home">
               <a href="#">
                 <i class="fa-solid fa-search"></i>
@@ -45,18 +44,11 @@
         <div class="row">
           <div class="col-md-12">
             <div class="card">
-              <div
-                class="card-header d-flex justify-content-between align-items-center flex-row-reverse"
-              >
+              <div class="card-header d-flex justify-content-between align-items-center flex-row-reverse">
                 <h4 class="card-title text-end">العهد المستلمة</h4>
 
                 <div class="button-group d-flex justify-content-start">
-                  <button
-                    type="button"
-                    class="btn my-button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#staticBackdrop"
-                  >
+                  <button type="button" class="btn my-button" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                     اضف عهد المستلمة
                     <i class="fa-solid fa-plus"></i>
                   </button>
@@ -72,13 +64,9 @@
               </div>
 
               <div
-                class="d-flex flex-row align-items-center mt-3 d-flex justify-content-between align-items-center flex-row-reverse"
-              >
+                class="d-flex flex-row align-items-center mt-3 d-flex justify-content-between align-items-center flex-row-reverse">
                 <div class="mb-2 me-2" style="width: 100px">
-                  <select
-                    class="form-select"
-                    aria-label="Default select example"
-                  >
+                  <select class="form-select" aria-label="Default select example">
                     <option selected>الاحدث</option>
                     <option value="1">خيار 1</option>
                     <option value="2">خيار 2</option>
@@ -96,12 +84,8 @@
 
                   <!-- Search form -->
                   <form class="d-flex position-relative">
-                    <input
-                      class="form-control text-end search-input"
-                      type="search"
-                      placeholder="بحث في الكل"
-                      aria-label="Search"
-                    />
+                    <input class="form-control text-end search-input" type="search" placeholder="بحث في الكل"
+                      aria-label="Search" />
                     <i class="fs-4 bi-search position-absolute search-icon"></i>
                   </form>
                 </div>
@@ -113,10 +97,7 @@
                     </span>
                   </button>
 
-                  <button
-                    class="btn my-custom-icone"
-                    style="background-color: #224273; color: #e7e7ea"
-                  >
+                  <button class="btn my-custom-icone" style="background-color: #224273; color: #e7e7ea">
                     <span class="btn-label">
                       <i class="fa-solid fa-list-ul"></i>
                     </span>
@@ -132,15 +113,12 @@
 
               <div class="card-body">
                 <div class="table-responsive">
-                  <table
-                    id="basic-datatables"
-                    class="display table table-striped table-hover"
-                  >
+                  <table id="basic-datatables" class="display table table-striped table-hover">
                     <thead>
                       <tr class="firstcol">
                         <th> <i class="fa-solid fa-arrow-right-arrow-left"></i>
                         </th>
-                        <th >الموظف المستلم</th>
+                        <th>الموظف المستلم</th>
                         <th>المنشأ</th>
                         <th>تاريخ النشاء</th>
                         <th>اسم العهده باللغة المحلية</th>
@@ -162,9 +140,46 @@
                           <input type="checkbox" class="large-checkbox" />
                         </td>
                       </tr>
-                     
+
                     </tbody>
                   </table>
+
+                  <!-- paging -->
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-end">
+                      <!-- Previous Button -->
+                      <li class="page-item" [class.disabled]="pageNumber === 1">
+                        <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1"
+                          [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                      </li>
+
+                      <!-- Page Numbers -->
+                      <li class="page-item" [class.active]="pageNumber === 1">
+                        <a class="page-link" (click)="changePage(1)">1</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 2">
+                        <a class="page-link" (click)="changePage(2)">2</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 3">
+                        <a class="page-link" (click)="changePage(3)">3</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 4">
+                        <a class="page-link" (click)="changePage(4)">4</a>
+                      </li>
+                      <li class="page-item" [class.active]="pageNumber === 5">
+                        <a class="page-link" (click)="changePage(5)">5</a>
+                      </li>
+
+                      <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                      <li class="page-item"><a class="page-link">...</a></li>
+
+                      <!-- Next Button -->
+                      <li class="page-item">
+                        <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                      </li>
+                    </ul>
+                  </nav>
+
                 </div>
               </div>
             </div>
@@ -176,52 +191,31 @@
 </div>
 
 <!-- Modal -->
-<div
-  class="modal fade"
-  id="staticBackdrop"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="staticBackdropLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5
-          class="modal-title text-end flex-row-reverse"
-          id="staticBackdropLabel"
-        >
+        <h5 class="modal-title text-end flex-row-reverse" id="staticBackdropLabel">
           اضافه عهده مستلمه
         </h5>
       </div>
       <div class="modal-body">
-        <form>
+        <form [formGroup]="convenantForm" (ngSubmit)="onSubmit()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row ">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field1 text-end"> اسم العهده</label>
-                  <input
-                    type="text"
-                    id="field1"
-                    class="form-control custom-input"
-                    placeholder="اسم العهده"
-                  />
+                  <label for="name text-end"> اسم العهده</label>
+                  <input type="text" id="name" formControlName="name" class="form-control custom-input" placeholder="اسم العهده" />
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field2 text-end"
-                    >اسم العهده باللغه المحليه
+                  <label for="localName text-end">اسم العهده باللغه المحليه
                   </label>
-                  <input
-                    type="text"
-                    id="field2"
-                    class="form-control custom-input"
-                    placeholder="the convenant"
-                  />
+                  <input type="text" id="localName" formControlName="localName" class="form-control custom-input" placeholder="the convenant" />
                 </div>
               </div>
             </div>
@@ -229,13 +223,8 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label for="field1 "> تاريخ الانشاء </label>
-                  <input
-                  type="date"
-                  id="field2"
-                  class="form-control custom-input"
-                  placeholder="قم باختيار التاريخ"
-                />
+                  <label for="receivingStartDate "> تاريخ الانشاء </label>
+                  <input disabled type="date" id="field2" class="form-control custom-input" placeholder="قم باختيار التاريخ" />
                 </div>
               </div>
             </div>
@@ -244,88 +233,71 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field3"> المنشأ</label>
-                  <input
-                    type="text"
-                    id="field3"
-                    class="form-control custom-input"
-                    placeholder="اسم العهده"
-                  />
+                  <input disabled type="text" id="field3" class="form-control custom-input" placeholder="اسم العهده" />
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field4"> الموظف المستلم </label>
-                  <input
-                    type="text"
-                    id="field4"
-                    class="form-control custom-input"
-                    placeholder="الموظف المستلم"
-                  />
-                </div>
+                  <label for="location" class="form-label">الموظف المستلم</label>
+                  <div class="input-group" >
+                      <select class="form-select form-control" formControlName="employeeId" >
+                          <option  disabled selected> قم باختيار الموظف</option>
+                          <option *ngFor="let item of employees" [value]="item.id"
+                          >{{ item.name }}</option>
+                         
+                      </select>
+                  </div>
+              </div>
               </div>
             </div>
 
             <div class="row">
-           
+
 
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field5">تاريخ بدايه استلام العهده</label>
-                  <input
-                    type="date"
-                    id="field2"
-                    class="form-control custom-input"
-                    placeholder="قم باختيار التاريخ"
-                  />
+                  <input type="date" id="receivingStartDate" formControlName="receivingStartDate" class="form-control custom-input" placeholder="قم باختيار التاريخ" />
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field1 text-end">
-                    تاريخ نهايه استلام العهده</label
-                  >
-                  <input
-                    type="date"
-                    id="field2"
-                    class="form-control custom-input"
-                    placeholder="قم باختيار التاريخ"
-                  />
+                  <label for="receivingEndDate text-end">
+                    تاريخ نهايه استلام العهده</label>
+                  <input type="date" id="receivingEndDate" formControlName="receivingEndDate" class="form-control custom-input" placeholder="قم باختيار التاريخ" />
                 </div>
               </div>
             </div>
 
             <div class="row">
-           
+
 
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field2 text-end"> نوع العهده</label>
-                  <input
-                    type="text"
-                    id="field2"
-                    class="form-control custom-input"
-                    placeholder="Employee"
-                    placeholder="قم باختيار نوع العهده"
-                  />
+                  <input type="text" id="field2" disabled class="form-control custom-input" placeholder="Employee"
+                    placeholder="قم باختيار نوع العهده" />
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="field1 text-end">المعده</label>
-                  <input
-                    type="text"
-                    id="field1"
-                    class="form-control custom-input"
-                    placeholder=" قم باختيار المعده"
-                  />
-                </div>
+                  <label for="location" class="form-label">المعده</label>
+                  <div class="input-group" >
+                      <select class="form-select form-control" formControlName="equipmentId" >
+                          <option value="" disabled selected>قم باختيار المعده</option>
+                          <option *ngFor="let item of equips" [value]="item.id"
+                          >{{ item.name }}</option>
+                         
+                      </select>
+                  </div>
+              </div>
               </div>
             </div>
 
 
-           
-              <div class="container mt-5">
+
+            <div class="container mt-5">
               <h5 class="mb-3">المرفقات</h5>
               <button class="btn btn-link text-muted p-1"><i class="fa fa-microphone"></i></button>
 
@@ -337,30 +309,26 @@
                 <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
               </div>
             </div>
-            
 
-              
-            
-          
-          
+
+
+
+
+
 
             <div class="row mb-4">
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="floatingTextarea2">وصف القسم</label>
 
-                  <textarea
-                    class="form-control custom-input"
-                    placeholder="قم بوصف القسم "
-                    id="floatingTextarea2"
-                    style="height: 100px"
-                  ></textarea>
+                  <textarea class="form-control custom-input" placeholder="قم بوصف القسم " id="floatingTextarea2"
+                    style="height: 100px"></textarea>
                 </div>
               </div>
             </div>
 
             <div class="col-md-6 mx-auto ">
-              <button type="button" class="btn my-button3">
+              <button type="submit" class="btn my-button3">
                 حفظ
                 <i class="fa-solid fa-plus"></i>
               </button>

@@ -60,9 +60,13 @@ export class ContractService {
   api= environment.apiUrl+'Contract/CreateContract' ;
 
     createData(data: any): Observable<any> {
-      const headers = new HttpHeaders({
-        'tenant': 'ash'  // Required tenant header
-      });
+      const tenant = localStorage.getItem('tenant')||'';
+
+    // Set the custom header with the tenantId
+    const headers = new HttpHeaders({
+      tenant: tenant , // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
   
       const formData = new FormData();
       formData.append('Name', data.name);

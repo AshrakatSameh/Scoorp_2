@@ -117,7 +117,7 @@ p,
 label,
 input,
 button,
- span {
+ span , input, select{
     font-family: "Cairo", sans-serif;
     font-optical-sizing: auto;
     font-weight: 600;
@@ -266,4 +266,14 @@ input.form-control, select.form-control {
 .custom-file-upload.drag-over {
   border-color: #007bff;
   background-color: #f0f8ff;
+}
+.form-select{
+  background-position: left;
+}
+
+input::placeholder{
+  color: black;
+}
+select option[disabled] {
+  color:#c9c9ca;/* Placeholder text color */
 }

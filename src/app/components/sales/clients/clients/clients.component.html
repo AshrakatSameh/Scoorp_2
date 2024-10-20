@@ -122,19 +122,21 @@
                                             <th>المنشأ</th>
                                             <th>تاريخ الإنشاء</th>
                                             <th>اسم العميل</th>
+                                            <th>مسلسل</th>
                                             <th class="firstcolright">
                                                 <input type="checkbox" class="large-checkbox" />
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let item of clients">
+                                        <tr *ngFor="let item of clients, let i= index ">
                                             <td> </td>
                                             <td>{{item.phone}}</td>
                                             <td>{{item.code}}</td>
                                             <td>Chief Operating Officer (COO)</td>
                                             <td>{{item.localName}}</td>
                                             <td>{{item.name}}</td>
+                                            <td>{{i+1}}</td>
                                             <td> <input type="checkbox" class="large-checkbox" />
                                             </td>
 

@@ -178,67 +178,40 @@ getAllPriceLists() {
 }
 
 onSubmit() {
+    // code: ['', Validators.required],
+      // clientId: ['', Validators.required],
+      // representativeId: ['', Validators.required],
+      // teamId: ['', Validators.required],
+      // invoiceNumber:['',Validators.required],
+      // priceListId:['',Validators.required],
+      // paymentPeriodId:['',Validators.required],
+      // invoiceType:['',Validators.required],
+      // costCenterId: ['', Validators.required],
+      // driver:['', Validators.required],
+  const formData = new FormData();
+  formData.append('clientId', this.salesForm.get('clientId')?.value);
+  formData.append('code', this.salesForm.get('code')?.value);
+  formData.append('representativeId', this.salesForm.get('representativeId')?.value);
+  formData.append('teamId', this.salesForm.get('teamId')?.value);
+  formData.append('invoiceNumber', this.salesForm.get('invoiceNumber')?.value);
+  formData.append('priceListId', this.salesForm.get('priceListId')?.value);
+  formData.append('paymentPeriodId', this.salesForm.get('paymentPeriodId')?.value);
+  formData.append('invoiceType', this.salesForm.get('invoiceType')?.value);
+  formData.append('costCenterId', this.salesForm.get('costCenterId')?.value);
+  formData.append('driver', this.salesForm.get('driver')?.value);
 
-  if (this.salesForm.valid) {
-    this.salesInvoiceService.postSalesInvoice(this.salesForm.value).subscribe(
-      response => {
-        console.log('Form successfully submitted', response);
-      },
-      error => {
-        console.error('Error submitting form', error);
-      }
-    );
-  } else {
-    console.log('Form is invalid');
-  }}
-  onSubmitAdd() {
-    const formData = new FormData();
-    const code = this.salesForm.get('code')!.value;
-    const clientId = this.salesForm.get('clientId')!.value;
-    const representativeId = this.salesForm.get('representativeId')!.value;
-    const teamId = this.salesForm.get('teamId')!.value;
-    const invoiceNumber = this.salesForm.get('invoiceNumber')!.value;
-    const priceListId = this.salesForm.get('priceListId')!.value;
-    const paymentPeriodId = this.salesForm.get('paymentPeriodId')!.value;
-    const invoiceType = this.salesForm.get('invoiceType')!.value;
-    const costCenterId = this.salesForm.get('costCenterId')!.value;
-    const driver = this.salesForm.get('driver')!.value;
-    if (code) {
-      formData.append('code', code);
-      formData.append('clientId', clientId);
-      formData.append('representativeId', representativeId);
-      formData.append('teamId', teamId);
-      formData.append('invoiceNumber', invoiceNumber);
-      formData.append('priceListId', priceListId);
-      formData.append('paymentPeriodId', paymentPeriodId);
-      formData.append('invoiceType', invoiceType);
-      formData.append('costCenterId', costCenterId);
-      formData.append('driver', driver);
-      
-    } else {
-      console.error('One or more form fields are null');
-      return;
-    }
+  const headers = new HttpHeaders({
+    'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+  });
 
-    const tenantId = localStorage.getItem('tenant');
-    const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
+  this.http.post(this.apiUrl+'SalesInvoice', formData, { headers })
+    .subscribe(response => {
+      console.log('Response:', response);
+      alert('submit successfully');
+    }, error => {
+      console.error('Error:', error);
     });
-    const url = `${this.apiUrl}SalesInvoice`;
-    this.http.post<any>(url, formData,{headers}).subscribe(
-      (response) => {
-        alert('Done');
-        console.log('Employee created successfully:', response);
-        // Reset form after successful submission
-        this.salesForm.reset();
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error creating Employee:', error.error);
-        // Handle error
-      }
-    );
-  }
+}
 
   apiUrl=environment.apiUrl;
 
@@ -247,4 +220,32 @@ onSubmit() {
     console.log(this.pageNumber)
     this.getAllSaleIncoices();
   }
+
+
+  // onSubmit() {
+  //   const formData = new FormData();
+  //   formData.append('code', this.salesForm.get('code')?.value);
+  //   formData.append('clientId', this.salesForm.get('clientId')?.value);
+  //   formData.append('representativeId', this.salesForm.get('representativeId')?.value);
+  //   formData.append('teamId', this.salesForm.get('teamId')?.value);
+  //   formData.append('invoiceNumber', this.salesForm.get('invoiceNumber')?.value);
+  //   formData.append('priceListId', this.salesForm.get('priceListId')?.value);
+  //   formData.append('paymentPeriodId', this.salesForm.get('paymentPeriodId')?.value);
+  //   formData.append('invoiceType', this.salesForm.get('invoiceType')?.value);
+  //   formData.append('costCenterId', this.salesForm.get('costCenterId')?.value);
+  //   formData.append('driver', this.salesForm.get('driver')?.value);
+
+    
+  //   const headers = new HttpHeaders({
+  //     'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+  //   });
+  
+  //   this.http.post(this.apiUrl+'CovenantBox', formData, { headers })
+  //     .subscribe(response => {
+  //       console.log('Response:', response);
+  //       alert('submit successfully');
+  //     }, error => {
+  //       console.error('Error:', error);
+  //     });
+  // }
 }

@@ -224,3 +224,18 @@ tr, th, tr {
   background-color: #224273 !important; /* Custom hover color */
   color: white !important; /* Custom hover text color */
 }
+
+.my-button3{
+  background-color: #224273;
+  color:#F7fBFF;
+  width: 13rem;
+  margin-left: 3%;
+}
+
+
+.closebutton{
+  color:#224273;
+  border: 1px solid #224273;
+  background-color:#F7fBFF;
+  width: 13rem;
+}

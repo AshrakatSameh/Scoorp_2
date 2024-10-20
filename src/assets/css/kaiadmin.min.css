@@ -85,32 +85,7 @@ danger-color : #f3545d
 
 
 -------------------------------------------------------------------*/
-.alert,
-.brand,
-.btn-simple,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6,
-.navbar,
-.td-name,
-a,
-body,
-button.close,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-td {
-   -moz-osx-font-smoothing: grayscale;
-   -webkit-font-smoothing: antialiased;
-   font-family: 'Public Sans', sans-serif
-}
+
 
 body,
 html {
@@ -363,7 +338,7 @@ label {
 body {
    min-height: 100vh;
    position: relative;
-   background: #f5f7fd;
+   background: #fff;
    background-size: cover;
    background-attachment: fixed;
    background-repeat: no-repeat
@@ -497,7 +472,7 @@ body {
 
 .main-panel>.container {
    min-height: calc(100% - 123px);
-   margin-top: 69px;
+   margin-top: 20px;
    overflow: hidden;
    width: 100%;
    max-width: unset;
@@ -919,7 +894,7 @@ body {
 .sidebar .nav>.nav-item.active>a,
 .sidebar[data-background-color=white] .nav>.nav-item.active>a {
    background: rgba(0, 0, 0, .03);
-   color: #2a2f5b !important
+   /* color: #2a2f5b !important */
 }
 
 .sidebar .nav>.nav-item.active>a:before,
@@ -967,7 +942,7 @@ body {
    /* position: relative; */
    margin-bottom: 3px;
    text-decoration: none !important;
-   flex-direction: row-reverse;
+   /* flex-direction: row-reverse; */
    flex-wrap: nowrap;
    justify-content: space-between;
    /* display: flex;
@@ -1561,12 +1536,12 @@ body {
    background: 0 0 !important
 }
 
-.sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a .caret,
+/* .sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a .caret,
 .sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a i,
 .sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a p,
 .sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a span {
    color: #fff !important
-}
+} */
 
 .sidebar.sidebar-style-2 .nav.nav-primary>.nav-item.active>a[data-toggle=collapse][aria-expanded=true] i {
    color: #fff !important
@@ -2026,12 +2001,7 @@ body {
    color: #fff
 }
 
-body[data-background-color=dark] .border-bottom,
-body[data-background-color=dark] .border-left,
-body[data-background-color=dark] .border-right,
-body[data-background-color=dark] .border-top {
-   border-color: rgba(181, 181, 181, .1) !important
-}
+
 
 .main-header .navbar-header[data-background-color][data-background-color=dark2] .dropdown-menu,
 .main-header .navbar-header[data-background-color][data-background-color=dark] .dropdown-menu {
@@ -2317,13 +2287,13 @@ body[data-background-color=dark] .border-top {
    color: #224273 !important
 }
 
-.sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a,
+/* .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a:focus,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a:hover,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a[data-toggle=collapse][aria-expanded=true] {
    background: #fff !important;
    color: #1a2035 !important
-}
+} */
 
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a .caret,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a i,
@@ -2337,7 +2307,7 @@ body[data-background-color=dark] .border-top {
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a[data-toggle=collapse][aria-expanded=true] .caret,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a[data-toggle=collapse][aria-expanded=true] i,
 .sidebar[data-background-color=dark].sidebar-style-2 .nav .nav-item.active>a[data-toggle=collapse][aria-expanded=true] p {
-   color: #1a2035 !important
+   color: #fff 
 }
 
 /* .sidebar[data-background-color=dark] .scrollbar-inner>.scroll-element .scroll-bar {
@@ -9631,9 +9601,9 @@ label.error {
 }
 
 body {
-   background: #f5f7fd
+   background: #fff
 }
-
+/* 
 body[data-background-color=bg1] {
    background: #f5f7fd
 }
@@ -9960,7 +9930,7 @@ body[data-background-color=dark] .card-warning h4,
 body[data-background-color=dark] .card-warning h5,
 body[data-background-color=dark] .card-warning h6 {
    color: #fff !important
-}
+} */
 
 body[data-background-color=dark2] .nav-line,
 body[data-background-color=dark] .nav-line {

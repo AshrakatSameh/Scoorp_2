@@ -20,7 +20,7 @@ export class ContactsComponent implements OnInit {
   location:any[]=[];
   contactForm:FormGroup;
 
-  apiUrl= 'https://lawersys-001-site1.etempurl.com/api/Contact';
+  apiUrl= environment.apiUrl +'Contact';
 
   constructor(private contactService:ContactsService, private locationService:LocationService,
     private clientService:ClientsService, private fb:FormBuilder, private http:HttpClient
@@ -37,8 +37,8 @@ export class ContactsComponent implements OnInit {
       nationality: ['', Validators.required],
       clientId: ['', Validators.required],
       supplier: ['', Validators.required],
-      description:['', Validators.required]
-
+      description:['', Validators.required],
+      attachments:[]
     });
   }
 
@@ -80,62 +80,46 @@ export class ContactsComponent implements OnInit {
   }
 
 
+  
   onSubmit() {
+    // name: ['', Validators.required],
+    // localName: ['', Validators.required],
+    // phoneNumber1: ['', Validators.required],
+    // phoneNumber2: ['', Validators.required],
+    // jobTitle: ['', Validators.required],
+    // email: ['', Validators.required],
+    // locationLinks: ['', Validators.required],
+    // nationality: ['', Validators.required],
+    // clientId: ['', Validators.required],
+    // supplier: ['', Validators.required],
+    // description:['', Validators.required]
     const formData = new FormData();
-    const name = this.contactForm.get('name')!.value;
-    const localName = this.contactForm.get('localName')!.value;
-    const jobTitle = this.contactForm.get('jobTitle')!.value;
-    const phoneNumber1 = this.contactForm.get('phoneNumber1')!.value;
-    const phoneNumber2 = this.contactForm.get('phoneNumber2')!.value;
-    const email = this.contactForm.get('email')!.value;
-    const locationLinks = this.contactForm.get('locationLinks')!.value;
-    const nationality = this.contactForm.get('nationality')!.value;
-    const clientId = this.contactForm.get('clientId')!.value;
-    const supplier = this.contactForm.get('supplier')!.value;
-    const description = this.contactForm.get('description')!.value;
+    formData.append('name', this.contactForm.get('name')?.value);
+    formData.append('localName', this.contactForm.get('localName')?.value);
+    formData.append('phoneNumber1', this.contactForm.get('phoneNumber1')?.value);
+    formData.append('phoneNumber2', this.contactForm.get('phoneNumber2')?.value);
+    formData.append('jobTitle', this.contactForm.get('jobTitle')?.value);
+    formData.append('email', this.contactForm.get('email')?.value);
+    formData.append('locationLinks', this.contactForm.get('locationLinks')?.value);
+    formData.append('nationality', this.contactForm.get('nationality')?.value);
+    formData.append('clientId', this.contactForm.get('clientId')?.value);
+    formData.append('supplier', this.contactForm.get('supplier')?.value);
+    formData.append('description', this.contactForm.get('description')?.value);
+    formData.append('attachments', this.contactForm.get('attachments')?.value);
 
-    if (name) {
-      formData.append('name', name);
-      formData.append('localName', localName);
-      formData.append('jobTitle', jobTitle);
-      formData.append('phoneNumber1', phoneNumber1);
-      formData.append('phoneNumber2', phoneNumber2);
-      formData.append('email', email);
-      formData.append('locationLinks', locationLinks);
-      formData.append('nationality', nationality);
-      formData.append('clientId', clientId);
-      formData.append('supplier', supplier);
-      formData.append('description', description);
-
-
-      
-    } else {
-      console.error('One or more form fields are null');
-      return;
-    }
-
-   
-    const tenantId = localStorage.getItem('tenant');
+  
     const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
+      'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
     });
-    // const url = `${this.apiUrl}?Name=${encodeURIComponent(name)}&LocalName=${encodeURIComponent(localName)}&JobTitle=${encodeURIComponent(jobTitle)}&DepartmentManagerId=${encodeURIComponent(departmentManagerId)}&DepartmentSupervisorId=${encodeURIComponent(departmentSupervisorId)}&StartDate=${encodeURIComponent(startDate)}&EndDate=${encodeURIComponent(endDate)}`;
-    this.http.post<any>(this.apiUrl, formData,{headers}).subscribe(
-      (response) => {
-        alert('Done');
-        console.log('Contact created successfully:', response);
-        // Reset form after successful submission
-        this.contactForm.reset();
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error creating Contact:', error.error);
-        // Handle error
-      }
-    );
+  
+    this.http.post(this.apiUrl, formData, { headers })
+      .subscribe(response => {
+        console.log('Response:', response);
+        alert('submit successfully');
+      }, error => {
+        console.error('Error:', error);
+      });
   }
-
-
 
 
   changePage(newPageNumber: number): void {

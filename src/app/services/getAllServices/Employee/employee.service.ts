@@ -51,4 +51,18 @@ export class EmployeeService {
 
   // Called when the user changes the page number (e.g. via pagination controls)
 
+  getAllEmployeesWithoutPaging(): Observable<any> {
+    // Get tenantId from localStorage
+    const tenantId = localStorage.getItem('tenant');
+
+    // Set the custom header with the tenantId
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+
+    // Send the GET request with headers
+    return this.http.get(`${this.apiUrl}Employees/GetAllEmployees`, { headers });
+
+  }
 }

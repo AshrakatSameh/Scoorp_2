@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClientsService } from 'src/app/services/getAllServices/Clients/clients.service';
 import { CollectionsService } from 'src/app/services/getAllServices/Collections/collections.service';
 import { ContractService } from 'src/app/services/getAllServices/Contracts/contract.service';
+import { ConvenantBoxService } from 'src/app/services/getAllServices/ConvenantBox/convenant-box.service';
 import { ConvenantService } from 'src/app/services/getAllServices/Convenants/convenant.service';
 import { CostCenterService } from 'src/app/services/getAllServices/CostCenter/cost-center.service';
 import { PaymentMethodService } from 'src/app/services/getAllServices/PaymentMethods/payment-method.service';
 import { RepresentativeService } from 'src/app/services/getAllServices/Representative/representative.service';
+import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.service';
 
 @Component({
   selector: 'app-collections',
@@ -29,19 +31,34 @@ export class CollectionsComponent implements OnInit {
 
 
   collectionForm!: FormGroup;
+
   constructor(private costCenterService: CostCenterService, private representService:RepresentativeService,
-     private convenantService: ConvenantService, private contractService:ContractService,
+     private convenantBoxService: ConvenantBoxService, private contractService:ContractService,
     private paymentService:PaymentMethodService, private clientService:ClientsService,
-  private collectionService:CollectionsService) { }
+  private collectionService:CollectionsService, private fb:FormBuilder, private teamService:TeamsService) { 
+    this.collectionForm= this.fb.group({
+      code:['', Validators.required],
+      clientId:['', Validators.required],
+      representativeId:['', Validators.required],
+      teamId:['', Validators.required],
+      paymentMethodId:['', Validators.required],
+      clientPhone:['', Validators.required],
+      clientEmail:['', Validators.required],
+      costCenterId:['', Validators.required],
+      covenantBoxId:['', Validators.required],
+
+    })
+  }
 
   ngOnInit(): void {
     this.getAllCostCenters();
-    this.getAllConvenants();
+    this.getAllConvenantBoxes();
     this.getAllRepresentative();
     this.getAllContracts();
     this.getAllPaymentMethods();
     this.getAllClients();
     this.getAllCollections();
+    this.getAllTeams();
 
   }
 
@@ -65,9 +82,9 @@ export class CollectionsComponent implements OnInit {
     })
 
   }
-  getAllConvenants() {
-    this.convenantService.getAllConvenant2().subscribe(response => {
-      this.convenants = response.data;
+  getAllConvenantBoxes() {
+    this.convenantBoxService.getConvenantBoxes().subscribe(response => {
+      this.convenants = response;
       //console.log(this.convenants);
     }, error => {
       console.error('Error fetching convenants data:', error)
@@ -95,7 +112,7 @@ export class CollectionsComponent implements OnInit {
   getAllPaymentMethods() {
     this.paymentService.getAllPaymentMethods().subscribe(response => {
       this.paymentMethods = response.paymentMethods;
-      console.log(this.paymentMethods);
+     // console.log(this.paymentMethods);
     }, error => {
       console.error('Error fetching paymentMethods data:', error)
     })
@@ -104,7 +121,7 @@ export class CollectionsComponent implements OnInit {
   getAllClients() {
     this.clientService.getCliensts().subscribe(response => {
       this.clients = response.data;
-      console.log(this.clients);
+    //  console.log(this.clients);
     }, error => {
       console.error('Error fetching clients data:', error)
     })
@@ -113,12 +130,53 @@ export class CollectionsComponent implements OnInit {
 
   getAllCollections() {
     this.collectionService.getAllCollections(this.pageNumber, this.pageSize).subscribe(response => {
-      this.collections = response.data;
+      this.collections = response;
+      console.log(this.collections);
+    }, error => {
+      console.error('Error fetching collections data:', error)
+    })
+
+  }
+  teams:any[]=[];
+  getAllTeams() {
+    this.teamService.getTeams().subscribe(response => {
+      this.teams = response.teams;
     //  console.log(this.collections);
     }, error => {
-      console.error('Error fetching clients data:', error)
+      console.error('Error fetching teams data:', error)
     })
 
   }
 
+ 
+
+  onSubmitAdd(): void {
+   
+    if (this.collectionForm.valid) {
+      // Call the service to post the data
+      const formData = this.collectionForm.value; // Get the form data
+      this.collectionService.createCollection(formData).subscribe(
+        response => {
+          console.log('collection created successfully!', response);
+          alert('collection created successfully!')
+          // Handle success, show notification, etc.
+        },
+        error => {
+          console.error('Error creating collection:', error);
+          console.log(formData)
+          // Handle error, show notification, etc.
+        }
+      );
+    } else {
+      console.log(this.collectionForm);
+      console.log('Form is not valid');
+      // Handle form validation errors
+    }
+  }
+
+  changePage(newPageNumber: number): void {
+    this.pageNumber = newPageNumber;
+    console.log(this.pageNumber)
+    this.getAllCollections();
+  }
 }

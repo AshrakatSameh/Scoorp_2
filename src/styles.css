@@ -2,3 +2,20 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+ /* font */
+ h2,h1,
+ h3,
+ h5,
+a,
+h4,
+p,
+label,
+input,
+button,
+span,select, option {
+   font-family: "Cairo", sans-serif;
+   font-optical-sizing: auto;
+   font-weight: 600;
+   font-style: normal;
+
+}

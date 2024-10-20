@@ -198,14 +198,15 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of try">
+                       <td> </td>
                         <td> </td>
-                        <td>{{item.name}}</td>
+                        <!-- <td>{{item.name}}</td>
                         <td>{{item.startDate}}</td>
                         <td>{{item.localName}}</td>
-                        <td>{{item.name}}</td>
-                        <th class="firstcolright">
+                        <td>{{item.name}}</td> -->
+                        <td class="firstcolright">
                           <input type="checkbox" class="large-checkbox" />
-                        </th>
+                        </td>
                         
                       </tr>
                    
@@ -338,7 +339,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)" enctype="multipart/form-data">
+        <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" >
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -348,7 +349,7 @@
                   <input
                     type="text"
                     
-                    id="name" name="name" ngModel required
+                    id="name" name="name" formControlName="name"
                     class="form-control custom-input"
                     placeholder="اسم المشروع"
                   />
@@ -359,7 +360,7 @@
                   <label for="field2 text-end">اسم المشروع باللغه المحليه </label>
                   <input
                     type="text"
-                    id="localName" name="localName" ngModel required
+                    id="localName" name="localName" formControlName="localName"
                     class="form-control custom-input"
                     placeholder="Project "
                   />
@@ -373,7 +374,7 @@
                   <label for="field1 text-end">العميل </label>
                   <input
                     type="text"
-                    id="clientId" name="clientId" ngModel required
+                    id="clientId" name="clientId" formControlName="clientId"
 
                     class="form-control custom-input"
                     placeholder="قم باختيار العميل "
@@ -388,7 +389,7 @@
                   <label for="field1 text-end">موكل إلي</label>
                   <input
                     type="text"
-                    id="assignedToId" name="assignedToId" ngModel required
+                    id="assignedToId" name="assignedToId" formControlName="assignedToId"
 
                     class="form-control custom-input"
                     placeholder="قم باختيار المستخدم"
@@ -401,7 +402,7 @@
                   <input
                     type="text"
                    
-                    id="teamId" name="teamId" ngModel required
+                    id="teamId" name="teamId" formControlName="teamId"
 
                     class="form-control custom-input"
                     placeholder="قم باختيار الفريق"
@@ -417,7 +418,7 @@
                   <input
                     type="text"
                     
-                    id="userIds" name="userIds" ngModel required
+                    id="userIds" name="userIds" formControlName="userIds"
                     class="form-control custom-input"
                     placeholder="قم باختيار المستخدم"
                   />
@@ -431,7 +432,7 @@
                   <label for="field1 text-end">تاريخ البدء</label>
                   <input
                     type="date"
-                    id="startDate" name="startDate" ngModel required
+                    id="startDate" name="startDate" formControlName="startDate"
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -443,7 +444,7 @@
                   <input
                     type="date"
                    
-                    id="endDate" name="endDate" ngModel required
+                    id="endDate" name="endDate" formControlName="endDate"
 
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
@@ -459,7 +460,7 @@
                   <input
                     type="text"
                     id="field1"
-                   
+                   disabled
                     class="form-control custom-input"
                     placeholder="قم باختيار حاله المشروع"
                   />
@@ -471,6 +472,7 @@
                   <input
                     type="text"
                     id="field2"
+                    disabled
                     class="form-control custom-input"
                     placeholder="قم باختيار تطور المشروع"
                   />
@@ -629,7 +631,7 @@
                       <label for="field1 text-end">اولويه المشروع</label>
                       <input
                         type="text"
-                        id="priority" name="priority" ngModel required
+                        id="priority" name="priority" formControlName="priority"
 
                         class="form-control custom-input"
                         placeholder="قم باختبار اولويه المشروع"
@@ -641,7 +643,7 @@
                       <label for="field2 text-end"> حجم المشروع</label>
                       <input
                         type="text"
-                        id="size" name="size" ngModel required
+                        id="size" name="size" formControlName="size"
 
                         class="form-control custom-input"
                         placeholder="قم باختيار حجم المشروع"

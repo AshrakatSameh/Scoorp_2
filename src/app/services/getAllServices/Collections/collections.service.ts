@@ -28,4 +28,14 @@ export class CollectionsService {
     return this.http.get(`${this.apiUrl}Collections/GetAll`, { headers, params });
 
   }
+
+  createCollection(data: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    console.log(data)
+    return this.http.post(`${this.apiUrl}Collections/Create?`, data, { headers });
+  }
 }

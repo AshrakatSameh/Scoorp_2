@@ -210,6 +210,7 @@ onSubmit() {
     this.salesService.postDeliveryNote(this.deliveryVoucherForm.value).subscribe(
       response => {
         console.log('Form successfully submitted', response);
+        alert('Form successfully submitted')
       },
       error => {
         console.error('Error submitting form', error);

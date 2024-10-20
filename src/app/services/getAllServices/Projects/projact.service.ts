@@ -29,13 +29,31 @@ export class ProjactService {
       return this.http.get(`${this.apiUrl}Project/GetProjects`, { headers, params });
       
     }
-
+    getProjactsWithoutPag(): Observable<any> {
+      // Get tenantId from localStorage
+      const tenantId = localStorage.getItem('tenant');
+  
+      // Set the custom header with the tenantId
+      const headers = new HttpHeaders({
+        tenant: tenantId || '', // Set tenantId header if available
+        'Content-Type': 'application/json',
+      });
+     
+  
+      // Send the GET request with headers
+      return this.http.get(`${this.apiUrl}Project/GetProjects`, { headers });
+      
+    }
 
     api= environment.apiUrl+'Project/CreateProject' ;
 
     createData(data: any): Observable<any> {
-      const headers = new HttpHeaders({
-        'tenant': 'ash'  // Required tenant header
+      const tenant = localStorage.getItem('tenant')|| '';
+
+    // Set the custom header with the tenantId
+    const headers = new HttpHeaders({
+      tenant: 'tenant' , // Set tenantId header if available
+      'Content-Type': 'application/json', 
       });
   
       const formData = new FormData();
