@@ -32,7 +32,7 @@ export class ProjectsComponent implements OnInit {
       clientId: ['', Validators.required],
       assignedToId: ['', Validators.required],
       teamId: ['', Validators.required],
-      userIds: ['', Validators.required],
+      userIds:this.fb.array([]),
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
      // status: ['', Validators.required],
@@ -146,7 +146,7 @@ export class ProjectsComponent implements OnInit {
         console.log('Response:', response);
         alert('submit successfully');
       }, error => {
-        console.error('Error:', error);
+        console.error('Error:', error.error);
       });
 
 }

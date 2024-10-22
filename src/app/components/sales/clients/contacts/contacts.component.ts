@@ -82,17 +82,6 @@ export class ContactsComponent implements OnInit {
 
   
   onSubmit() {
-    // name: ['', Validators.required],
-    // localName: ['', Validators.required],
-    // phoneNumber1: ['', Validators.required],
-    // phoneNumber2: ['', Validators.required],
-    // jobTitle: ['', Validators.required],
-    // email: ['', Validators.required],
-    // locationLinks: ['', Validators.required],
-    // nationality: ['', Validators.required],
-    // clientId: ['', Validators.required],
-    // supplier: ['', Validators.required],
-    // description:['', Validators.required]
     const formData = new FormData();
     formData.append('name', this.contactForm.get('name')?.value);
     formData.append('localName', this.contactForm.get('localName')?.value);

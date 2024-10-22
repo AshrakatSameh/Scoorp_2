@@ -6,12 +6,11 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root'
 })
-export class RepresentativeService {
+export class UserTypesService {
 
   apiUrl= environment.apiUrl;
   constructor(private http: HttpClient) { }
-
-  getAllRepresentative(): Observable<any> {
+  getUserTypes(): Observable<any> {
     // Get tenantId from localStorage
     const tenantId = localStorage.getItem('tenant');
 
@@ -22,17 +21,7 @@ export class RepresentativeService {
     });
 
     // Send the GET request with headers
-    return this.http.get(`${this.apiUrl}Clients/GetAllRepresentatives`, { headers });
-
-  }
-
-  createRepresentative(data: any): Observable<any> {
-    const tenantId = localStorage.getItem('tenant');
-    const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
-    });
-    console.log(data)
-    return this.http.post(`${this.apiUrl}Auth/AddUser`, data, { headers });
+    return this.http.get(`${this.apiUrl}UserTypes/GetAllUserTypes`, { headers });
+    
   }
 }

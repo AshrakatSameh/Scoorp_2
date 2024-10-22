@@ -59,6 +59,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
+import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
+import { ToastrModule } from 'ngx-toastr';
+import { NgToastModule } from 'ng-angular-popup';
 
 @NgModule({
   declarations: [
@@ -108,6 +112,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     StorehouseTransportationComponent,
     DocumentOperationsComponent,
     LoginComponent,
+    RepresentativeComponent,
     
   ],
   imports: [
@@ -121,8 +126,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     BrowserAnimationsModule,
     MatSelectModule,
     MatFormFieldModule,
-  
-
+    // JwtModule
+    ToastrModule.forRoot({ // Initialize Toastr with configuration
+      positionClass: 'toast-top-right', // Position of the toast
+      timeOut: 5000, // Duration in milliseconds
+      preventDuplicates: true, // Prevent duplicate toasts
+    })
+    // NgToastModule, 
     // TranslateModule.forRoot({
     //   defaultLanguage: 'ar',
 
@@ -133,7 +143,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     //   },
     // })
   ],
-  providers: [],
+  providers: [
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },  // Provide JWT options
+    JwtHelperService  // Add JwtHelperService to the providers array
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
