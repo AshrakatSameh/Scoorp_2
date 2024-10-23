@@ -47,6 +47,7 @@ import { StorageComponent } from './components/stock/storehouse/storage/storage.
 import { StorehouseTransportationComponent } from './components/stock/storehouse/storehouse-transportation/storehouse-transportation.component';
 import { authGuard } from './guard/auth.guard';
 import { CateogriesComponent } from './components/stock/categories/cateogries/cateogries.component';
+import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
 
 const routes: Routes = [
   {path:'forgetPassword', component: ForgetPasswordComponent,canActivate:[authGuard]},
@@ -96,6 +97,7 @@ const routes: Routes = [
   {path:'workServicesType', component:WorkServecesTypeComponent,canActivate:[authGuard]},
   {path:'workServicesCategory', component:WorkServecesCategoryComponent,canActivate:[authGuard]},
   {path:'documentOperations' , component:DocumentOperationsComponent,canActivate:[authGuard]},
+  {path:'representatives' , component: RepresentativeComponent},
   {path:'**', component:LoginComponent}
 ];
 

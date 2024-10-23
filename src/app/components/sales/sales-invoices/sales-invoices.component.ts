@@ -178,16 +178,6 @@ getAllPriceLists() {
 }
 
 onSubmit() {
-    // code: ['', Validators.required],
-      // clientId: ['', Validators.required],
-      // representativeId: ['', Validators.required],
-      // teamId: ['', Validators.required],
-      // invoiceNumber:['',Validators.required],
-      // priceListId:['',Validators.required],
-      // paymentPeriodId:['',Validators.required],
-      // invoiceType:['',Validators.required],
-      // costCenterId: ['', Validators.required],
-      // driver:['', Validators.required],
   const formData = new FormData();
   formData.append('clientId', this.salesForm.get('clientId')?.value);
   formData.append('code', this.salesForm.get('code')?.value);

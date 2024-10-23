@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 
@@ -10,7 +11,7 @@ export class AuthService {
   private apiUrl = environment.apiUrl; // Adjust base URL if necessary
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private jwtHelper:JwtHelperService) { }
 
      // Login method
   login(credentials: { email: string; password: string }, tenant: string): Observable<any> {
@@ -50,9 +51,27 @@ export class AuthService {
   isLoggin(): boolean{
     return !!localStorage.getItem('authToken')
   }
-  getToken = (): string | null =>
-    localStorage.getItem('authToken') || '';
+  // getToken = (): string | null =>
+  //   localStorage.getItem('authToken') || '';
 
- 
+  getToken(): string | null {
+    return localStorage.getItem('authToken');
+  }
 
+  getDecodedToken(): any {
+    const token = this.getToken();
+    if (token) {
+      return this.jwtHelper.decodeToken(token);
+    }
+    return null;
+  }
+  // Check if the token contains a specific permission
+  hasPermission(requiredPermission: string): boolean {
+    const decodedToken = this.getDecodedToken();
+    if (decodedToken && decodedToken.Permission) {
+      
+      return decodedToken.Permission.includes(requiredPermission);
+    }
+    return false;
+  }
 }
