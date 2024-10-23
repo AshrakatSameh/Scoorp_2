@@ -59,6 +59,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CateogriesComponent } from './components/stock/categories/cateogries/cateogries.component';
 
 @NgModule({
   declarations: [
@@ -108,6 +109,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     StorehouseTransportationComponent,
     DocumentOperationsComponent,
     LoginComponent,
+    CateogriesComponent,
     
   ],
   imports: [

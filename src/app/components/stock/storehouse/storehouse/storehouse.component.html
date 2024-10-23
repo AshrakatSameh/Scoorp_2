@@ -150,24 +150,56 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Fiona Green</td>
-                          <td>Chief Operating Officer (COO)</td>
-                          <td>San Francisco</td>
-                          <td>48</td>
-                          <td>2010/03/11</td>
-                          <td>$850,000</td>
+                        <tr *ngFor="let item of storehouse">
+                          <td>{{item.description}}</td>
+                          <td></td>
+                          <td></td>
+                          <td>{{item.localName}}</td>
+                          <td>{{item.name}}</td>
+                          <td><input type="checkbox" class="large-checkbox" /></td>
                         </tr>
-                        <tr>
-                          <td>Shou Itou</td>
-                          <td>Regional Marketing</td>
-                          <td>Tokyo</td>
-                          <td>20</td>
-                          <td>2011/08/14</td>
-                          <td>$163,000</td>
-                        </tr>
+                        
                       </tbody>
                     </table>
+
+                          <!-- paging -->
+                          <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end">
+                                <!-- Previous Button -->
+                                <li class="page-item" [class.disabled]="pageNumber === 1">
+                                    <a class="page-link" href="#" (click)="changePage(pageNumber - 1)"
+                                        tabindex="-1"
+                                        [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                                </li>
+
+                                <!-- Page Numbers -->
+                                <li class="page-item" [class.active]="pageNumber === 1">
+                                    <a class="page-link" (click)="changePage(1)">1</a>
+                                </li>
+                                <li class="page-item" [class.active]="pageNumber === 2">
+                                    <a class="page-link" (click)="changePage(2)">2</a>
+                                </li>
+                                <li class="page-item" [class.active]="pageNumber === 3">
+                                    <a class="page-link" (click)="changePage(3)">3</a>
+                                </li>
+                                <li class="page-item" [class.active]="pageNumber === 4">
+                                    <a class="page-link" (click)="changePage(4)">4</a>
+                                </li>
+                                <li class="page-item" [class.active]="pageNumber === 5">
+                                    <a class="page-link" (click)="changePage(5)">5</a>
+                                </li>
+
+                                <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                                <li class="page-item"><a class="page-link">...</a></li>
+
+                                <!-- Next Button -->
+                                <li class="page-item">
+                                    <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        
                   </div>
                 </div>
               </div>
@@ -202,7 +234,7 @@
           </h5>
         </div>
         <div class="modal-body">
-          <form>
+          <form (ngSubmit)="onSubmit()" [formGroup]="storeHouseForm">
             <div class="container">
               <!-- Row with two fields -->
               <div class="row">
@@ -212,6 +244,7 @@
                     <input
                       type="text"
                       id="field1"
+                      formControlName="name"
                       class="form-control custom-input"
                       placeholder="اسم المستودع"
                     />
@@ -225,7 +258,7 @@
                     <input
                       type="text"
                       id="field2"
-                    
+                      formControlName="localName"
                       class="form-control custom-input"
                       placeholder="Warehouse"
                     />
@@ -268,13 +301,13 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="field3"> فئه المستودع</label>
-                    <input
-                      type="text"
-                      id="field3"
-                    
-                      class="form-control custom-input"
-                      placeholder="اسم فئه المستودع "
-                    />
+
+                    <select class="form-select form-control custom-input" formControlName="warehouseCategoryId" >
+                      <option  selected>قم باختيار  فئه السمتودع</option>
+                      <option *ngFor="let item of itemCategory" [value]="item.id"
+                      >{{ item.name }}</option>
+                     
+                  </select>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -318,6 +351,7 @@
                     <textarea
                       class="form-control custom-input"
                       id="Textarea1"
+                      formControlName="description"
                       rows="3"
                     ></textarea>
                   </div>

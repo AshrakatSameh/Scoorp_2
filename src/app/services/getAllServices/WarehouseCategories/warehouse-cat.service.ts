@@ -30,4 +30,6 @@ export class WarehouseCatService {
       // Send the GET request with headers
       return this.http.get(`${this.apiUrl}WarehouseCategories/GetAllCategories`, { headers, params });
     }
+
+    
 }

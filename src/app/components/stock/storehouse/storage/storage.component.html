@@ -151,11 +151,11 @@
                         </tr>
                       </thead>
                       <tbody >
-                        <tr *ngFor="let item of wares">
-                          <td>{{ item.data.name }}</td>
-                          <td>{{item.name}}</td>
-                          <td>{{item.name}}</td>
-                          <td>{{item.name}}</td>
+                        <tr *ngFor="let item of stores">
+                          <td>{{ item.note}}</td>
+                          <td></td>
+                          <td></td>
+                          <td>{{item.localName}}</td>
                           <td>{{item.name}}</td>
                           <td class="firstcolright">
                             <input type="checkbox" class="large-checkbox" />
@@ -242,7 +242,7 @@
           </h5>
         </div>
         <div class="modal-body">
-          <form>
+          <form (ngSubmit)="onSubmitAdd()" [formGroup]="myForm">
             <div class="container">
               <!-- Row with two fields -->
               <div class="row">
@@ -252,7 +252,7 @@
                     <input
                       type="text"
                       id="field1"
-                      
+                      formControlName="name"
                       class="form-control custom-input"
                       placeholder="اسم اماكن التخزين"
                     />
@@ -266,7 +266,7 @@
                     <input
                       type="text"
                       id="field2"
-                      
+                      formControlName="localName"
                       class="form-control custom-input"
                       placeholder="Storage places"
                     />
@@ -324,7 +324,7 @@
                     <input
                     type="text"
                     id="field2"
-                    
+                    formControlName="code"
                     class="form-control custom-input"
                     placeholder="قم بكتابه كود اماكن التخزين"
                   />
@@ -358,6 +358,7 @@
                     <label for="field1 text-end">وصف اماكن التخزين</label>
                     <textarea
                       class="form-control custom-input"
+                      formControlName="note"
                       id="Textarea1"
                       rows="3"
                     ></textarea>
@@ -367,7 +368,8 @@
 
               
            
-  
+              <div class="col-md-6 mx-auto ">
+
               <button type="button my-button3" class="btn my-button3">
                 حفظ
               </button>
@@ -379,6 +381,7 @@
               >
                 الغاء
               </button>
+              </div>
             
        
     
