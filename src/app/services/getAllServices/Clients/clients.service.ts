@@ -68,4 +68,15 @@ export class ClientsService {
     return this.http.get(`${this.apiUrl}Clients/GetAllClients`, { headers });
 
   }
+
+  deleteClientById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}Clients/DeleteClient/${id}`,{headers});
+  }
+
+  
 }

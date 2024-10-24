@@ -1,11 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { PaymentType } from 'src/app/enums/PaymentType';
 import { RequestStage } from 'src/app/enums/RequestStage';
 
 import { ClientsService } from 'src/app/services/getAllServices/Clients/clients.service';
 import { CostCenterService } from 'src/app/services/getAllServices/CostCenter/cost-center.service';
+import { ItemsService } from 'src/app/services/getAllServices/Items/items.service';
 import { PriceListService } from 'src/app/services/getAllServices/PriceList/price-list.service';
 import { RepresentativeService } from 'src/app/services/getAllServices/Representative/representative.service';
 import { SalesService } from 'src/app/services/getAllServices/Sales/sales.service';
@@ -22,7 +24,7 @@ import { environment } from 'src/environments/environment.development';
 export class SalesComponent implements OnInit {
 
   pageNumber: number = 1;
-  pageSize: number = 3;
+  pageSize: number = 10;
   
   costCenters:any[]=[];
   salesOffers:any[]=[];
@@ -31,9 +33,18 @@ export class SalesComponent implements OnInit {
   representatives:any[]=[]
   teams:any[]=[];
   priceLists:any[]=[];
-
-
   saleOfferForm:FormGroup;
+  tableData = [
+    {
+      selectedItemId: null,
+      code: '',
+      unit: '',
+      unitPrice: 0,
+      tax: 0,
+      discount: 0,
+      total: 0,
+    },
+  ];
 
   paymentType = PaymentType;  // Access the PaymentType enum
 // Convert enum to an array for dropdown
@@ -51,7 +62,7 @@ apiUrl=environment.apiUrl;
     private teamService:TeamsService,private representative:RepresentativeService,
      private wareService:WarehouseService, private fb:FormBuilder,
      private pricelistService:PriceListService, private costService:CostCenterService,
-     private http:HttpClient
+     private http:HttpClient, private toast:ToastrService, private itemService:ItemsService
   ){
 
     this.saleOfferForm= this.fb.group({
@@ -66,6 +77,8 @@ apiUrl=environment.apiUrl;
       offerExpiryDate:['',Validators.required],
       paymentPeriod:['',Validators.required],
       paymentType:['',Validators.required],
+      items: this.fb.array([]), // FormArray for the items
+
       // requestStage:['',Validators.required],
 
       // clientPurchaseOrder:['',Validators.required],
@@ -76,6 +89,7 @@ apiUrl=environment.apiUrl;
       
       });
 
+      this.addItem(); 
       
 
     this.paymentTypeList = Object.keys(this.paymentType).map(key => ({
@@ -97,6 +111,10 @@ apiUrl=environment.apiUrl;
     this.getAllRepresentatives();
     this.getcostCenters();
     this.getAllClients();
+    this.getAllItems();
+    }
+    get items(): FormArray {
+      return this.saleOfferForm.get('items') as FormArray;
     }
   // buttons=['المعلومات الأساسية','المواقع و الفروع','المرفقات','المهام' ,'الحساب البنكي','الأشعارات والتذكير','التقارير','معلومات التواصل','بيانات الضريبه','الاستبيانات']
   buttons=['الأصناف','الملاحظات','المهام' ,'مرفقات']
@@ -152,18 +170,44 @@ apiUrl=environment.apiUrl;
     console.log('File selected:', file);
     // You could upload the file to the server here using an API service
   }
+  addItem() {
+    const itemGroup = this.fb.group({
+      itemId: [''],
+      quantity: [0, Validators.required],
+      unitPrice: [0, Validators.required],
+      discount: [0],
+      salesTax: [0],
+      unit: [''],
+      notes: [''],
+    });
 
-  // getAllSaleOffers() {
-  //   this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response => {
-  //     this.salesOffers = response;
-  //     console.log(this.salesOffers);
-  //   }, error => {
-  //     console.error('Error fetching sales data:', error)
-  //   })
-  // }
+    this.items.push(itemGroup);
+  }
+
+  // items table methods
+  onItemSelect(event: any, rowIndex: number) {
+    const selectedItemId = event.target.value;
+
+    // Fetch details for the selected item
+    this.itemService.getItemDetails(selectedItemId).subscribe((itemDetails: any) => {
+      // Update the specific row with the item details
+      this.tableData[rowIndex].code = itemDetails.code;
+      this.tableData[rowIndex].unit = itemDetails.unit;
+      this.tableData[rowIndex].unitPrice = itemDetails.unitPrice;
+      this.tableData[rowIndex].tax = itemDetails.tax;
+      this.tableData[rowIndex].discount = itemDetails.discount;
+      this.tableData[rowIndex].total = this.calculateTotal(itemDetails);
+    });
+  }
+
+  calculateTotal(itemDetails: any) {
+    // Example calculation of total price (modify based on your logic)
+    return itemDetails.unitPrice - itemDetails.discount + itemDetails.tax;
+  }
+
   getAllSaleOffers(){
     this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response=>{
-        this.salesOffers= response;
+        this.salesOffers= response.saleOffers;
         console.log(this.salesOffers);
       }, error =>{
         console.error('Error fetching salesOffers data:' , error)
@@ -179,7 +223,16 @@ getAllClients() {
     console.error('Error fetching  clients:', error)
   })
 }
-
+itemss:any[]=[];
+getAllItems(){
+  this.itemService.getAllItems().subscribe(response=>{
+    this.itemss = response.item1;
+    console.log(this.itemss)
+  },error=>{
+    console.error('Error fetching items: ' , error)
+  }
+)
+}
 getAllWarehouses() {
   this.wareService.getAllWarehouses().subscribe(response => {
     this.warehouses = response.data;
@@ -228,33 +281,72 @@ getAllTeams() {
     })
   }
 
+   // Method to remove an item from the FormArray
+   removeItem(index: number) {
+    this.items.removeAt(index);
+  }
   onSubmit() {
+    const formData = new FormData();
+    formData.append('clientId', this.saleOfferForm.get('clientId')?.value);
+    formData.append('representativeId', this.saleOfferForm.get('representativeId')?.value);
+    formData.append('code', this.saleOfferForm.get('code')?.value);
+    formData.append('teamId', this.saleOfferForm.get('teamId')?.value);
+    formData.append('clientPurchaseOrder', this.saleOfferForm.get('clientPurchaseOrder')?.value);
+    formData.append('costCenterId', this.saleOfferForm.get('costCenterId')?.value);
+    formData.append('warehouseId', this.saleOfferForm.get('warehouseId')?.value);
+    formData.append('offerExpiryDate', this.saleOfferForm.get('offerExpiryDate')?.value);
+    formData.append('paymentPeriod', this.saleOfferForm.get('paymentPeriod')?.value);
+    formData.append('paymentType', this.saleOfferForm.get('paymentType')?.value);
 
 
-if (this.saleOfferForm.valid) {
-  // Call the service to post the data
-  const formData = this.saleOfferForm.value; // Get the form data
-  this.salesService.postSaleOffer(formData).subscribe(
-    response => {
-      console.log('sales offer created successfully!', response);
-      alert('sales offer created successfully!')
-      // Handle success, show notification, etc.
-    },
-    error => {
-      console.error('Error creating sales offer:', error);
-      console.log(formData)
-      // Handle error, show notification, etc.
-    }
-  );
-} else {
-  console.log(this.saleOfferForm);
-  console.log('Form is not valid');
-  // Handle form validation errors
-}
-}
+      // Access the items FormArray
+  // const itemsArray = this.saleOfferForm.get('items') as FormArray;
+
+  // // Loop through the items FormArray to append each item to FormData
+  // itemsArray.controls.forEach((itemGroup: AbstractControl, index: number) => {
+  //   const item = itemGroup as FormGroup;
+
+  //   // Append each property of the item with index-based keys
+  //   formData.append(`items[${index}][id]`, item.get('id')?.value);
+  //   formData.append(`items[${index}][quantity]`, item.get('quantity')?.value);
+  //   formData.append(`items[${index}][unitPrice]`, item.get('unitPrice')?.value);
+  //   formData.append(`items[${index}][discount]`, item.get('discount')?.value);
+  //   formData.append(`items[${index}][salesTax]`, item.get('salesTax')?.value);
+  //   formData.append(`items[${index}][unit]`, item.get('unit')?.value);
+  //   formData.append(`items[${index}][notes]`, item.get('notes')?.value);
+  // });
+    //  // Convert items FormArray to JSON string and append it
+     const itemsArray = this.saleOfferForm.get('items')?.value;
+     formData.append('items', JSON.stringify(itemsArray));
+  
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+    });
+  
+    this.http.post(this.apiUrl+'SaleOffer', formData, { headers })
+      .subscribe(response => {
+        console.log('Response:', response);
+        // alert('submit successfully');
+        this.toast.success('submit successfully')
+      }, error => {
+        console.error('Error:', error);
+        this.toast.error('An error accured')
+      });
+  }
 changePage(newPageNumber: number): void {
   this.pageNumber = newPageNumber;
   console.log(this.pageNumber)
   this.getAllSaleOffers();
 }
+
+isDropdownOpen: boolean = false;
+
+toggleDropdown() {
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+closeDropdown() {
+  this.isDropdownOpen = false;
+}
+
 }

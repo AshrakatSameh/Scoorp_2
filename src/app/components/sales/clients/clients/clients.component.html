@@ -48,10 +48,17 @@
                                     <i class="fa-solid fa-print"></i>
                                     طباعه
                                 </button>
-                                <button type="button" class="btn ms-3 my-button">
-                                    <i class="fa-solid fa-gear"></i>
-                                    الاجراءات
-                                </button>
+                                <div class="dropdown" [class.show]="isDropdownOpen">
+                                    <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                                      <i class="fa-solid fa-gear"></i> الاجراءات
+                                    </button>
+                                    
+                                    <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                                      <a class="dropdown-item" > تعديل</a>
+                                      <a class="dropdown-item" >عرض</a>
+                                      <a class="dropdown-item" (click)="deleteSelectedClients()" >حدف</a>
+                                    </div>
+                                  </div>
                             </div>
                         </div>
 
@@ -137,7 +144,7 @@
                                             <td>{{item.localName}}</td>
                                             <td>{{item.name}}</td>
                                             <td>{{i+1}}</td>
-                                            <td> <input type="checkbox" class="large-checkbox" />
+                                            <td> <input   type="checkbox" class="large-checkbox" />
                                             </td>
 
                                         </tr>

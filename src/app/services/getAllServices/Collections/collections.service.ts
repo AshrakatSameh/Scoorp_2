@@ -38,4 +38,37 @@ export class CollectionsService {
     console.log(data)
     return this.http.post(`${this.apiUrl}Collections/Create?`, data, { headers });
   }
+
+  updateItemType(id: number, updatedCategory: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || ''  // Set tenantId header if available
+    });
+  
+    // Prepare FormData for multipart/form-data request
+    const formData = new FormData();
+    formData.append('code', updatedCategory.code || '');
+    formData.append('clientId', updatedCategory.clientId || '');
+    formData.append('representativeId', updatedCategory.representativeId || '');
+    formData.append('teamId', updatedCategory.teamId || '');
+    formData.append('paymentMethodId', updatedCategory.paymentMethodId || '');
+    formData.append('clientPhone', updatedCategory.clientPhone || '');
+    formData.append('clientEmail', updatedCategory.clientEmail || '');
+    formData.append('costCenterId', updatedCategory.costCenterId || '');
+    formData.append('covenantBoxId', updatedCategory.covenantBoxId || '');
+  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}Collections/Update/${id}`, formData, { headers });
+  }
+ 
+  deleteItemById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}Collections/${id}`,{headers});
+  }
 }
