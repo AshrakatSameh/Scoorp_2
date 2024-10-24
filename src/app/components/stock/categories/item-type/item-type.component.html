@@ -72,7 +72,7 @@
                       <div class="dropdown-menu" [class.show]="isDropdownOpen">
                         <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
                         <a class="dropdown-item" href="#">عرض</a>
-                        <a class="dropdown-item" href="#">حدف</a>
+                        <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
                       </div>
                     </div>
                   </div>
@@ -392,7 +392,7 @@
           class="modal-title text-end flex-row-reverse"
           id="staticBackdropLabel"
         >
-           اضافه نوع الصنف
+           تعديل نوع الصنف
         </h5>
       </div>
       <div class="modal-body">

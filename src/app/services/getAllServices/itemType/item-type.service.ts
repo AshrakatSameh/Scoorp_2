@@ -61,23 +61,7 @@ export class ItemTypeService {
     return this.http.post(`${this.apiUrl}StoresSection/item-type?`, brand, { headers });
   }
 
-  // updateItemType(id: number, updatedCategory: any): Observable<any> {
-  //   const tenantId = localStorage.getItem('tenant');
-  //   const headers = new HttpHeaders({
-  //     tenant: tenantId || '', // Set tenantId header if available
-  //     id : id.toString(),
-  //     'Content-Type': 'application/json',
-  //     // Add any additional headers if necessary, e.g., 'Authorization': 'Bearer token'
-  //   });
-  //   // Prepare FormData if your API requires multipart/form-data
-  //   const formData = new FormData();
-  //   formData.append('name', updatedCategory.name || '');
-  //   formData.append('localName', updatedCategory.localName || '');
-  //   formData.append('note', updatedCategory.note || '');
-  //   formData.append('code', updatedCategory.code || '');
 
-  //   return this.http.put(`${this.apiUrl}StoresSection/item-type/${id}`, updatedCategory, { headers });
-  // }
   updateItemType(id: number, updatedCategory: any): Observable<any> {
     const tenantId = localStorage.getItem('tenant');
     
@@ -97,4 +81,12 @@ export class ItemTypeService {
     return this.http.put(`${this.apiUrl}StoresSection/item-type/${id}`, formData, { headers });
   }
   
+  deleteItemTypeById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}StoresSection/item-type/${id}`,{headers});
+  }
 }

@@ -48,10 +48,17 @@
                   <i class="fa-solid fa-print"></i>
                   طباعه
                 </button>
-                <button type="button" class="btn ms-3 my-button">
-                  <i class="fa-solid fa-gear"></i>
-                  الاجراءات
-                </button>
+                <div class="dropdown" [class.show]="isDropdownOpen">
+                  <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                    <i class="fa-solid fa-gear"></i> الاجراءات
+                  </button>
+                  
+                  <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                    <a class="dropdown-item" >تعديل</a>
+                    <a class="dropdown-item" href="#">عرض</a>
+                    <a class="dropdown-item" href="#">حدف</a>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -380,7 +387,7 @@
 
 
             <!-- show table button 1 -->
-            <div *ngIf="selectedButton !== null">
+            <div *ngIf="selectedButton !== null" >
               <div *ngIf="selectedButton === 0">
                 <div class="card-body">
                   <div class="table-responsive">
@@ -391,31 +398,39 @@
                           <th>اجمالي فرعي</th>
                           <th>الخصم</th>
                           <th>الضريبه</th>
-                          <th>سعر الوحدة</th>
+                         
                           <th> الوحدة</th>
-                          <th>الوصف</th>
+                          <th>سعر الوحدة</th>
+                          <th>الكمية</th>
                           <th>الصنف</th>
                           <th>مسلسل</th>
 
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr>
+                      <tbody formArrayName="items">
+                        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                           <td>
-                            <i class="fas fa-trash" style="cursor: pointer;"></i>
+                            <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
                           </td>
-                          <td>اجمالى فرعي</td>
-                          <td>الخصم</td>
-                          <td>الضريبه</td>
-                          <td>سعر الوحده</td>
-                          <td>الوحده</td>
-                          <td>الوصف</td>
-                          <td>الصنف</td>
+                          <td><input type="text" formControlName="note" placeholder="note" class="form-control"></td>
+                          <td><input type="number" formControlName="discount" placeholder="discount" class="form-control"></td>
+                          <td><input type="number" formControlName="salesTax" placeholder="salesTax" class="form-control"></td>
+                          <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
+                          <td><input type="number" formControlName="unitPrice" placeholder="unitPrice" class="form-control"></td>
+                          <td><input type="number" formControlName="quantity" placeholder="Quantity" class="form-control"></td>
+                          <td><select formControlName="id" class="form-control">
+                            <option *ngFor="let dropdownItem of itemss" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
+                          </select></td>
+                          <!-- <td>  <select (change)="onItemSelect($event, i)" [(ngModel)]="row.selectedItemId">
+                            <option *ngFor="let item of items" [value]="item.id">{{ item.name }}</option>
+                          </select></td> -->
                           <td>1</td>
                         </tr>
 
                       </tbody>
                     </table>
+                    <button type="button" (click)="addItem()">اضف صنف</button>
+
                   </div>
 
                 </div>

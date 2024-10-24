@@ -25,4 +25,15 @@ export class ItemsService {
     return this.http.get(`${this.apiUrl}Items`, { headers });
 
   }
+///get item by Id
+  getItemDetails(itemId: number): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+
+    // Set the custom header with the tenantId
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.get(`${this.apiUrl}Items/${itemId}`,{headers});
+  }
 }

@@ -29,14 +29,16 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
 
   pageNumber: number = 1;
   pageSize: number = 10;
-
   employees: any[] = [];
   departments: any[] = [];
   supervisors: any[] = [];
   managers: any[] = [];
-
-
   employeeForm: FormGroup;
+
+  // for Update
+  selectedCategory: any = null;
+  isModalOpen = false;
+
 
   constructor(private employeeService: EmployeeService, private fb: FormBuilder,
     private departmentService: DepartmentService, private supervisorService: SupervisorService,
@@ -62,6 +64,15 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
     this.getAllSupervisors();
   }
 
+  isDropdownOpen: boolean = false;
+
+toggleDropdown() {
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+closeDropdown() {
+  this.isDropdownOpen = false;
+}
 
   getAllEmployees() {
     this.employeeService.getAllEmployees(this.pageNumber, this.pageSize)
@@ -84,6 +95,7 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
     })
 
   }
+  // get all supervicors
   getAllSupervisors() {
     this.supervisorService.getAllSupervisors().subscribe(response => {
       this.supervisors = response;
@@ -93,6 +105,7 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
     })
 
   }
+  // getall managers
   getAllManagers() {
     this.managerService.getAllManagers().subscribe(response => {
       this.managers = response;
@@ -148,6 +161,62 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
       }
     );
   }
+
+  // Update
+  // onCheckboxChange(category: any) {
+  //   this.selectedCategory = category;  // Store the selected category data
+  // }
+  // openModalForSelected() {
+  //   if (this.selectedCategory) {
+  //     this.employeeForm.patchValue({
+  //       name: this.selectedCategory.name,
+  //       localName: this.selectedCategory.localName,
+  //       jobTitle: this.selectedCategory.jobTitle,
+  //       departmentSupervisorId: this.selectedCategory.departmentSupervisorId,
+  //       departmentManagerId: this.selectedCategory.departmentManagerId,
+  //       departmentId: this.selectedCategory.departmentId,
+  //       startDate: this.selectedCategory.startDate,
+  //       endDate: this.selectedCategory.endDate,
+  //     });
+  
+  //     this.isModalOpen = true;
+  //   } else {
+  //     alert('Please select a category to update.');
+  //   }
+  // }
+  
+  // closeModal() {
+  //   this.isModalOpen = false;
+  // }
+  
+  // updateCategory() {
+  //   if (this.employeeForm.valid) {
+  //     const updatedCategory = { ...this.employeeForm.value, id: this.selectedCategory.id };
+  
+  //     // Call the update service method using the category's id
+  //     this.itemTypeServices.updateItemType(this.selectedCategory.id, updatedCategory).subscribe(
+  //       (response) => {
+  //         console.log('Category updated successfully:', response);
+  //         this.toast.success('Item type updated successfully')
+  //         // Update the local categories array if necessary
+  //         const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+  //         if (index !== -1) {
+  //           this.storesSec[index] = updatedCategory;
+  //         }
+  
+  //         this.getAllItemTypes();
+  //         this.closeModal();  // Close the modal after successful update
+  //       },
+  //       (error: HttpErrorResponse) => {
+  //         console.error('Error updating category:', error);
+  //         console.log('Updated Category Data:', updatedCategory);
+  //         // alert('An error occurred while updating the item type .');
+  //         this.toast.error('An error occurred while updating the item type .')
+  //       }
+  //     );
+  //     }
+  //   }
+  
   changePage(newPageNumber: number): void {
     this.pageNumber = newPageNumber;
     console.log(this.pageNumber)

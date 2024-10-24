@@ -65,4 +65,27 @@ export class EmployeeService {
     return this.http.get(`${this.apiUrl}Employees/GetAllEmployees`, { headers });
 
   }
+
+  updateEmployee(id: number, updatedCategory: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || ''  // Set tenantId header if available
+    });
+  
+    // Prepare FormData for multipart/form-data request
+    const formData = new FormData();
+    formData.append('name', updatedCategory.name || '');
+    formData.append('localName', updatedCategory.localName || '');
+    formData.append('jobTitle', updatedCategory.jobTitle || '');
+    formData.append('departmentSupervisorId', updatedCategory.departmentSupervisorId || '');
+    formData.append('departmentManagerId', updatedCategory.departmentManagerId || '');
+    formData.append('departmentId', updatedCategory.departmentId || '');
+    formData.append('startDate', updatedCategory.startDate || '');
+    formData.append('startDate', updatedCategory.startDate || '');
+  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}StoresSection/item-type/${id}`, formData, { headers });
+  }
 }

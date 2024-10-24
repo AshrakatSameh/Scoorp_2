@@ -81,6 +81,7 @@
 
 .card-body{
     min-width: 500px;
+    direction: ltr;
   }
   
   .search-input {
@@ -118,7 +119,7 @@ label,
 input,
 button,
  span , input, select{
-    font-family: "Cairo", sans-serif;
+    font-family: "Cairo", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -141,7 +142,7 @@ tr, th, td {
 
 .scroll-buttons-container {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   overflow-x: auto;
   white-space: nowrap;
   padding: 10px 0;
@@ -277,3 +278,4 @@ input::placeholder{
 select option[disabled] {
   color:#c9c9ca;/* Placeholder text color */
 }
+

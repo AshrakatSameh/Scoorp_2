@@ -27,13 +27,7 @@ export class ContactsService {
 
   }
 
-  // createContact(contactData: FormData, tenant: string): Observable<any> {
-  //   const headers = new HttpHeaders({
-  //     'tenant': tenant
-  //   });
 
-  //   return this.http.post<any>(`${this.apiUrl}Contact`, contactData, { headers });
-  // }
   
 api = this.apiUrl+'Contact';
   createData(data: any): Observable<any> {
@@ -61,5 +55,39 @@ api = this.apiUrl+'Contact';
     return this.http.post(this.api, formData, { headers });
   }
   
+  updateItem(id: number, updatedCategory: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || ''  // Set tenantId header if available
+    });
+  
+    // Prepare FormData for multipart/form-data request
+    const formData = new FormData();
+    // formData.append('name', updatedCategory.name || '');
+    formData.append('name', updatedCategory.name ||'');
+    formData.append('localName', updatedCategory.localName || '');
+    formData.append('jobTitle', updatedCategory.jobTitle || '');
+    formData.append('phoneNumber1', updatedCategory.phoneNumber1 || '');
+    formData.append('phoneNumber2', updatedCategory.phoneNumber2 || '');
+    formData.append('email', updatedCategory.email || '');
+    formData.append('locationLiknks', updatedCategory.locationLiknks || '');
+    formData.append('nationality', updatedCategory.nationality || '');
+    formData.append('clientId', updatedCategory.clientId || '');
+    formData.append('supplier', updatedCategory.supplier || '');
+    formData.append('description', updatedCategory.description || '');
+  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}Contact/${id}`, formData, { headers });
+  }
 
+  deleteById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}Contact/${id}`,{headers});
+  }
 }

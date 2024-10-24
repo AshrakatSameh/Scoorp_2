@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { ClientsService } from 'src/app/services/getAllServices/Clients/clients.service';
 import { SupervisorService } from 'src/app/services/getAllServices/Supervisors/supervisor.service';
 import { TagService } from 'src/app/services/getAllServices/Tag/tag.service';
@@ -63,7 +64,7 @@ export class ClientsComponent implements OnInit {
     }
     getAllTags(){
       this.tagService.getUserTags().subscribe(response=>{
-          this.tags= response;
+          this.tags= response.item1;
           console.log(this.tags);
         }, error =>{
           console.error('Error fetching tags data:' , error)
@@ -116,6 +117,48 @@ export class ClientsComponent implements OnInit {
       );
     }
 
+    // ازرار الاجراءات
+    isDropdownOpen: boolean = false;
+
+toggleDropdown() {
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+closeDropdown() {
+  this.isDropdownOpen = false;
+}
+    // for delete 
+    selectedClients: any[] = []; 
+    onCheckboxChange(client: any, event: Event): void {
+      const checkbox = event.target as HTMLInputElement;
+      if (checkbox.checked) {
+        this.selectedClients.push(client); // Add to selected clients
+      } else {
+        this.selectedClients = this.selectedClients.filter(c => c.id !== client.id); // Remove from selected clients
+      }
+    }
+  
+    deleteSelectedClients(): void {
+      if (this.selectedClients.length === 0) {
+        alert('No clients selected for deletion.');
+        return;
+      }
+  
+      const deleteRequests = this.selectedClients.map(client => this.clientService.deleteClientById(client.id));
+  
+      // Execute all delete requests
+      forkJoin(deleteRequests).subscribe({
+        next: () => {
+          alert('Selected clients deleted successfully.');
+          this.clients = this.clients.filter(client => !this.selectedClients.includes(client)); // Remove deleted clients from the list
+          this.selectedClients = []; // Clear selected clients
+        },
+        error: (err) => {
+          console.error('Error deleting clients:', err);
+          alert('An error occurred while deleting clients.');
+        }
+      });
+    }
     changePage(newPageNumber: number): void {
       this.pageNumber = newPageNumber;
       console.log(this.pageNumber)
