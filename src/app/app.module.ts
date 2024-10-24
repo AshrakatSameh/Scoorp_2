@@ -63,7 +63,6 @@ import { CateogriesComponent } from './components/stock/categories/cateogries/ca
 import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
 import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { ToastrModule } from 'ngx-toastr';
-import { NgToastModule } from 'ng-angular-popup';
 
 @NgModule({
   declarations: [

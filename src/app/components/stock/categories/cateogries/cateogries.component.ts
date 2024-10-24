@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BrandsService } from 'src/app/services/getAllServices/brands/brands.service';
@@ -9,6 +9,7 @@ import { ItemsService } from 'src/app/services/getAllServices/Items/items.servic
 import { ItemTypeService } from 'src/app/services/getAllServices/itemType/item-type.service';
 import { UnitService } from 'src/app/services/getAllServices/unit/unit.service';
 import { environment } from 'src/environments/environment.development';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cateogries',
@@ -22,6 +23,11 @@ export class CateogriesComponent {
   brands: any[] = [];
   itemCategory: any[] = [];
   costs:any[] = [];
+  selectedCategory: any = null;
+  
+  isModalOpen = false;
+  isDropdownOpen: boolean = false;
+
 
   ItemsForm: FormGroup;
 
@@ -57,7 +63,8 @@ export class CateogriesComponent {
     private unit: UnitService,
     private brand: BrandsService,
     private http:HttpClient,
-    private cost :CostCenterService
+    private cost :CostCenterService,
+    private toast: ToastrService,
   ) {
     this.ItemsForm = this.fb.group({
       name: ['', Validators.required],
@@ -213,4 +220,85 @@ getAllcosts(){
       });
     
   }
+
+  onCheckboxChange(category: any) {
+    this.selectedCategory = category;  // Store the selected category data
+  }
+
+  openModalForSelected() {
+    if (this.selectedCategory) {
+      this.ItemsForm.patchValue({
+        name: this.selectedCategory.name,
+        localName: this.selectedCategory.localName,
+        canBeSold: this.selectedCategory.canBeSold,
+        canBePurchased: this.selectedCategory.canBePurchased,
+        canBeConsumed: this.selectedCategory.canBeConsumed,
+        itemCategoryId: this.selectedCategory.itemCategoryId,
+        barcode: this.selectedCategory.barcode,
+        code: this.selectedCategory.code,
+        itemTypeId: this.selectedCategory.itemTypeId,
+        unitId: this.selectedCategory.unitId,
+        salesPrice: this.selectedCategory.salesPrice,
+        salesTax: this.selectedCategory.salesTax,
+        costCenterId: this.selectedCategory.costCenterId,
+        brandId: this.selectedCategory.brandId,
+        note: this.selectedCategory.note,
+        localNote: this.selectedCategory.localNote,
+        totalSoldQuantity: this.selectedCategory.totalSoldQuantity,
+        totalPurchasedQuantity: this.selectedCategory.totalPurchasedQuantity,
+        totalCurrentStock: this.selectedCategory.totalCurrentStock,
+        width: this.selectedCategory.width,
+        length: this.selectedCategory.length,
+        height: this.selectedCategory.height,
+        pallet: this.selectedCategory.pallet,
+        palletHeight: this.selectedCategory.palletHeight,
+        thickness: this.selectedCategory.thickness,
+        weight: this.selectedCategory.weight,
+        customField: this.selectedCategory.customField,
+
+
+      });
+  
+      this.isModalOpen = true;
+    } else {
+      alert('Please select a category to update.');
+    }
+  }
+
+  
+toggleDropdown() {
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  updateCategory() {
+    if (this.ItemsForm.valid) {
+      const updatedCategory = { ...this.ItemsForm.value, id: this.selectedCategory.id };
+  
+      // Call the update service method using the category's id
+      this.itemCat.updateItemType(this.selectedCategory.id, updatedCategory).subscribe(
+        (response) => {
+          console.log('Category updated successfully:', response);
+          this.toast.success('Item type updated successfully')
+          // Update the local categories array if necessary
+          const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+          if (index !== -1) {
+            this.storesSec[index] = updatedCategory;
+          }
+  
+          this.closeModal();  // Close the modal after successful update
+        },
+        (error: HttpErrorResponse) => {
+          console.error('Error updating category:', error);
+          console.log('Updated Category Data:', updatedCategory);
+          // alert('An error occurred while updating the item type .');
+          this.toast.error('An error occurred while updating the item type .')
+        }
+      );
+      }
+    }
+  
 }

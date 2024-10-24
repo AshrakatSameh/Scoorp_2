@@ -57,4 +57,52 @@ export class ItemcategoryService {
       console.log(brand)
       return this.http.post(`${this.apiUrl}StoresSection/item-category?`, brand, { headers });
     }
+
+    updateItemType(id: number, updatedCategory: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      
+      // Create headers with tenant info
+      const headers = new HttpHeaders({
+        tenant: tenantId || ''  // Set tenantId header if available
+      });
+    
+      // Prepare FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('name', updatedCategory.name || '');
+      formData.append('localName', updatedCategory.localName || '');
+      formData.append('canBeSold', updatedCategory.note || '');
+      formData.append('canBePurchased', updatedCategory.code || '');
+
+      formData.append('canBeConsumed', updatedCategory.name || '');
+      formData.append('itemCategoryId', updatedCategory.localName || '');
+      formData.append('barcode', updatedCategory.note || '');
+      formData.append('code', updatedCategory.code || '');
+
+      formData.append('itemTypeId', updatedCategory.name || '');
+      formData.append('unitId', updatedCategory.localName || '');
+      formData.append('salesPrice', updatedCategory.note || '');
+      formData.append('salesTax', updatedCategory.code || '');
+
+      formData.append('costCenterId', updatedCategory.name || '');
+      formData.append('brandId', updatedCategory.localName || '');
+      formData.append('note', updatedCategory.note || '');
+      formData.append('localNote', updatedCategory.code || '');
+
+      formData.append('totalSoldQuantity', updatedCategory.name || '');
+      formData.append('totalPurchasedQuantity', updatedCategory.localName || '');
+      formData.append('totalCurrentStock', updatedCategory.note || '');
+      formData.append('width', updatedCategory.code || '');
+
+      formData.append('length', updatedCategory.name || '');
+      formData.append('height', updatedCategory.localName || '');
+      formData.append('pallet', updatedCategory.note || '');
+      formData.append('palletHeight', updatedCategory.code || '');
+
+      formData.append('thickness', updatedCategory.name || '');
+      formData.append('weight', updatedCategory.localName || '');
+      formData.append('customField', updatedCategory.note || '');
+    
+      // API call with PUT method using the FormData and headers
+      return this.http.put(`${this.apiUrl}Items/${id}`, formData, { headers });
+    }
 }

@@ -65,10 +65,17 @@
                     <i class="fa-solid fa-print"></i>
                     طباعه
                   </button>
-                  <button type="button" class="btn ms-3 my-button2">
-                    <i class="fa-solid fa-gear"></i>
-                    الاجراءات
-                  </button>
+                  <div class="dropdown" [class.show]="isDropdownOpen">
+                    <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                      <i class="fa-solid fa-gear"></i> الاجراءات
+                    </button>
+                    
+                    <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                      <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                      <a class="dropdown-item" href="#">عرض</a>
+                      <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -150,22 +157,15 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Fiona Green</td>
-                        <td>Chief Operating Officer (COO)</td>
-                        <td>San Francisco</td>
-                        <td>48</td>
-                        <td>2010/03/11</td>
-                        <td>$850,000</td>
-                      </tr>
-                      <tr>
-                        <td>Shou Itou</td>
-                        <td>Regional Marketing</td>
-                        <td>Tokyo</td>
-                        <td>20</td>
-                        <td>2011/08/14</td>
-                        <td>$163,000</td>
-                      </tr>
+                      <tr *ngFor="let item of deps">
+                        <td>{{item.description}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{item.localName}}</td>
+                        <td>{{item.name}}</td>
+                        <td> <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                        </td>                      </tr>
+                     
                     </tbody>
                   </table>
                 </div>
@@ -199,7 +199,7 @@
         </h5>
       </div>
       <div class="modal-body">
-        <form>
+        <form [formGroup]="depForm" (ngSubmit)="onSubmitAdd()">
           <div class="container">
             <!-- Row with two fields -->
             <div class="row">
@@ -209,7 +209,7 @@
                   <input
                     type="text"
                     id="field1"
-                    
+                    formControlName="name"
                     class="form-control custom-input"
                     placeholder="اسم القسم"
                   />
@@ -221,7 +221,7 @@
                   <input
                     type="text"
                     id="field2"
-                    
+                    formControlName="localName"
                     class="form-control custom-input"
                     placeholder="section"
                   />
@@ -280,6 +280,8 @@
                     class="form-control custom-input"
                     placeholder="قم بوصف القسم"
                     id="floatingTextarea2"
+                    formControlName="description"
+
                     style="height: 100px"
                   ></textarea>
                 </div>
@@ -302,4 +304,137 @@
       </div>
     </div>
   </div>
+</div>
+
+
+
+
+
+
+
+
+
+<div
+class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
+>
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5
+        class="modal-title text-end flex-row-reverse"
+        id="staticBackdropLabel"
+      >
+         تعديل نوع الصنف
+      </h5>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="depForm" (ngSubmit)="onSubmitUpdate()">
+        <div class="container">
+          <!-- Row with two fields -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field1 text-end"> اسم القسم</label>
+                <input
+                  type="text"
+                  id="field1"
+                  formControlName="name"
+                  class="form-control custom-input"
+                  placeholder="اسم القسم"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field2 text-end">اسم القسم باللغه المحليه </label>
+                <input
+                  type="text"
+                  id="field2"
+                  formControlName="localName"
+                  class="form-control custom-input"
+                  placeholder="section"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="field1 text-end"> تاريخ الانشاء </label>
+                <input
+                type="date"
+                id="field2"
+                
+                class="form-control custom-input"
+                placeholder="قم باختيار التاريخ"
+              />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field3"> المنشأ</label>
+                <input
+                  type="text"
+                  id="field3"
+                  
+                  class="form-control custom-input"
+                  placeholder="اسم العهده"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field4"> كود القسم </label>
+                <input
+                  type="text"
+                  id="field4"
+                  
+                  class="form-control custom-input"
+                  placeholder="كود القسم"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="floatingTextarea2">وصف القسم</label>
+
+                <textarea
+                  class="form-control custom-input"
+                  placeholder="قم بوصف القسم"
+                  id="floatingTextarea2"
+                  formControlName="description"
+
+                  style="height: 100px"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mx-auto ">
+            <button type="submit" class="btn my-button3">
+              حفظ
+              
+            </button>
+
+            <button
+              type="button"
+              class="btn closebutton"
+              data-bs-dismiss="modal"
+              (click)="closeModal()"
+            >
+              الغاء
+            </button>
+            </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </div>
