@@ -10,6 +10,7 @@ export class ConvenantBoxService {
 
   apiUrl= environment.apiUrl
   constructor(private http: HttpClient) { }
+  
   getConvenantBoxes(): Observable<any> {
     // Get tenantId from localStorage
     const tenantId = localStorage.getItem('tenant');
@@ -32,4 +33,30 @@ export class ConvenantBoxService {
 
     return this.http.post(this.apiUrl, contactData, { headers });
   }
+
+  update(id: number, updatedCategory: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || ''  // Set tenantId header if available
+    });
+    const formData = new FormData();
+    formData.append('covenantBoxName', updatedCategory.covenantBoxName || '');
+    formData.append('description', updatedCategory.description || '');
+    formData.append('code', updatedCategory.code || '');
+  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}CovenantBox/${id}`, formData, { headers });
+  }
+  
+  deleteById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}CovenantBox/${id}`,{headers});
+  }
+
 }

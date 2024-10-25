@@ -65,10 +65,17 @@
                     <i class="fa-solid fa-print"></i>
                     طباعه
                   </button>
-                  <button type="button" class="btn ms-3 my-button2">
-                    <i class="fa-solid fa-gear"></i>
-                    الاجراءات
-                  </button>
+                  <div class="dropdown" [class.show]="isDropdownOpen2">
+                    <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                      <i class="fa-solid fa-gear"></i> الاجراءات
+                    </button>
+                    
+                    <div class="dropdown-menu" [class.show]="isDropdownOpen2">
+                      <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                      <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                      <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -217,7 +224,7 @@
                         <td>{{item.name}}</td>
                         <td>{{i+1}}</td>
                         <td class="firstcolright">
-                          <input type="checkbox" class="large-checkbox" />
+                          <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
                         </td>
                       </tr>
                   
@@ -528,13 +535,14 @@
                     <label for="locationLinks" class="form-label">Location Links:</label>
                     <div *ngFor="let location of locationLinks; let i = index" class="input-group mb-2">
                       <select 
-                        class="form-select" 
-                        [(ngModel)]="locationLinks[i]" 
+                        class="form-select form-control custom-input"
                         name="locationLink{{i}}" 
                         required
                       >
+                      <!-- formArrayName="locationLinks[i]"  -->
+
                         <option value="" disabled selected>قم بلإختيار المواقع</option>
-                        <option *ngFor="let link of locations" [value]="link">{{ link.locationName }}</option>
+                        <option *ngFor="let link of locations" [value]="link.id">{{ link.locationName }}</option>
                       </select>
                       <button type="button" class="btn btn-danger" (click)="removeLocationLink(i)">Remove</button>
                     </div>
@@ -1472,3 +1480,164 @@
       </div>
     </div>
   </div>
+
+
+
+  <!-- Update -->
+  <div
+  class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title text-end flex-row-reverse"
+          id="staticBackdropLabel"
+        >
+          تعديل عقد
+        </h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="contractForm" (ngSubmit)="updateCategory()">
+          <div class="container">
+            <!-- Row with two fields -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for=" text-end"> اسم العقد</label>
+                  <input
+                    type="text"
+                    id="name" name="name" formControlName="name" 
+                    class="form-control custom-input"
+                    placeholder="اسم العقد"
+                    name="name"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field2 text-end">اسم العقد باللغه المحليه </label>
+                  <input
+                    type="text"
+                    id="localName" name="localName" formControlName="localName" 
+                    class="form-control custom-input"
+                    placeholder="Contract Name"
+                    
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="clientId">العميل</label>
+                  <select id="clientId" name="clientId" formControlName="clientId" class="form-select form-control">
+                    <option  value=""  disabled selected>قم باختيار العميل</option>
+                    <option *ngFor="let item of clients" [value]="item.id">{{item.name}}</option>
+                  </select>
+                  <!-- <select formControlName="userIds" multiple>
+                    <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
+                  </select> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="assignedToId">موكل الى </label>
+                  <select id="assignedToId" name="assignedToId" formControlName="assignedToId" class="form-select form-control">
+                    <option  value=""  disabled selected>قم باختيار موكل الى </option>
+                    <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="teamId">الفريق </label>
+                  <select id="teamId" name="teamId" formControlName="teamId" class="form-select form-control">
+                    <option  value=""  disabled selected>قم باختيار الفريق </option>
+                    <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="userIds">المستخدمين </label>
+                  <select id="userIds" name="userIds" formControlName="userIds" class="form-select form-control">
+                    <option  value=""  disabled selected>قم باختيار المستخدمين </option>
+                    <option *ngFor="let item of users" [value]="item.id">{{item.userName}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="startDate text-end">تاريخ البدء</label>
+                  <input
+                    type="date"
+                    id="startDate" name="startDate" formControlName="startDate"
+                    class="form-control custom-input"
+                    placeholder="قم باختيار التاريخ"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="endDate text-end"> تاريخ الانتهاء </label>
+                  <input
+                    type="date"
+                    id="endDate" name="endDate" formControlName="endDate"
+                    class="form-control custom-input"
+                    placeholder="قم باختيار التاريخ"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="code text-end">رقم العقد</label>
+                  <input
+                    type="text"
+                    id="code" name="code" formControlName="code"
+                    class="form-control custom-input"
+                    placeholder="قم باختبار رقم العقد"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field2 text-end">حاله العقد </label>
+                  <input
+                    type="text"
+                    id="field2"
+                    disabled
+                    class="form-control custom-input"
+                    placeholder="قم باختيار حاله العقد"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mx-auto ">
+              <button type="submit" class="btn my-button3">
+                اضافه
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <button type="button" class="btn closebutton " data-bs-dismiss="modal">
+                الغاء
+              </button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

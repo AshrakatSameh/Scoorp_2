@@ -11,6 +11,7 @@ import { WarehouseService } from 'src/app/services/getAllServices/Warehouse/ware
 import { environment } from 'src/environments/environment.development';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-goods-voucher',
@@ -27,12 +28,13 @@ export class GoodsVoucherComponent implements OnInit {
   apiUrl= environment.apiUrl +'DeliveryNotes/Create';
   clientData:any;
   deliveryVoucherForm!:FormGroup;
-  locationForm!:FormGroup;
+  // locationForm!:FormGroup;
   
   constructor(private salesService:SalesService,private clientService:ClientsService,
     private representServece:RepresentativeService, private fb: FormBuilder, private  http:HttpClient,
     private teamService: TeamsService, private costCenterService:CostCenterService,
-    private warehouseService:WarehouseService,private locationService:LocationService
+    private warehouseService:WarehouseService,private locationService:LocationService,
+    private toast: ToastrService
   ){
     this.deliveryVoucherForm= this.fb.group({
     clientId: ['', Validators.required],
@@ -84,6 +86,15 @@ export class GoodsVoucherComponent implements OnInit {
     this.isCodeVisible = !this.isCodeVisible;  // Toggle the visibility
   }
 
+  isDropdownOpen: boolean = false;
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+  
+  closeDropdown() {
+    this.isDropdownOpen = false;
+  }
 
 
 
@@ -194,26 +205,28 @@ getAllTeams() {
   return this.deliveryVoucherForm.get('locationLinkIds') as FormArray;
 }
 // Method to add new locationLink input
-addLocationLink(): void {
-  const locationForm = this.fb.group({
-      locationName: ['', Validators.required],
-      locationAddress: ['', Validators.required],
-      latitude: ['', Validators.required],
-      linelongitude3: ['', Validators.required]
-  });
-  this.locationLinkIds.push(locationForm);
-  this.locationLinkIds.push(this.locationLinkIds);
-}
+// addLocationLink(): void {
+//   const locationForm = this.fb.group({
+//       locationName: ['', Validators.required],
+//       locationAddress: ['', Validators.required],
+//       latitude: ['', Validators.required],
+//       linelongitude3: ['', Validators.required]
+//   });
+//   this.locationLinkIds.push(locationForm);
+//   this.locationLinkIds.push(this.locationLinkIds);
+// }
 onSubmit() {
 
   if (this.deliveryVoucherForm.valid) {
     this.salesService.postDeliveryNote(this.deliveryVoucherForm.value).subscribe(
       response => {
         console.log('Form successfully submitted', response);
-        alert('Form successfully submitted')
+        // alert('Form successfully submitted')
+        this.toast.success('Form successfully submitted')
       },
       error => {
         console.error('Error submitting form', error);
+        this.toast.error('Error in submit form')
       }
     );
   } else {
@@ -269,6 +282,99 @@ onSubmit() {
   // );
 }
 
+// Update Delivery note
+storesSec:any[] =[];
+  isModalOpen = false;
+  selectedCategory: any = null;
+onCheckboxChange(category: any) {
+  this.selectedCategory = category;  // Store the selected category data
+}
+
+openModalForSelected() {
+  if (this.selectedCategory) {
+    this.deliveryVoucherForm.patchValue({
+      clientId: this.selectedCategory.clientId,
+      representativeId: this.selectedCategory.representativeId,
+      teamId: this.selectedCategory.teamId,
+      code: this.selectedCategory.code,
+      purchaseOrderNumber: this.selectedCategory.purchaseOrderNumber,
+      costCenterId: this.selectedCategory.costCenterId,
+      warehouseId: this.selectedCategory.warehouseId,
+      locationLinkIds: this.selectedCategory.locationLinkIds,
+    });
+
+    this.isModalOpen = true;
+  } else {
+    alert('Please select a category to update.');
+  }
+}
+
+closeModal() {
+  this.isModalOpen = false;
+  this.deliveryVoucherForm.reset();
+}
+
+updateCategory() {
+  if (this.deliveryVoucherForm.valid) {
+    const updatedCategory = { ...this.deliveryVoucherForm.value, id: this.selectedCategory.id };
+
+    // Call the update service method using the category's id
+    this.salesService.update(this.selectedCategory.id, updatedCategory).subscribe(
+      (response) => {
+        console.log('Category updated successfully:', response);
+        this.toast.success('Item type updated successfully')
+        // Update the local categories array if necessary
+        const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+        if (index !== -1) {
+          this.storesSec[index] = updatedCategory;
+        }
+
+        this.getAllDeliveryVouchers();
+        this.closeModal();  // Close the modal after successful update
+        this.deliveryVoucherForm.reset();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error updating category:', error);
+        console.log('Updated Category Data:', updatedCategory);
+        // alert('An error occurred while updating the item type .');
+        this.toast.error('An error occurred while updating the item type .')
+      }
+    );
+    }
+  }
+
+deleteItemType(){
+  const confirmed = window.confirm(
+    'Are you sure you want to delete this record?'
+  );
+  if (confirmed){
+    this.salesService.deleteById(this.selectedCategory.id).subscribe(
+      (response)=>{
+        console.log('Item type deleted successfully:', response);
+        this.toast.success('Item type deleted successfully');
+        this.getAllDeliveryVouchers();
+        this.closeModal(); 
+      },error => {
+        console.error('Error delete item type category:', error);
+        console.log(this.selectedCategory.id);
+        // alert('An error occurred while updating the item type .');
+        this.toast.error('An error occurred while deleting the item type .')
+      }
+    )
+  }else {
+      // User canceled the deletion
+      console.log('Deletion canceled');
+    }
+  
+}
+
+
+
+changePage(newPageNumber: number): void {
+  this.pageNumber = newPageNumber;
+  console.log(this.pageNumber)
+  this.getAllDeliveryVouchers();
+}
 
 
 }

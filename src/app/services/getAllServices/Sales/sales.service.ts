@@ -103,6 +103,39 @@ export class SalesService {
       'Content-Type': 'application/json',
     });
     console.log(data)
-    return this.http.post('https://lawersys-001-site1.etempurl.com/api/SalesInvoice', data, { headers });
+    return this.http.post(`${this.apiUrl}SalesInvoice`, data, { headers });
+  }
+
+  // Update And Delete Delivery Notes
+  update(id: number, updatedCategory: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || ''  // Set tenantId header if available
+    });
+  
+    const formData = new FormData();
+    formData.append('clientId', updatedCategory.clientId || '');
+    formData.append('representativeId', updatedCategory.representativeId || '');
+    formData.append('teamId', updatedCategory.teamId || '');
+    formData.append('code', updatedCategory.code || '');
+    formData.append('purchaseOrderNumber', updatedCategory.purchaseOrderNumber || '');
+    formData.append('costCenterId', updatedCategory.costCenterId || '');
+    formData.append('warehouseId', updatedCategory.warehouseId || '');
+    (updatedCategory.locationLinkIds || []).forEach((id: string) => {
+      formData.append('locationLinkIds', id);
+    });  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}DeliveryNotes/Update/${id}`, formData, { headers });
+  }
+  
+  deleteById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}DeliveryNotes/${id}`,{headers});
   }
 }

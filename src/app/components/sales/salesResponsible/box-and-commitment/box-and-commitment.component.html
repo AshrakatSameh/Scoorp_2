@@ -48,10 +48,17 @@
                                     <i class="fa-solid fa-print"></i>
                                     طباعه
                                 </button>
-                                <button type="button" class="btn ms-3 my-button">
-                                    <i class="fa-solid fa-gear"></i>
-                                    الاجراءات
-                                </button>
+                                <div class="dropdown" [class.show]="isDropdownOpen">
+                                    <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                                        <i class="fa-solid fa-gear"></i> الاجراءات
+                                    </button>
+
+                                    <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                                        <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                                        <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                                        <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -114,7 +121,7 @@
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr class="firstcol">
-                                          
+
                                             <th> <i class="fa-solid fa-arrow-right-arrow-left"></i>
                                             </th>
                                             <th>كود العهده</th>
@@ -122,27 +129,67 @@
                                             <th>تاريخ الإنشاء</th>
                                             <th>اسم العهده باللغة المحلية</th>
                                             <th>اسم العهده</th>
+                                            <th>المسلسل</th>
                                             <th class="firstcolright">
                                                 <input type="checkbox" class="large-checkbox" />
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let item of convenantBoxes">
-                                            
+                                        <tr *ngFor="let item of convenantAndBox, let i =index">
+
                                             <td> </td>
                                             <td>{{item.code}}</td>
                                             <td>San Francisco</td>
                                             <td>Chief Operating Officer (COO)</td>
                                             <td>{{item.covenantBoxName}}</td>
                                             <td>{{item.covenantBoxName}}</td>
-                                            <td> <input type="checkbox" class="large-checkbox" />
+                                            <td>{{ i+1 }} </td>
+                                            <td> <input type="checkbox" (change)="onCheckboxChange(item)"
+                                                    class="large-checkbox" />
                                             </td>
 
                                         </tr>
-                                      
+
                                     </tbody>
                                 </table>
+
+                                <!-- paging -->
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-end">
+                                        <!-- Previous Button -->
+                                        <li class="page-item" [class.disabled]="pageNumber === 1">
+                                            <a class="page-link" href="#" (click)="changePage(pageNumber - 1)"
+                                                tabindex="-1"
+                                                [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                                        </li>
+
+                                        <!-- Page Numbers -->
+                                        <li class="page-item" [class.active]="pageNumber === 1">
+                                            <a class="page-link" (click)="changePage(1)">1</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 2">
+                                            <a class="page-link" (click)="changePage(2)">2</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 3">
+                                            <a class="page-link" (click)="changePage(3)">3</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 4">
+                                            <a class="page-link" (click)="changePage(4)">4</a>
+                                        </li>
+                                        <li class="page-item" [class.active]="pageNumber === 5">
+                                            <a class="page-link" (click)="changePage(5)">5</a>
+                                        </li>
+
+                                        <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                                        <li class="page-item"><a class="page-link">...</a></li>
+
+                                        <!-- Next Button -->
+                                        <li class="page-item">
+                                            <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
 
@@ -161,7 +208,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-end flex-row-reverse" id="staticBackdropLabel">
-                    اضافه فترة السداد
+                    اضافه عهده/ صندوق
                 </h5>
             </div>
             <div class="modal-body">
@@ -172,11 +219,11 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="field4 text-end"> اسم العهده</label>
-                                    <input type="text" id="covenantBoxName" formControlName="covenantBoxName" name="covenantBoxName"  class="form-control"
-                                        placeholder="اسم العهده" />
+                                    <input type="text" id="covenantBoxName" formControlName="covenantBoxName"
+                                        name="covenantBoxName" class="form-control" placeholder="اسم العهده" />
                                 </div>
                             </div>
-                       
+
                         </div>
 
                         <!-- <div class="row">
@@ -222,33 +269,113 @@
                                 </div>
                             </div>
                         </div>
-                          <div class="row mb-3">
+                        <div class="row mb-3">
                             <div class="col-md-12 ">
-                              <label for="Textarea1">وصف العهده</label>
-                              <textarea class="form-control" name="description" formControlName="description" id="description" rows="3"></textarea>
+                                <label for="Textarea1">وصف العهده</label>
+                                <textarea class="form-control" name="description" formControlName="description"
+                                    id="description" rows="3"></textarea>
                             </div>
-                          </div>
+                        </div>
 
-                           <!-- ألمرفقات -->
-                           <div class="container mt-5">
+                        <!-- ألمرفقات -->
+                        <div class="container mt-5">
                             <h5 class="mb-3">المرفقات</h5>
                             <button class="btn btn-link text-muted p-1"><i class="fa fa-microphone"></i></button>
-            
+
                             <button class="btn btn-link text-muted p-1"><i class="fa fa-paperclip"></i></button>
-            
+
                             <div class="custom-file-upload">
-                              <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                              <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
-                              <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
+                                <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
                             </div>
-                          </div>
-                    
-                        
-              
-                          <!-- show table button 1 -->
-                          
+                        </div>
+
+
+
+                        <!-- show table button 1 -->
+
                         <div class="col-md-6 mx-auto ">
-                            <button type="submit" class="btn my-button3" >
+                            <button type="submit" class="btn my-button3">
+                                اضافه
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <button type="button" class="btn closebutton " data-bs-dismiss="modal">
+                                الغاء
+                            </button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;"
+    *ngIf="isModalOpen">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-end flex-row-reverse" id="staticBackdropLabel">
+                    اضافه فترة السداد
+                </h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="convBoxForm" (ngSubmit)="updateCategory()">
+                    <div class="container">
+                        <!-- Row with two fields -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="field4 text-end"> اسم العهده</label>
+                                    <input type="text" id="covenantBoxName" formControlName="covenantBoxName"
+                                        name="covenantBoxName" class="form-control" placeholder="اسم العهده" />
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="field4 text-end">كود العهده</label>
+                                    <input type="text" id="code" formControlName="code" name="code" class="form-control"
+                                        placeholder="كود العهده" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12 ">
+                                <label for="Textarea1">وصف العهده</label>
+                                <textarea class="form-control" name="description" formControlName="description"
+                                    id="description" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- ألمرفقات -->
+                        <div class="container mt-5">
+                            <h5 class="mb-3">المرفقات</h5>
+                            <button class="btn btn-link text-muted p-1"><i class="fa fa-microphone"></i></button>
+
+                            <button class="btn btn-link text-muted p-1"><i class="fa fa-paperclip"></i></button>
+
+                            <div class="custom-file-upload">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
+                                <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
+                            </div>
+                        </div>
+
+
+
+                        <!-- show table button 1 -->
+
+                        <div class="col-md-6 mx-auto ">
+                            <button type="submit" class="btn my-button3">
                                 اضافه
                                 <i class="fa-solid fa-plus"></i>
                             </button>

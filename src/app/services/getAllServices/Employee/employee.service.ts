@@ -86,6 +86,15 @@ export class EmployeeService {
     formData.append('startDate', updatedCategory.startDate || '');
   
     // API call with PUT method using the FormData and headers
-    return this.http.put(`${this.apiUrl}StoresSection/item-type/${id}`, formData, { headers });
+    return this.http.put(`${this.apiUrl}Employees/UpdateEmployee/${id}`, formData, { headers });
+  }
+
+  deleteEmployeeById(id: number): Observable<void> {
+    const tenantId = localStorage.getItem('tenant'); 
+    const headers = new HttpHeaders({
+      tenant: tenantId || '',
+      // 'Content-Type': 'application/json',
+    });
+    return this.http.delete<void>(`${this.apiUrl}Employees/${id}`,{headers});
   }
 }

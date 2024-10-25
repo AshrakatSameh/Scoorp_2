@@ -186,6 +186,9 @@ updateCategory() {
       }
     );
     }
+    else{
+      console.log(this.contactForm)
+    }
   }
 
 deleteItemType(){

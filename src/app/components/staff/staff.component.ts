@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { DepartmentService } from 'src/app/services/getAllServices/Department/department.service';
 import { EmployeeService } from 'src/app/services/getAllServices/Employee/employee.service';
 import { ManagerService } from 'src/app/services/getAllServices/Managers/manager.service';
@@ -38,11 +39,11 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
   // for Update
   selectedCategory: any = null;
   isModalOpen = false;
-
+  storesSec:any[] =[];
 
   constructor(private employeeService: EmployeeService, private fb: FormBuilder,
     private departmentService: DepartmentService, private supervisorService: SupervisorService,
-    private managerService: ManagerService, private http:HttpClient
+    private managerService: ManagerService, private http:HttpClient, private toast: ToastrService
   ) {
 
     this.employeeForm = this.fb.group({
@@ -73,6 +74,7 @@ toggleDropdown() {
 closeDropdown() {
   this.isDropdownOpen = false;
 }
+
 
   getAllEmployees() {
     this.employeeService.getAllEmployees(this.pageNumber, this.pageSize)
@@ -163,59 +165,84 @@ closeDropdown() {
   }
 
   // Update
-  // onCheckboxChange(category: any) {
-  //   this.selectedCategory = category;  // Store the selected category data
-  // }
-  // openModalForSelected() {
-  //   if (this.selectedCategory) {
-  //     this.employeeForm.patchValue({
-  //       name: this.selectedCategory.name,
-  //       localName: this.selectedCategory.localName,
-  //       jobTitle: this.selectedCategory.jobTitle,
-  //       departmentSupervisorId: this.selectedCategory.departmentSupervisorId,
-  //       departmentManagerId: this.selectedCategory.departmentManagerId,
-  //       departmentId: this.selectedCategory.departmentId,
-  //       startDate: this.selectedCategory.startDate,
-  //       endDate: this.selectedCategory.endDate,
-  //     });
+  onCheckboxChange(category: any) {
+    this.selectedCategory = category;  // Store the selected category data
+  }
+  openModalForSelected() {
+    if (this.selectedCategory) {
+      this.employeeForm.patchValue({
+        name: this.selectedCategory.name,
+        localName: this.selectedCategory.localName,
+        jobTitle: this.selectedCategory.jobTitle,
+        departmentSupervisorId: this.selectedCategory.departmentSupervisorId,
+        departmentManagerId: this.selectedCategory.departmentManagerId,
+        departmentId: this.selectedCategory.departmentId,
+        startDate: this.selectedCategory.startDate,
+        endDate: this.selectedCategory.endDate,
+      });
   
-  //     this.isModalOpen = true;
-  //   } else {
-  //     alert('Please select a category to update.');
-  //   }
-  // }
+      this.isModalOpen = true;
+    } else {
+      alert('Please select a category to update.');
+    }
+  }
   
-  // closeModal() {
-  //   this.isModalOpen = false;
-  // }
+  closeModal() {
+    this.isModalOpen = false;
+  }
   
-  // updateCategory() {
-  //   if (this.employeeForm.valid) {
-  //     const updatedCategory = { ...this.employeeForm.value, id: this.selectedCategory.id };
+  updateCategory() {
+    if (this.employeeForm.valid) {
+      const updatedCategory = { ...this.employeeForm.value, id: this.selectedCategory.id };
   
-  //     // Call the update service method using the category's id
-  //     this.itemTypeServices.updateItemType(this.selectedCategory.id, updatedCategory).subscribe(
-  //       (response) => {
-  //         console.log('Category updated successfully:', response);
-  //         this.toast.success('Item type updated successfully')
-  //         // Update the local categories array if necessary
-  //         const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
-  //         if (index !== -1) {
-  //           this.storesSec[index] = updatedCategory;
-  //         }
+      // Call the update service method using the category's id
+      this.employeeService.updateEmployee(this.selectedCategory.id, updatedCategory).subscribe(
+        (response) => {
+          console.log('Employee updated successfully:', response);
+          this.toast.success('Employee updated successfully')
+          // Update the local categories array if necessary
+          const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+          if (index !== -1) {
+            this.storesSec[index] = updatedCategory;
+          }
   
-  //         this.getAllItemTypes();
-  //         this.closeModal();  // Close the modal after successful update
-  //       },
-  //       (error: HttpErrorResponse) => {
-  //         console.error('Error updating category:', error);
-  //         console.log('Updated Category Data:', updatedCategory);
-  //         // alert('An error occurred while updating the item type .');
-  //         this.toast.error('An error occurred while updating the item type .')
-  //       }
-  //     );
-  //     }
-  //   }
+          this.getAllEmployees();
+          this.closeModal();  // Close the modal after successful update
+        },
+        (error: HttpErrorResponse) => {
+          console.error('Error updating category:', error);
+          console.log('Updated Category Data:', updatedCategory);
+          // alert('An error occurred while updating the item type .');
+          this.toast.error('An error occurred while updating the item type .')
+        }
+      );
+      }
+    }
+
+    deleteItemType(){
+      const confirmed = window.confirm(
+        'Are you sure you want to delete this record?'
+      );
+      if (confirmed){
+        this.employeeService.deleteEmployeeById(this.selectedCategory.id).subscribe(
+          (response)=>{
+            console.log('Employee deleted successfully:', response);
+            this.toast.success('Employee deleted successfully');
+            this.getAllEmployees();
+            this.closeModal(); 
+          },error => {
+            console.error('Error delete employeecategory:', error);
+            console.log(this.selectedCategory.id);
+            // alert('An error occurred while updating the employee.');
+            this.toast.error('An error occurred while deleting the employee.')
+          }
+        )
+      }else {
+          // User canceled the deletion
+          console.log('Deletion canceled');
+        }
+      
+    }
   
   changePage(newPageNumber: number): void {
     this.pageNumber = newPageNumber;

@@ -70,9 +70,9 @@
                     </button>
                     
                     <div class="dropdown-menu" [class.show]="isDropdownOpen">
-                      <!-- <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a> -->
-                      <a class="dropdown-item" href="#">عرض</a>
-                      <!-- <a class="dropdown-item" (click)="deleteItemType()">حذف</a> -->
+                      <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                      <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                      <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
                     </div>
                   </div>
                 </div>
@@ -165,7 +165,7 @@
                         <td>{{item.name}}</td>
                         <td>{{i+1}}</td>
                         <td class="firstcolright">
-                          <input type="checkbox" class="large-checkbox" />
+                          <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
                         </td>
                       </tr>
                    
@@ -725,4 +725,508 @@
       </div>
     </div>
   </div>
+</div>
+
+
+<!-- Update -->
+<div
+class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
+
+>
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5
+        class="modal-title text-end flex-row-reverse"
+        id="staticBackdropLabel"
+      >
+        تعديل موظف
+      </h5>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="employeeForm" (ngSubmit)="updateCategory()">
+        <div class="container">
+          <!-- Row with two fields -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field1 text-end"> اسم الموظف</label>
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  class="form-control custom-input"
+                  placeholder="اسم الموظف"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field2 text-end"
+                  >اسم الموظف باللغه المحليه
+                </label>
+                <input
+                  type="text"
+                  id="localName"
+                  formControlName="localName"
+                  class="form-control custom-input"
+                  placeholder="Employee"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="field1 text-end"> المهنه / الوظيفه </label>
+                <input
+                  type="text"
+                  id="jobTitle"
+                  formControlName="jobTitle"
+                  class="form-control custom-input"
+                  placeholder=" قم بكتابه المهنه / الوظيفه"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Row with three fields -->
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="location" class="form-label">مشرف القسم</label>
+                <div class="input-group" >
+                    <select class="form-select form-control" formControlName="departmentSupervisorId" >
+                        <option value="" disabled selected>قم باختيار مشرف القسم</option>
+                        <option *ngFor="let item of supervisors" [value]="item.id"
+                        >{{ item.userName }}</option>
+                       
+                    </select>
+                </div>
+            </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label  class="form-label">مدير القسم</label>
+                <div class="input-group" >
+                    <select class="form-select form-control" formControlName="departmentManagerId" >
+                        <option value="" disabled selected>قم باختيار مدير القسم</option>
+                        <option *ngFor="let item of managers" [value]="item.id"
+                        >{{ item.userName }}</option>
+                       
+                    </select>
+                </div>
+            </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">القسم</label>
+                <div class="input-group" >
+                    <select class="form-select form-control" formControlName="departmentId" >
+                        <option value="" disabled selected>قم باختيار القسم</option>
+                        <option *ngFor="let item of departments" [value]="item.id"
+                        >{{ item.name }}</option>
+                       
+                    </select>
+                </div>
+            </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field1 text-end"> تاريخ البدء</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  formControlName="startDate"
+                  class="form-control custom-input"
+                  placeholder="قم باختيار التاريخ"
+                />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="field2 text-end"
+                  >تاريح الانتهاء
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  formControlName="endDate"
+                  class="form-control custom-input"
+                  placeholder="قم باختيار التاريخ"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="scroll-buttons-container">
+            <button
+              *ngFor="let btn of buttons; let i = index"
+              [id]="'button-' + i"
+              class="scroll-button"
+              type="button"
+              (click)="showContent(i)"
+            >
+              {{ btn }}
+            </button>
+          </div>
+
+          <!-- show personal information  -->
+
+          <div *ngIf="selectedButton !== null">
+            <div *ngIf="selectedButton === 0">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field1 text-end"> رقم الجواز</label>
+                    <input
+                      type="text"
+                      id="field1"
+
+                      class="form-control custom-input"
+                      placeholder=" قم بكتابه رقم الجواز"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field2 text-end">تاريخ انتهاء الجواز</label>
+                    <input
+                    type="date"
+                    id="field2"
+
+                    class="form-control custom-input"
+                    placeholder="قم باختيار التاريخ"
+                  />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field1 text-end"> رقم رخصه السواقه</label>
+                    <input
+                      type="text"
+                      id="field1"
+
+                      class="form-control custom-input"
+                      placeholder=" قم بكتابه رقم رخصه السواقه"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field2 text-end">
+                      تاريخ انتهاء رخصه السواقه</label
+                    >
+                    <input
+                    type="date"
+                    id="field2"
+
+                    class="form-control custom-input"
+                    placeholder="قم باختيار التاريخ"
+                  />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field1 text-end"> الجنسيه</label>
+                    <input
+                      type="text"
+                      id="field1"
+                      
+                      class="form-control custom-input"
+                      placeholder=" قم باختيار الجنسيه"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field2 text-end">النوع</label>
+                    <input
+                      type="text"
+                      id="field2"
+                      class="form-control custom-input"
+                      placeholder="ذكر ام انثي"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field1 text-end"> رقم الحدود</label>
+                    <input
+                      type="text"
+                      id="field1"
+                      class="form-control custom-input"
+                      placeholder=" قم بكتابه رقم الحدود"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field2 text-end"> موقع سكن الموظف </label>
+                    <input
+                      type="text"
+                      id="field2"
+                      class="form-control custom-input"
+                      placeholder="قم بكتابه موقع سكن الموظف"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- show  Notifications -->
+
+          <div *ngIf="selectedButton !== null">
+            <div *ngIf="selectedButton === 4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+
+                    <table
+                    id="basic-datatables"
+                    class="display table table-striped table-hover"
+                  >
+                    <thead>
+                      <tr class="firstcol">
+
+                        
+                        <th class="firstcolright">
+                          اسم الاشعار
+                        </th>
+
+                        <th> تاريخ الاشعار</th>
+                        <th class="firstcolleft">حاله الاشعار </th>
+
+                      
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Fiona Green</td>
+                        <td>Chief Operating Officer (COO)</td>
+                        <td>San Francisco</td>
+                     
+                      </tr>
+                      <tr>
+                        <td>Shou Itou</td>
+                        <td>Regional Marketing</td>
+                        <td>Tokyo</td>
+                        
+                      </tr>
+                    </tbody>
+                  </table>
+
+
+                  </div>
+                </div>
+          
+              </div>
+
+            
+
+            
+
+              
+            </div>
+          </div>
+
+
+          <!-- show sales  -->
+
+          <div *ngIf="selectedButton !== null">
+            <div *ngIf="selectedButton === 5">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+
+                    <h5>ملخص التحصيل</h5>
+                    <table
+                    id="basic-datatables"
+                    class="display table table-striped table-hover"
+                  >
+                    <thead>
+                      <tr class="firstcol">
+
+                        
+                        <th class="firstcolright">
+                          رقم التحصيل
+                        </th>
+
+                        <th> تاريخ التحصيل</th>
+                        <th class="firstcolleft">قيمه التحصيل </th>
+
+                      
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Fiona Green</td>
+                        <td>Chief Operating Officer (COO)</td>
+                        <td>San Francisco</td>
+                     
+                      </tr>
+                      <tr>
+                        <td>Shou Itou</td>
+                        <td>Regional Marketing</td>
+                        <td>Tokyo</td>
+                        
+                      </tr>
+                    </tbody>
+                  </table>
+
+
+
+                  <h5>ملخص طلبات البيع</h5>
+
+
+                  <table
+                  id="basic-datatables"
+                  class="display table table-striped table-hover"
+                >
+                  <thead>
+                    <tr class="firstcol">
+
+                      
+                      <th class="firstcolright">
+                        رقم طلب البيع
+                      </th>
+
+                      <th> تاريخ طلب البيع</th>
+                      <th class="firstcolleft">قيمه طلب البيع </th>
+
+                    
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Fiona Green</td>
+                      <td>Chief Operating Officer (COO)</td>
+                      <td>San Francisco</td>
+                   
+                    </tr>
+                    <tr>
+                      <td>Shou Itou</td>
+                      <td>Regional Marketing</td>
+                      <td>Tokyo</td>
+                      
+                    </tr>
+                  </tbody>
+                </table>
+
+
+                <h5>ملخص فواتير البيع</h5>
+
+
+                <table
+                id="basic-datatables"
+                class="display table table-striped table-hover"
+              >
+                <thead>
+                  <tr class="firstcol">
+
+                    
+                    <th class="firstcolright">
+                       فاتورة البيع
+                    </th>
+
+                    <th> تاريخ فاتورة البيع</th>
+                    <th class="firstcolleft">قيمه فاتورة البيع </th>
+
+                  
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Fiona Green</td>
+                    <td>Chief Operating Officer (COO)</td>
+                    <td>San Francisco</td>
+                 
+                  </tr>
+                  <tr>
+                    <td>Shou Itou</td>
+                    <td>Regional Marketing</td>
+                    <td>Tokyo</td>
+                    
+                  </tr>
+                </tbody>
+              </table>
+
+
+
+                  </div>
+                </div>
+          
+              </div>
+
+            
+
+            
+
+              
+            </div>
+          </div>
+
+
+          <!-- show bank account -->
+          
+
+
+          <div *ngIf="selectedButton !== null">
+            <div *ngIf="selectedButton === 9">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="field1 text-end">  الحساب البنكي</label>
+                    <input
+                      type="text"
+                      id="field1"
+                      class="form-control custom-input"
+                      placeholder=" قم بكتابه الحساب البنكي"
+                    />
+                  </div>
+                </div>
+               
+              </div>
+
+              
+
+           
+            
+            </div>
+          </div>
+
+
+
+
+
+      
+          <div class="col-md-6 mx-auto ">
+            <button type="submit" class="btn my-button3">
+              اضافه
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button type="button" class="btn closebutton " data-bs-dismiss="modal">
+              الغاء
+            </button></div>
+        
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </div>

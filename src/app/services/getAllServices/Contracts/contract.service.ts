@@ -81,4 +81,36 @@ export class ContractService {
 
       return this.http.post(this.api, formData, { headers });
     }
+
+    updateItem(id: number, updatedCategory: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      
+      // Create headers with tenant info
+      const headers = new HttpHeaders({
+        tenant: tenantId || ''  // Set tenantId header if available
+      });
+      // Prepare FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('name', updatedCategory.name || '');
+      formData.append('localName', updatedCategory.localName || '');
+      formData.append('clientId', updatedCategory.clientId || '');
+      formData.append('assignedToId', updatedCategory.assignedToId || '');
+      formData.append('teamId', updatedCategory.teamId || '');
+      formData.append('userIds', updatedCategory.userIds || '');
+      formData.append('startDate', updatedCategory.startDate || '');
+      formData.append('endDate', updatedCategory.endDate || '');
+      formData.append('code', updatedCategory.code || '');
+    
+      // API call with PUT method using the FormData and headers
+      return this.http.put(`${this.apiUrl}Contract/UpdateContract/${id}`, formData, { headers });
+    }
+    
+    deleteItemById(id: number): Observable<void> {
+      const tenantId = localStorage.getItem('tenant'); 
+      const headers = new HttpHeaders({
+        tenant: tenantId || '',
+        // 'Content-Type': 'application/json',
+      });
+      return this.http.delete<void>(`${this.apiUrl}Contract/${id}`,{headers});
+    }
 }

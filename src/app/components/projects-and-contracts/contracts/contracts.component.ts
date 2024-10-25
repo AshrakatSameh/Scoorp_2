@@ -8,6 +8,7 @@ import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.servic
 import { UserService } from 'src/app/services/getAllServices/Users/user.service';
 import { environment } from 'src/environments/environment.development';
 import * as L from 'leaflet';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -42,9 +43,13 @@ export class ContractsComponent implements OnInit {
   map: L.Map | undefined;
   locationLinks: string[] = []; // Initialize an array to hold location links
 
+  storesSec:any[] =[];
+  isModalOpen = false;
+  selectedCategory: any = null;
+
   constructor(private cnotractService: ContractService, private fb: FormBuilder, private http: HttpClient,
     private clientService: ClientsService, private userService: UserService, private teamService: TeamsService
-    , private locarionService: LocationService
+    , private locarionService: LocationService, private toast:ToastrService
   ) {
 
 
@@ -59,6 +64,7 @@ export class ContractsComponent implements OnInit {
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
       code: ['', Validators.required],
+      locationLinks: fb.array([]),
 
     });
   }
@@ -77,21 +83,6 @@ export class ContractsComponent implements OnInit {
   toggleCode(): void {
     this.isCodeVisible = !this.isCodeVisible;  // Toggle the visibility
   }
-
-  // initializeMap(): void {
-  //   this.map = L.map('map').setView([51.505, -0.09], 13); // Set initial view
-
-  //   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  //     maxZoom: 19,
-  //     attribution: '© OpenStreetMap'
-  //   }).addTo(this.map);
-
-  //   this.map.on('click', (event: L.LeafletMouseEvent) => {
-  //     this.latitude = event.latlng.lat;
-  //     this.longitude = event.latlng.lng;
-  //     console.log('Latitude:', this.latitude, 'Longitude:', this.longitude);
-  //   });
-  // }
 
   getcontracts() {
     this.cnotractService.getPagingContracts(this.pageNumber, this.pageSize)
@@ -158,43 +149,14 @@ export class ContractsComponent implements OnInit {
     this.http.post(this.apiUrl+'Contract/CreateContract', formData, { headers })
       .subscribe(response => {
         console.log('Response:', response);
-        alert('submit successfully');
+        // alert('submit successfully');
+        this.toast.success('submit successfully');
       }, error => {
         console.error('Error:', error);
+        this.toast.error('error:' , error)
       });
   }
-  // onSubmit(form: any) {
-  //   if (form.valid) {
-  //     const formData = {
-  //       name: form.value.name,
-  //       localName: form.value.localName,
-  //       code: form.value.code,
-  //       startDate: form.value.startDate,
-  //       endDate: form.value.endDate,
-  //       clientId: form.value.clientId,
-  //       assignedToId: form.value.assignedToId,
-  //       teamId: form.value.teamId,
-  //       userIds: form.value.userIds,
 
-  //       locationLinks: this.locationLinks, // Include locationLinks here
-
-  //       contractTypeId: form.value.contractTypeId,
-  //       costCenterId: form.value.costCenterId,
-  //       description: form.value.description,
-  //       autoRenewal: form.value.autoRenewal,
-  //       contacts: []
-
-  //     };
-
-  //     this.cnotractService.createData(formData).subscribe(response => {
-  //       console.log('Data submitted successfully', response);
-  //       alert('Data submitted successfully')
-  //     }, error => {
-  //       console.error('Error occurred while submitting data', error);
-  //     });
-  //   }
-
-  // }
 
   onSubmitLocation(form: any) {
     if (form.valid) {
@@ -280,6 +242,99 @@ export class ContractsComponent implements OnInit {
   showContent(index: number): void {
     this.selectedButton = index;
   }
+
+  // Update contract
+  isDropdownOpen2: boolean = false;
+
+toggleDropdown() {
+  this.isDropdownOpen2 = !this.isDropdownOpen2;
+}
+
+closeDropdown() {
+  this.isDropdownOpen2 = false;
+}
+
+onCheckboxChange(category: any) {
+  this.selectedCategory = category;  // Store the selected category data
+}
+
+openModalForSelected() {
+  if (this.selectedCategory) {
+    this.contractForm.patchValue({
+      name: this.selectedCategory.name,
+      localName: this.selectedCategory.localName,
+      clientId: this.selectedCategory.clientId,
+      assignedToId: this.selectedCategory.assignedToId,
+      teamId: this.selectedCategory.teamId,
+      userIds: this.selectedCategory.userIds,
+      startDate: this.selectedCategory.startDate,
+      endDate: this.selectedCategory.endDate,
+      code: this.selectedCategory.code,
+    });
+
+    this.isModalOpen = true;
+  } else {
+    alert('Please select a category to update.');
+  }
+}
+
+closeModal() {
+  this.isModalOpen = false;
+}
+
+updateCategory() {
+  if (this.contractForm.valid) {
+    const updatedCategory = { ...this.contractForm.value, id: this.selectedCategory.id };
+
+    // Call the update service method using the category's id
+    this.cnotractService.updateItem(this.selectedCategory.id, updatedCategory).subscribe(
+      (response) => {
+        console.log('Contract updated successfully:', response);
+        this.toast.success('Contract updated successfully')
+        // Update the local categories array if necessary
+        const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+        if (index !== -1) {
+          this.storesSec[index] = updatedCategory;
+        }
+
+        this.getcontracts();
+        this.closeModal();  // Close the modal after successful update
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error updating contract:', error);
+        console.log('Updated contract Data:', updatedCategory);
+        // alert('An error occurred while updating the item type .');
+        this.toast.error('An error occurred while updating the contract .')
+      }
+    );
+    }
+  }
+
+deleteItemType(){
+  const confirmed = window.confirm(
+    'Are you sure you want to delete this record?'
+  );
+  if (confirmed){
+    this.cnotractService.deleteItemById(this.selectedCategory.id).subscribe(
+      (response)=>{
+        console.log('contract deleted successfully:', response);
+        this.toast.success('contract deleted successfully');
+        this.getcontracts();
+        this.closeModal(); 
+      },error => {
+        console.error('Error delete contract category:', error);
+        console.log(this.selectedCategory.id);
+        // alert('An error occurred while updating the contract .');
+        this.toast.error('An error occurred while deleting the contract .')
+      }
+    )
+  }else {
+      // User canceled the deletion
+      console.log('Deletion canceled');
+    }
+  
+}
+
 
   changePage(newPageNumber: number): void {
     this.pageNumber = newPageNumber;
