@@ -46,6 +46,7 @@ import { StorehouseComponent } from './components/stock/storehouse/storehouse/st
 import { StorageComponent } from './components/stock/storehouse/storage/storage.component';
 import { StorehouseTransportationComponent } from './components/stock/storehouse/storehouse-transportation/storehouse-transportation.component';
 import { authGuard } from './guard/auth.guard';
+import { CateogriesComponent } from './components/stock/categories/cateogries/cateogries.component';
 import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
 
 const routes: Routes = [
@@ -86,6 +87,7 @@ const routes: Routes = [
   {path:'groupCategory',component:CategoryGroupComponent,canActivate:[authGuard]},
   {path:'itemType',component:ItemTypeComponent,canActivate:[authGuard]},
   {path:'typeCategory',component:TypeCategoryComponent,canActivate:[authGuard]},
+  {path:'categories' , component:CateogriesComponent,canActivate:[authGuard]},
   {path:'storehouseCategory',component:StorehouseCategoryComponent,canActivate:[authGuard]},
   {path:'storehouse',component:StorehouseComponent,canActivate:[authGuard]},
   {path:'storage',component:StorageComponent,canActivate:[authGuard]},

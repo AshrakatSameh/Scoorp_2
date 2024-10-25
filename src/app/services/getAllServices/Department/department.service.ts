@@ -27,4 +27,32 @@ export class DepartmentService {
     return this.http.get(`${this.apiUrl}Departments/GetAllDepartments`, { headers });
 
   }
+
+
+  createDep(tagData: any): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    console.log(tagData)
+    return this.http.post(`${this.apiUrl}Departments/CreateDepartment?`, tagData, { headers });
+  }
+
+
+  updateDepartment(departmentId: number, formData: FormData): Observable<any> {
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant') || ''  // Add your tenant value here
+    });
+    return this.http.put(`${this.apiUrl}Departments/UpdateDepartment/${departmentId}`, formData, { headers });
+  }
+
+  deleteDepartment(departmentId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant') || ''  // Add your tenant value here
+    });
+    return this.http.delete(`${this.apiUrl}Departments/${departmentId}`, { headers });
+  }
+
+
 }

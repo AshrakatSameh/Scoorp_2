@@ -59,10 +59,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CateogriesComponent } from './components/stock/categories/cateogries/cateogries.component';
 import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
 import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { ToastrModule } from 'ngx-toastr';
-import { NgToastModule } from 'ng-angular-popup';
 
 @NgModule({
   declarations: [
@@ -112,6 +112,7 @@ import { NgToastModule } from 'ng-angular-popup';
     StorehouseTransportationComponent,
     DocumentOperationsComponent,
     LoginComponent,
+    CateogriesComponent,
     RepresentativeComponent,
     
   ],
