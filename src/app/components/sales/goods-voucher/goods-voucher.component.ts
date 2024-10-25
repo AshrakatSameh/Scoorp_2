@@ -321,8 +321,8 @@ updateCategory() {
     // Call the update service method using the category's id
     this.salesService.update(this.selectedCategory.id, updatedCategory).subscribe(
       (response) => {
-        console.log('Category updated successfully:', response);
-        this.toast.success('Item type updated successfully')
+        console.log('Delivery note updated successfully:', response);
+        this.toast.success('Delivery note updated successfully')
         // Update the local categories array if necessary
         const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
         if (index !== -1) {
@@ -334,10 +334,10 @@ updateCategory() {
         this.deliveryVoucherForm.reset();
       },
       (error: HttpErrorResponse) => {
-        console.error('Error updating category:', error);
-        console.log('Updated Category Data:', updatedCategory);
+        console.error('Error updating delivery note:', error);
+        console.log('Updated delivery note Data:', updatedCategory);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while updating the item type .')
+        this.toast.error('An error occurred while updating the delivery note .')
       }
     );
     }
