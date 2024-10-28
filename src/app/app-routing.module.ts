@@ -98,6 +98,7 @@ const routes: Routes = [
   {path:'workServicesCategory', component:WorkServecesCategoryComponent,canActivate:[authGuard]},
   {path:'documentOperations' , component:DocumentOperationsComponent,canActivate:[authGuard]},
   {path:'representatives' , component: RepresentativeComponent},
+  {path:'', component:LoginComponent},
   {path:'**', component:LoginComponent}
 ];
 

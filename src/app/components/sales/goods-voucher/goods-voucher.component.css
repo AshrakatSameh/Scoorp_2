@@ -113,7 +113,7 @@
   }
   
   /* font */
-  h2,
+  h2,h1,h5,h6,
   h3,
 a,
 h4,
@@ -121,8 +121,8 @@ p,
 label,
 input,
 button,
- span {
-    font-family: "Cairo", sans-serif;
+ span, select, form {
+    font-family: "Cairo", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -309,4 +309,9 @@ tr, th, td {
 /* select arrow */
 .form-select{
   background-position: left;
+}
+
+.cutom-table .table>tbody>tr>td,
+ .table>tbody>tr>th {
+  padding: 16px 7px !important;
 }

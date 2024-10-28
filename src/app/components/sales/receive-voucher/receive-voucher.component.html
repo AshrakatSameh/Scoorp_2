@@ -1,4 +1,3 @@
-<app-sidebar></app-sidebar>
 <div class="main-panel">
     <div class="container">
         <div class="page-inner">
@@ -69,18 +68,21 @@
                                 </select>
                             </div>
 
-                            <button class="btn  my-custom-icone">
-                                <span class="btn-label">
+                            <div class="d-flex align-items-center flex-row-reverse">
+                                <!-- Button with icon -->
+                                <button class="btn my-custom-icone me-2">
+                                  <span class="btn-label">
                                     <i class="fa-solid fa-sliders"></i>
-                                </span>
-
-                            </button>
-
-                            <form class="d-flex position-relative me-2">
-                                <input class="form-control text-end search-input" type="search"
-                                    placeholder="بحث في الكل" aria-label="Search" />
-                                <i class="fs-4 bi-search position-absolute search-icon"></i>
-                            </form>
+                                  </span>
+                                </button>
+                
+                                <!-- Search form -->
+                                <form class="d-flex position-relative">
+                                  <input class="form-control text-end search-input" type="search" placeholder="بحث في الكل"
+                                    aria-label="Search" />
+                                  <i class="fs-4 bi-search position-absolute search-icon"></i>
+                                </form>
+                              </div>
                             <div class="icon-group d-flex align-items-center">
 
                                 <button class="btn  my-custom-icone">

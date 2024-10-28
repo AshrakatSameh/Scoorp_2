@@ -25,7 +25,7 @@ export class UnitComponent {
 
     this.unitService.getAllUnits().subscribe(
      (response) => {
-       this.storesSec = response; // Assign the fetched Warehouses
+       this.storesSec = response.units; // Assign the fetched Warehouses
        console.log('units :', this.storesSec);
      },
      (error) => {

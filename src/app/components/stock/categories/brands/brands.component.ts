@@ -24,7 +24,7 @@ export class BrandsComponent {
 
     this.brandServices.getAllbrands().subscribe(
      (response) => {
-       this.storesSec = response; // Assign the fetched Warehouses
+       this.storesSec = response.brands; // Assign the fetched Warehouses
        console.log('brands :', this.storesSec);
      },
      (error) => {

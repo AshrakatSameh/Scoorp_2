@@ -1,4 +1,3 @@
-<app-sidebar></app-sidebar>
 <div class="main-panel">
     <div class="container">
         <div class="page-inner">
@@ -69,18 +68,25 @@
                                 </select>
                             </div>
 
-                            <button class="btn  my-custom-icone">
+                            <div class="icon-group d-flex align-items-center">
+                              <button class="btn my-custom-icone">
                                 <span class="btn-label">
-                                    <i class="fa-solid fa-sliders"></i>
+                                  <i class="fa-solid fa-table-cells-large"></i>
                                 </span>
-
-                            </button>
-
-                            <form class="d-flex position-relative me-2">
-                                <input class="form-control text-end search-input" type="search"
-                                    placeholder="بحث في الكل" aria-label="Search" />
-                                <i class="fs-4 bi-search position-absolute search-icon"></i>
-                            </form>
+                              </button>
+              
+                              <button class="btn my-custom-icone" style="background-color: #224273; color: #e7e7ea">
+                                <span class="btn-label">
+                                  <i class="fa-solid fa-list-ul"></i>
+                                </span>
+                              </button>
+              
+                              <button class="btn my-custom-icone">
+                                <span class="btn-label">
+                                  <i class="fa-solid fa-bag-shopping my-icone"></i>
+                                </span>
+                              </button>
+                            </div>
                             <div class="icon-group d-flex align-items-center">
 
                                 <button class="btn  my-custom-icone">
@@ -127,20 +133,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                      
+                                        <tr *ngFor="let item of invoices">
                                             <td> </td>
-                                            <td>Fiona Green</td>
-                                            <td>Chief Operating Officer (COO)</td>
-                                            <td>San Francisco</td>
-                                            <td>48</td>
-                                            <td>2010/03/11</td>
-                                            <td> <input type="checkbox" class="large-checkbox" />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td> </td>
-                                            <td>Shou Itou</td>
-                                            <td>Regional Marketing</td>
+                                            <td>{{item.representativeName}}</td>
+                                            <td>{{ item.clientName }}</td>
                                             <td>Tokyo</td>
                                             <td>20</td>
                                             <td>2011/08/14</td>
@@ -172,7 +169,7 @@
                 </h5>
             </div>
             <div class="modal-body">
-                <form>
+                <form [formGroup]="invoiceFrom" (ngSubmit)="onSubmit()">
                     <div class="container">
                         <!-- Row with two fields -->
                         <div class="row">
@@ -202,8 +199,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="field4 text-end"> رقم فاتورة المرتجع</label>
-                                    <input type="text" id="field3" class="form-control"
+                                    <label for="returnInvoiceNumber text-end"> رقم فاتورة المرتجع</label>
+                                    <input formControlName="returnInvoiceNumber" type="text" id="returnInvoiceNumber" class="form-control"
                                         placeholder="رقم فاتورة المرتجع" />
                                 </div>
                             </div>
@@ -211,7 +208,7 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">العميل</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control" id="location">
+                                        <select formControlName="clientId" class="form-select form-control" id="location">
                                             <option selected disabled>قم بإختيار العميل</option>
                                             <option [value]="item.id" *ngFor="let item of clients">{{item.name}}</option>
                                             
@@ -226,7 +223,7 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">المندوب</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control" id="location">
+                                        <select formControlName="representativeId" class="form-select form-control" id="location">
                                             <option selected>قم بإختيار المندوب</option>
                                             <option [value]="item.id" *ngFor="let item of representatives">{{item.userName}}</option>
                                           
@@ -239,7 +236,7 @@
                                 <div class="form-group">
                                     <label  class="form-label">فريق البيع</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control" >
+                                        <select formControlName="teamId" class="form-select form-control" >
                                             <option selected>قم بإختيار العقود</option>
                                             <option [value]="1" *ngFor="let item of teams">{{item.name}}</option>
                                             
@@ -249,8 +246,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="location" class="form-label">رقم مرتجع العميل</label>
-                                    <input type="text" id="field3" class="form-control"
+                                    <label for="clientReturnReference" class="form-label">رقم مرتجع العميل</label>
+                                    <input formControlName="clientReturnReference" type="text" id="clientReturnReference" class="form-control"
                                         placeholder="رقم مرتجع العميل" />
                                 </div>
                             </div>
@@ -268,7 +265,7 @@
                               <div class="form-group">
                                 <label  class="form-label">المشروع</label>
                                 <div class="input-group">
-                                    <select class="form-select form-control" >
+                                    <select formControlName="projectId" class="form-select form-control" >
                                         <option selected>قم بإختيار المشروع</option>
                                         <option [value]="item.id" *ngFor="let item of projects">{{item.name}}</option>
                                         
@@ -284,7 +281,7 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">رقم مرتجع العميل</label>
                                     <div class="input-group">
-                                      <input type="text" id="field7" class="form-control"
+                                      <input disabled type="text" id="field7" class="form-control"
                                     placeholder="قم بكتابه رقم المرتجع" />
                                   </div>
                                 </div>
@@ -293,9 +290,9 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label"> قائمة أسعار العميل</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control" id="location">
+                                        <select formControlName="priceListId" class="form-select form-control">
                                             <option disabled selected>قم بإختيار قائمة أسعار العميل</option>
-                                            <option value="1" *ngFor="let item of priceLists">{{item.name}}</option>
+                                            <option [value]="item.id" *ngFor="let item of priceLists">{{item.name}}</option>
                                           
                                         </select>
                                     </div>
@@ -307,8 +304,11 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">فترة الدفع</label>
                                     <div class="input-group">
-                                      <input type="date" id="field7" class="form-control"
-                                    placeholder="قم بكتابه فترة الدفع" />
+                                      <select formControlName="paymentPeriodId" class="form-select form-control">
+                                          <option disabled selected>قم بإختيار فترة الدفع</option>
+                                          <option [value]="item.id" *ngFor="let item of payPeriods">{{item.name}}</option>
+                                        
+                                      </select>
                                   </div>
                                 </div>
                             </div>
@@ -316,7 +316,7 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label"> نوع الفاتورة</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control" id="location">
+                                        <select disabled class="form-select form-control" id="location">
                                             <option selected>قم بإختيار نوع الفاتورة</option>
                                             <option value="1"> نوع الفاتورة 1</option>
                                             <option value="2"> نوع الفاتورة 2</option>
@@ -331,7 +331,7 @@
                                 <div class="form-group">
                                     <label for="location" class="form-label">مركز التكلفة</label>
                                 <div class="input-group">
-                                    <select class="form-select form-control" id="location">
+                                    <select formControlName="costCenterId" class="form-select form-control" id="location">
                                         <option selected>قم بإختيار مركز التكلفة</option>
                                         <option *ngFor="let item of costCenters" [value]="item.id">{{item.name}}</option>
                                         
@@ -345,7 +345,7 @@
                                     <label for="field7 text-end" class="form-label">السائق 
                                     </label>
                                     <div class="input-group">
-                                        <input type="text" id="field7" class="form-control"
+                                        <input formControlName="driver" type="text" id="field7" class="form-control"
                                       placeholder="قم بكتابه السائق" />
                                     </div>
                               </div>
@@ -362,7 +362,7 @@
               
               
                           <!-- show table button 1 -->
-                          <div *ngIf="selectedButton !== null">
+                          <div *ngIf="selectedButton !== null" dir="ltr">
                             <div *ngIf="selectedButton === 0">
                               <div class="card-body">
                                 <div class="table-responsive">
@@ -545,7 +545,7 @@
               
                           </div>
                         <div class="col-md-6 mx-auto ">
-                            <button type="button" class="btn my-button3">
+                            <button type="submit" class="btn my-button3">
                                 اضافه
                                 <i class="fa-solid fa-plus"></i>
                             </button>

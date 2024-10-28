@@ -109,7 +109,7 @@
   }
   
   /* font */
-  h2,
+  h2,h1,h5,h6,
   h3,
 a,
 h4,
@@ -117,8 +117,8 @@ p,
 label,
 input,
 button,
- span, select {
-    font-family: "Cairo", sans-serif;
+ span, select, form {
+    font-family: "Cairo", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
@@ -141,7 +141,7 @@ tr, th, td {
 
 .scroll-buttons-container {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   overflow-x: auto;
   white-space: nowrap;
   padding: 10px 0;

@@ -1,4 +1,3 @@
-<app-sidebar></app-sidebar>
 <div class="main-panel">
     <div class="container">
         <div class="page-inner">
@@ -76,18 +75,21 @@
                                 </select>
                             </div>
 
-                            <button class="btn  my-custom-icone">
-                                <span class="btn-label">
+                            <div class="d-flex align-items-center flex-row-reverse">
+                                <!-- Button with icon -->
+                                <button class="btn my-custom-icone me-2">
+                                  <span class="btn-label">
                                     <i class="fa-solid fa-sliders"></i>
-                                </span>
-
-                            </button>
-
-                            <form class="d-flex position-relative me-2">
-                                <input class="form-control text-end search-input" type="search"
-                                    placeholder="بحث في الكل" aria-label="Search" />
-                                <i class="fs-4 bi-search position-absolute search-icon"></i>
-                            </form>
+                                  </span>
+                                </button>
+                
+                                <!-- Search form -->
+                                <form class="d-flex position-relative">
+                                  <input class="form-control text-end search-input" type="search" placeholder="بحث في الكل"
+                                    aria-label="Search" />
+                                  <i class="fs-4 bi-search position-absolute search-icon"></i>
+                                </form>
+                              </div>
                             <div class="icon-group d-flex align-items-center">
 
                                 <button class="btn  my-custom-icone">
@@ -121,6 +123,7 @@
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr class="firstcol">
+                                            <th>الحالة</th>
                                             <th>المندوب</th>
                                             <th>العميل</th>
                                             <th>الكود</th>
@@ -134,6 +137,7 @@
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let item of deliveryVouchers, let i = index">
+                                            <td>{{ item.deliveryStatus }}</td>
                                             <td>{{item.representativeName}}</td>
                                             <td>{{item.teamName}}</td>
                                             <td>{{item.code}}</td>
@@ -417,7 +421,7 @@
                             <div *ngIf="selectedButton === 0">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="basic-datatables" class="display table table-striped table-hover">
+                                        <table id="basic-datatables" class="display table table-striped table-hover cutom_table">
                                             <thead>
                                                 <tr class="firstcol">
                                                     <th>مسلسل</th>
@@ -426,6 +430,7 @@
                                                     <th>الوحدة</th>
                                                     <th>الكمية المطلوبة</th>
                                                     <th>الكمية المحمله</th>
+                                                    <th> </th>
 
 
 
@@ -433,25 +438,27 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <th>الصنف</th>
-                                                    <th>وصف الصنف</th>
-                                                    <th>الوحدة</th>
-                                                    <th>الكمية المطلوبة</th>
-                                                    <th>الكمية المحمله</th>
 
+                                            <tbody formArrayName="items">
 
-
-
-
-
-
-
+                                                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                                    <td>{{ i+1 }} </td>
+                                                    <td><select formControlName="itemId" class="form-control">
+                                                        <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
+                                                      </select></td>
+                                                      <td><input type="number" formControlName="discount" placeholder="discount" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
+                                                  <td><input type="text" formControlName="quantity" placeholder="quantity" class="form-control"></td>
+                                                  
+                                                  <td>
+                                                    <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
+                                                  </td>
+                                                  
                                                 </tr>
+                                              </tbody>
+                                              <button type="button" (click)="addItem()">اضف صنف</button>
 
-                                            </tbody>
                                         </table>
                                     </div>
 
@@ -737,24 +744,7 @@
             <div class="modal-body">
                 <form [formGroup]="deliveryVoucherForm" (ngSubmit)="updateCategory()">
                     <div class="container">
-                        <!-- Row with two fields -->
-                        <!-- <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="field1 text-end"> المنشأ</label>
-                                    <input type="text" id="field1"  class="form-control"
-                                        placeholder="اسم المنشأ" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="field2 text-end">تاريخ الانشاء
-                                    </label>
-                                    <input type="date" id="field2"  class="form-control"
-                                        placeholder="قم باختيار التاريخ" />
-                                </div>
-                            </div>
-                        </div> -->
+                        
 
                         <div class="row">
                             <div class="col-md-6">
@@ -964,25 +954,23 @@
 
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <th>الصنف</th>
-                                                    <th>وصف الصنف</th>
-                                                    <th>الوحدة</th>
-                                                    <th>الكمية المطلوبة</th>
-                                                    <th>الكمية المحمله</th>
-
-
-
-
-
-
-
-
+                                            <tbody formArrayName="items">
+                                                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                                  <td>
+                                                    <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
+                                                  </td>
+                                                  <td><input type="text" formControlName="note" placeholder="note" class="form-control"></td>
+                                                  <td><input type="number" formControlName="discount" placeholder="discount" class="form-control"></td>
+                                                  <td><input type="number" formControlName="salesTax" placeholder="salesTax" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
+                                                  <td><input type="number" formControlName="unitPrice" placeholder="unitPrice" class="form-control"></td>
+                                                  <td><input type="number" formControlName="quantity" placeholder="Quantity" class="form-control"></td>
+                                                  <td><select formControlName="id" class="form-control">
+                                                    <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
+                                                  </select></td>
                                                 </tr>
-
-                                            </tbody>
+                        
+                                              </tbody>
                                         </table>
                                     </div>
 
@@ -1153,3 +1141,6 @@
         </div>
     </div>
 </div>
+
+
+<!-- Update -->

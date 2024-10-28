@@ -1,5 +1,4 @@
 <div class="wrapper">
-  <app-sidebar></app-sidebar>
   <!-- Sidebar component on the left -->
 
   <div class="main-panel">
@@ -74,7 +73,7 @@
                     <div class="dropdown-menu" [class.show]="isDropdownOpen">
                       <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
                       <a class="dropdown-item" href="#">عرض</a>
-                      <a class="dropdown-item" href="#">حدف</a>
+                      <a class="dropdown-item" (click)="deleteCategory()">حدف</a>
                     </div>
                   </div>
                 </div>
@@ -1179,30 +1178,7 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
             </div>
 
             <!-- Row with three fields -->
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="field3"> المنشأ</label>
-                  <input
-                    type="text"
-                    id="field3"
-                    class="form-control custom-input"
-                    placeholder="اسم المنشأ"
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="field4"> تاريخ الانشاء</label>
-                  <input
-                    type="date"
-                    id="field2"
-                    class="form-control custom-input"
-                    placeholder="قم باختيار التاريخ"
-                  />
-                </div>
-              </div>
-            </div>
+         
 
             
             <div class="radio-button-group">
@@ -1912,7 +1888,7 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                   </div> -->
 
             <div class="col-md-6 mx-auto">
-              <button type="button my-button3" class="btn my-button3">
+              <button type="submit" class="btn my-button3">
                 اضافه
                 <i class="fa-solid fa-plus"></i>
               </button>

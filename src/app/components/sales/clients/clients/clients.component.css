@@ -119,7 +119,7 @@ label,
 input,
 button,
  span, select {
-    font-family: "Cairo", sans-serif;
+    font-family: "Cairo", sans-serif !important;
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;

@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment.development';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ToastrService } from 'ngx-toastr';
+import { ItemsService } from 'src/app/services/getAllServices/Items/items.service';
 
 @Component({
   selector: 'app-goods-voucher',
@@ -34,6 +35,7 @@ export class GoodsVoucherComponent implements OnInit {
     private representServece:RepresentativeService, private fb: FormBuilder, private  http:HttpClient,
     private teamService: TeamsService, private costCenterService:CostCenterService,
     private warehouseService:WarehouseService,private locationService:LocationService,
+    private itemService: ItemsService,
     private toast: ToastrService
   ){
     this.deliveryVoucherForm= this.fb.group({
@@ -44,8 +46,9 @@ export class GoodsVoucherComponent implements OnInit {
     purchaseOrderNumber: ['', Validators.required],
     costCenterId: ['', Validators.required],
     warehouseId: ['', Validators.required],
-    locationLinkIds: this.fb.array([])
+    locationLinkIds: this.fb.array([]),
 
+    items:fb.array([]),
     
     });
 
@@ -68,7 +71,7 @@ export class GoodsVoucherComponent implements OnInit {
     this.getAllCostCenters();
     this.getAllWarehouses();
     this.getAllLocationss();
-
+    this.getAllItems();
     
   }
   // buttons=['الأصناف','الملاحظات','المهام' ,'مرفقات']
@@ -232,62 +235,98 @@ onSubmit() {
   } else {
     console.log('Form is invalid');
   }
-  // const formData = new FormData();
-  // const clientId = this.deliveryVoucherForm.get('clientId')!.value;
-  // const representativeId = this.deliveryVoucherForm.get('representativeId')!.value;
-  // const code = this.deliveryVoucherForm.get('code')!.value;
-  // const teamId = this.deliveryVoucherForm.get('teamId')!.value;
-  // const purchaseOrderNumber = this.deliveryVoucherForm.get('purchaseOrderNumber')!.value;
-  // const costCenterId = this.deliveryVoucherForm.get('costCenterId')!.value;
-  // const warehouseId = this.deliveryVoucherForm.get('warehouseId')!.value;
-  // // const locationLinkIds = this.deliveryVoucherForm.get('locationLinkIds')!.value;
-  // if (code) {
-  //   formData.append('clientId', clientId);
-  //   formData.append('representativeId', representativeId);
-  //   formData.append('code', code);
-  //   formData.append('teamId', teamId);
-  //   formData.append('purchaseOrderNumber', purchaseOrderNumber);
-  //   formData.append('costCenterId', costCenterId);
-  //   formData.append('warehouseId', warehouseId);
-  //   // formData.append('locationLinkIds', locationLinkIds);
-    
-  //   const locationLinks = this.deliveryVoucherForm.get('locationLinkIds')?.value;
-  // if (locationLinks && locationLinks.length > 0) {
-  //     locationLinks.forEach((linkId:string) => {
-  //         formData.append('locationLinkIds', linkId); // Append each location ID
-  //     });}
-    
-  // } else {
-  //   console.error('One or more form fields are null');
-  //   return;
-  // }
 
-  // const tenantId = localStorage.getItem('tenant');
-  // const headers = new HttpHeaders({
-  //   tenant: tenantId || '', // Set tenantId header if available
-  //   'Content-Type': 'application/json',
-  // });
-  // //const url = `${this.apiUrl}?Name=${encodeURIComponent(name)}&LocalName=${encodeURIComponent(localName)}&JobTitle=${encodeURIComponent(jobTitle)}&DepartmentManagerId=${encodeURIComponent(departmentManagerId)}&DepartmentSupervisorId=${encodeURIComponent(departmentSupervisorId)}&StartDate=${encodeURIComponent(startDate)}&EndDate=${encodeURIComponent(endDate)}`;
-  // this.http.post<any>(this.apiUrl, formData,{headers}).subscribe(
-  //   (response) => {
-  //     alert('Done');
-  //     console.log('Delivery voucher created successfully:', response);
-  //     // Reset form after successful submission
-  //     this.deliveryVoucherForm.reset();
-  //   },
-  //   (error: HttpErrorResponse) => {
-  //     console.error('Error creating delivery voucher:', error.error);
-  //     // Handle error
-  //   }
-  // );
 }
 
 // Update Delivery note
 storesSec:any[] =[];
   isModalOpen = false;
   selectedCategory: any = null;
+
 onCheckboxChange(category: any) {
   this.selectedCategory = category;  // Store the selected category data
+  console.log(this.selectedCategory);
+  // const categoryId = category.id;
+  // if (categoryId) {
+  //   this.ItemsById(categoryId);  // Fetch item details using the selected category ID
+  // } else {
+  //   console.error('No valid category ID provided');
+  // }
+}
+item:any
+ItemsById(id: number){
+  this.itemService.getItemDetails(id).subscribe(
+    (data) => {
+      this.item = data;
+      console.log('Fetched item:', this.item);
+    },
+    (error) => {
+      console.error('Error fetching item:', error);
+    }
+  );
+}
+itemList:any[]=[];
+getAllItems(){
+  this.itemService.getAllItems().subscribe(response => {
+    this.itemList = response.item1;
+    console.log(this.itemList);
+  }, error => {
+    console.error('Error fetching  items:', error)
+  })
+}
+
+// items tabke
+// Method to remove an item from the FormArray
+get items(): FormArray {
+  return this.deliveryVoucherForm.get('items') as FormArray;
+}
+tableData = [
+  {
+    selectedItemId: null,
+    code: '',
+    unit: '',
+    unitPrice: 0,
+    tax: 0,
+    discount: 0,
+    total: 0,
+  },
+];
+removeItem(index: number) {
+  this.items.removeAt(index);
+}
+addItem() {
+  const itemGroup = this.fb.group({
+    itemId: [''],
+    quantity: [0, Validators.required],
+    unitPrice: [0, Validators.required],
+    discount: [0],
+    salesTax: [0],
+    unit: [''],
+    notes: [''],
+  });
+
+  this.items.push(itemGroup);
+}
+
+// items table methods
+onItemSelect(event: any, rowIndex: number) {
+  const selectedItemId = event.target.value;
+
+  // Fetch details for the selected item
+  this.itemService.getItemDetails(selectedItemId).subscribe((itemDetails: any) => {
+    // Update the specific row with the item details
+    this.tableData[rowIndex].code = itemDetails.code;
+    this.tableData[rowIndex].unit = itemDetails.unit;
+    this.tableData[rowIndex].unitPrice = itemDetails.unitPrice;
+    this.tableData[rowIndex].tax = itemDetails.tax;
+    this.tableData[rowIndex].discount = itemDetails.discount;
+    this.tableData[rowIndex].total = this.calculateTotal(itemDetails);
+  });
+}
+
+calculateTotal(itemDetails: any) {
+  // Example calculation of total price (modify based on your logic)
+  return itemDetails.unitPrice - itemDetails.discount + itemDetails.tax;
 }
 
 openModalForSelected() {

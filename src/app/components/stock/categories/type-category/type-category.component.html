@@ -1,5 +1,4 @@
 <div class="wrapper">
-    <app-sidebar></app-sidebar>
     <!-- Sidebar component on the left -->
   
     <div class="main-panel">
@@ -150,22 +149,16 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Fiona Green</td>
+                        <tr *ngFor="let item of storesSec">
+                          <td>{{item.note}}</td>
                           <td>Chief Operating Officer (COO)</td>
                           <td>San Francisco</td>
-                          <td>48</td>
-                          <td>2010/03/11</td>
-                          <td>$850,000</td>
+                          <td>{{item.localName}}</td>
+                          <td>{{item.name}}</td>
+                          <td><input type="checkbox" class="large-checkbox" />
+                          </td>
                         </tr>
-                        <tr>
-                          <td>Shou Itou</td>
-                          <td>Regional Marketing</td>
-                          <td>Tokyo</td>
-                          <td>20</td>
-                          <td>2011/08/14</td>
-                          <td>$163,000</td>
-                        </tr>
+                      
                       </tbody>
                     </table>
                   </div>
@@ -204,10 +197,10 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="field1 text-end"> اسم فئه الصنف</label>
+                    <label for="name text-end"> اسم فئه الصنف</label>
                     <input
                       type="text"
-                      id="field1"
+                      id="name"
                       formControlName="name"
 
                       class="form-control custom-input"
@@ -224,8 +217,8 @@
                       type="text"
                       formControlName="localName"
 
-                      id="field2"
-                      ="field2"
+                      id="localName"
+                     
                       class="form-control custom-input"
                       placeholder="Item category name"
                     />
@@ -243,7 +236,7 @@
                     <input
                       type="text"
                       id="field3"
-                      ="field3"
+                
                       class="form-control custom-input"
                       placeholder="اسم المنشأ"
                     />
@@ -255,7 +248,7 @@
                     <input
                     type="date"
                     id="field2"
-                    ="field2"
+                   
                     class="form-control custom-input"
                     placeholder="قم باختيار التاريخ"
                   />
@@ -291,7 +284,7 @@
                       class="form-control custom-input"
                       formControlName="note"
 
-                      id="Textarea1"
+                      id="note"
                       rows="3"
                     ></textarea>
                   </div>

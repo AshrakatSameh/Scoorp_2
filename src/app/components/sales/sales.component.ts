@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -348,5 +348,86 @@ toggleDropdown() {
 closeDropdown() {
   this.isDropdownOpen = false;
 }
+
+storesSec:any[] =[];
+  isModalOpen = false;
+  selectedCategory: any = null;
+
+onCheckboxChange(category: any) {
+  this.selectedCategory = category;  // Store the selected category data
+  // console.log(this.selectedCategory);
+  // const categoryId = category.id;
+  // if (categoryId) {
+  //   this.ItemsById(categoryId);  // Fetch item details using the selected category ID
+  // } else {
+  //   console.error('No valid category ID provided');
+  // }
+}
+item:any
+ItemsById(id: number){
+  this.itemService.getItemDetails(id).subscribe(
+    (data) => {
+      this.item = data;
+      console.log('Fetched item:', this.item);
+    },
+    (error) => {
+      console.error('Error fetching item:', error);
+    }
+  );
+}
+
+openModalForSelected() {
+  if (this.selectedCategory) { 
+    this.saleOfferForm.patchValue({
+      clientId: this.selectedCategory.clientId,
+      representativeId: this.selectedCategory.representativeId,
+      teamId: this.selectedCategory.teamId,
+      code: this.selectedCategory.code,
+      purchaseOrderNumber: this.selectedCategory.purchaseOrderNumber,
+      costCenterId: this.selectedCategory.costCenterId,
+      warehouseId: this.selectedCategory.warehouseId,
+      locationLinkIds: this.selectedCategory.locationLinkIds,
+    });
+
+    this.isModalOpen = true;
+  } else {
+    alert('Please select a category to update.');
+  }
+}
+ 
+closeModal() {
+  this.isModalOpen = false;
+  this.saleOfferForm.reset();
+}
+ 
+updateCategory() {
+  if (this.saleOfferForm.valid) {
+    const updatedCategory = { ...this.saleOfferForm.value, id: this.selectedCategory.id };
+
+    // Call the update service method using the category's id
+    this.salesService.update(this.selectedCategory.id, updatedCategory).subscribe(
+      (response) => {
+        console.log('Delivery note updated successfully:', response);
+        this.toast.success('Delivery note updated successfully')
+        // Update the local categories array if necessary
+        const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+        if (index !== -1) {
+          this.storesSec[index] = updatedCategory;
+        }
+
+        this.getAllSaleOffers();
+        this.closeModal();  // Close the modal after successful update
+        this.saleOfferForm.reset();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error updating delivery note:', error);
+        console.log('Updated delivery note Data:', updatedCategory);
+        // alert('An error occurred while updating the item type .');
+        this.toast.error('An error occurred while updating the delivery note .')
+      }
+    );
+    }
+  }
+
 
 }

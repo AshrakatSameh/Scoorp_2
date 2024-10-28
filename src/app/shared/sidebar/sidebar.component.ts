@@ -71,6 +71,8 @@ export class SidebarComponent {
     this.isCollapsed[section] = !this.isCollapsed[section];
   }
 
+  
+
  
 
 
@@ -80,6 +82,31 @@ export class SidebarComponent {
   }
 
 
-  
+   // Track collapsed states
+   isCollapsed3: { [key: string]: boolean } = {
+    mainMenu: true,
+    projectsMovementSub: true,
+    contractsMovementSub: true
+  };
 
+  // Toggle collapse based on section key
+  toggleCollapse3(section: string) {
+    this.isCollapsed3[section] = !this.isCollapsed3[section];
+  }
+
+  // Track collapsed states
+  isCollapsed4: { [key: string]: boolean } = {
+    charts: true,
+
+    warehouseMovementSub: true,
+    warehouseManagersSub: true,
+    typeSub: true,
+    warehouseReportsSub: true,
+    settingsSub2: true,
+  };
+
+  // Toggle collapse based on section key
+  toggleCollapse4(section: string) {
+    this.isCollapsed4[section] = !this.isCollapsed4[section];
+  }
 }

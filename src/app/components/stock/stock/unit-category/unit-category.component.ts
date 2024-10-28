@@ -25,7 +25,7 @@ export class UnitCategoryComponent {
 
     this.mysrv.getAllUnitCategories().subscribe(
      (response) => {
-       this.storesSec = response; // Assign the fetched Warehouses
+       this.storesSec = response.categories; // Assign the fetched Warehouses
        console.log('store section:', this.storesSec);
      },
      (error) => {

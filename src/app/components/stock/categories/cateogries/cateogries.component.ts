@@ -298,7 +298,34 @@ toggleDropdown() {
           this.toast.error('An error occurred while updating the item type .')
         }
       );
+      }else{
+        console.log(this.ItemsForm)
       }
     }
   
+
+    deleteCategory(){
+      const confirmed = window.confirm(
+        'Are you sure you want to delete this record?'
+      );
+      if (confirmed){
+        this.itemCat.deleteCategoryById(this.selectedCategory.id).subscribe(
+          (response)=>{
+            console.log('category deleted successfully:', response);
+            this.toast.success('category deleted successfully');
+            this.getAllCategories();
+            this.closeModal(); 
+          },error => {
+            console.error('Error delete category category:', error);
+            console.log(this.selectedCategory.id);
+            // alert('An error occurred while updating the category .');
+            this.toast.error('An error occurred while deleting the category .')
+          }
+        )
+      }else {
+          // User canceled the deletion
+          console.log('Deletion canceled');
+        }
+      
+    }
 }

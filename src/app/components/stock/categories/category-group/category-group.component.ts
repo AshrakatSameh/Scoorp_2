@@ -24,7 +24,7 @@ export class CategoryGroupComponent {
 
     this.itemGServices.getAllitemGroup().subscribe(
      (response) => {
-       this.storesSec = response; // Assign the fetched Warehouses
+       this.storesSec = response.groups; // Assign the fetched Warehouses
        console.log('item Group :', this.storesSec);
      },
      (error) => {

@@ -219,11 +219,11 @@
             <div class="collapse" id="mainMenu">
               <ul class="nav nav-collapse p-0">
                 <li class="collapsed-item">
-                  <a (click)="toggleCollapse('projectsMovementSub')" aria-controls="projectsMovementSub">
-                    <span class="toggle-icon">{{ isCollapsed['projectsMovementSub'] ? '+' : '-' }}</span>
+                  <a (click)="toggleCollapse3('projectsMovementSub')" aria-expanded="false" aria-controls="projectsMovementSub">
+                    <span class="toggle-icon">{{ isCollapsed3['projectsMovementSub'] ? '+' : '-' }}</span>
                     <span class="sub-item">المشاريع</span>
                   </a>
-                  <div [ngClass]="{'collapse': isCollapsed['projectsMovementSub']}" id="projectsMovementSub">
+                  <div [ngClass]="{'collapse': isCollapsed3['projectsMovementSub']}" id="projectsMovementSub">
                     <ul class="nav nav-collapse sub-nav">
                       <li><a routerLink="/projects"><span class="sub-item">المشاريع</span></a></li>
                       <li><a routerLink="/projectType"><span class="sub-item">نوع المشاريع</span></a></li>
@@ -231,11 +231,11 @@
                   </div>
                 </li>
                 <li class="collapsed-item">
-                  <a (click)="toggleCollapse('contractsMovementSub')" aria-controls="contractsMovementSub">
-                    <span class="toggle-icon">{{ isCollapsed['contractsMovementSub'] ? '+' : '-' }}</span>
+                  <a (click)="toggleCollapse3('contractsMovementSub')" aria-expanded="false" aria-controls="contractsMovementSub">
+                    <span class="toggle-icon">{{ isCollapsed3['contractsMovementSub'] ? '+' : '-' }}</span>
                     <span class="sub-item">العقود</span>
                   </a>
-                  <div [ngClass]="{'collapse': isCollapsed['contractsMovementSub']}" id="contractsMovementSub">
+                  <div [ngClass]="{'collapse': isCollapsed3['contractsMovementSub']}" id="contractsMovementSub">
                     <ul class="nav nav-collapse sub-nav">
                       <li><a routerLink="/contracts"><span class="sub-item">العقود</span></a></li>
                       <li><a routerLink="/contractsType"><span class="sub-item">نوع العقود</span></a></li>
@@ -274,13 +274,13 @@
             <div class="collapse" id="charts">
               <ul class="nav nav-collapse p-0">
                 <li class="collapsed-item">
-                  <a (click)="toggleCollapse('warehouseMovementSub')" aria-expanded="false"
+                  <a (click)="toggleCollapse4('warehouseMovementSub')" aria-expanded="false"
                     aria-controls="warehouseMovementSub">
-                    <span class="toggle-icon">{{ isCollapsed['warehouseMovementSub'] ? '+' : '-' }}</span>
+                    <span class="toggle-icon">{{ isCollapsed4['warehouseMovementSub'] ? '+' : '-' }}</span>
                     <span class="sub-item ml-4">الوحده</span>
   
                   </a>
-                  <div [ngClass]="{'collapse': isCollapsed['warehouseMovementSub']}" id="warehouseMovementSub">
+                  <div [ngClass]="{'collapse': isCollapsed4['warehouseMovementSub']}" id="warehouseMovementSub">
                     <ul class="nav nav-collapse sub-nav">
                       <li><a routerLink="/unitCategory"><span class="sub-item">فئات الوحدة</span></a></li>
                       <li><a routerLink="/unit"><span class="sub-item">الوحدة</span></a></li>
@@ -289,12 +289,12 @@
                 </li>
   
                 <li class="collapsed-item">
-                  <a (click)="toggleCollapse('warehouseManagersSub')" aria-expanded="false"
+                  <a (click)="toggleCollapse4('warehouseManagersSub')" aria-expanded="false"
                     aria-controls="warehouseManagersSub">
-                    <span class="toggle-icon">{{ isCollapsed['warehouseManagersSub'] ? '+' : '-' }}</span>
+                    <span class="toggle-icon">{{ isCollapsed4['warehouseManagersSub'] ? '+' : '-' }}</span>
                     <span class="sub-item">الأصناف</span>
                   </a>
-                  <div [ngClass]="{'collapse': isCollapsed['warehouseManagersSub']}" id="warehouseManagersSub">
+                  <div [ngClass]="{'collapse': isCollapsed4['warehouseManagersSub']}" id="warehouseManagersSub">
                     <ul class="nav nav-collapse sub-nav">
                       <li><a routerLink="/typeCategory"><span class="sub-item">فئة الصنف</span></a></li>
                       <li><a routerLink="/categories"><span class="sub-item">الأصناف</span></a></li>
@@ -308,11 +308,11 @@
   
   
                 <li class="collapsed-item">
-                  <a (click)="toggleCollapse('typeSub')" aria-expanded="false" aria-controls="typeSub">
+                  <a (click)="toggleCollapse4('typeSub')" aria-expanded="false" aria-controls="typeSub">
                     <span class="toggle-icon">{{ isCollapsed['typeSub'] ? '+' : '-' }}</span>
                     <span class="sub-item">المستودعات</span>
                   </a>
-                  <div [ngClass]="{'collapse': isCollapsed['typeSub']}" id="typeSub">
+                  <div [ngClass]="{'collapse': isCollapsed4['typeSub']}" id="typeSub">
                     <ul class="nav nav-collapse sub-nav">
                       <li><a routerLink="/storehouseCategory"><span class="sub-item">فئة المستودعات</span></a></li>
                       <li><a routerLink="/storehouse"><span class="sub-item">المستودعات</span></a></li>
@@ -323,7 +323,7 @@
                     </ul>
                   </div>
                 </li>
-                <li><a href="charts/charts.html">
+                <li><a >
                     <span class="sub-item">الأعدادات</span></a>
                 </li>
               </ul>
