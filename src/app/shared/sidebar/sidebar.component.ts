@@ -7,9 +7,39 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+  isOpen = false;
+
+  toggleSidebar() {
+    this.isOpen = !this.isOpen;
+  }
+  // isCollapsed: { [key: string]: boolean } = {};
+
+  // constructor() {
+  //   // Initialize all sub-items to collapsed
+  //   this.isCollapsed['salesMovementSub'] = true;
+  //   this.isCollapsed['salesManagersSub'] = true;
+  //   this.isCollapsed['clientsSub'] = true;
+  //   this.isCollapsed['salesReportsSub'] = true;
+  //   this.isCollapsed['settingsSub'] = true;
+  //   // Add more as needed...
+  // }
+
+  // toggleCollapse(item: string) {
+  //   this.isCollapsed[item] = !this.isCollapsed[item];
+  // }
 
   constructor(private authService: AuthService,    private renderer: Renderer2,
-  ) {}
+  ) {
+   
+  }
+
+  isCollapsed: { [key: string]: boolean } = {
+    salesMovementSub: true,
+    salesManagersSub: true,
+    clientsSub: true,
+    salesReportsSub: true,
+    settingsSub: true
+  };
 
   logout() {
     const tenant = localStorage.getItem('tenant');
@@ -35,13 +65,13 @@ export class SidebarComponent {
 
 
    // Define the object with string indexing
-   isCollapsed: { [key: string]: boolean } = {
-    salesMovementSub: true,
-    salesManagersSub: true,
-    clientsSub: true,
-    salesReportsSub: true,
-    settingsSub: true,
-  };
+  //  isCollapsed: { [key: string]: boolean } = {
+  //   salesMovementSub: true,
+  //   salesManagersSub: true,
+  //   clientsSub: true,
+  //   salesReportsSub: true,
+  //   settingsSub: true,
+  // };
   
   isCollapsed2: { [key: string]: boolean } = {
     warehouseMovementSub: true,
@@ -71,6 +101,13 @@ export class SidebarComponent {
   toggleCollapse(section: string) {
     this.isCollapsed[section] = !this.isCollapsed[section];
   }
+
+  isSidebarCollapsed: boolean = false;
+
+  // toggleSidebar() {
+  //   this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  // }
+
 
   
 

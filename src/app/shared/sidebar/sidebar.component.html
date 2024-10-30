@@ -1,7 +1,9 @@
-<!-- New One -->
 
-<div class="sidebar" data-background-color="dark" >
 
+<div class="sidebar"  [class.open]="isOpen">
+  <button class="toggle-button" (click)="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+  </button>
 
   <div class="sidebar-wrapper scrollbar scrollbar-inner">
     <div class="sidebar-content">

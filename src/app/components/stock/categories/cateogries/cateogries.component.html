@@ -73,11 +73,7 @@
                     <div class="dropdown-menu" [class.show]="isDropdownOpen">
                       <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
                       <a class="dropdown-item" href="#">عرض</a>
-
-                      <a class="dropdown-item" (click)="deleteItem()">حدف</a>
-
                       <a class="dropdown-item" (click)="deleteCategory()">حدف</a>
-
                     </div>
                   </div>
                 </div>
@@ -1190,10 +1186,10 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                   <label>يمكن مصروف:</label>
                   <div class="radio-options">
                     <label>
-                      <input type="radio" name="canBeSold" formControlName="canBeSold" value="true"  [(ngModel)]="selectedGender"> نعم
+                      <input type="radio" name="canBeSold" formControlName="canBeSold" value="true"  [(ngModel)]="selectedGender"> true
                     </label>
                     <label>
-                      <input type="radio" name="canBeSold" formControlName="canBeSold" value="false" [(ngModel)]="selectedGender"> لا
+                      <input type="radio" name="canBeSold" formControlName="canBeSold" value="false" [(ngModel)]="selectedGender"> false
                     </label>
                   </div>
                 </div>
@@ -1257,7 +1253,7 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                 <div class="form-group">
                   <label for="field1 text-end">باركود الصنف</label>
                   <input
-                    type="number"
+                    type="text"
                     id="field1"
                     formControlName="barcode"
                     class="form-control custom-input"
@@ -1891,22 +1887,6 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                     </div>
                   </div> -->
 
-
-                  <div class="col-md-6 mx-auto ">
-                    <button type="submit" class="btn my-button3">
-                      حفظ
-                      
-                    </button>
-        
-                    <button
-                      type="button"
-                      class="btn closebutton"
-                      data-bs-dismiss="modal"
-                      (click)="closeModal()"
-                    >
-                      الغاء
-                    </button>
-                    </div>
             <div class="col-md-6 mx-auto">
               <button type="submit" class="btn my-button3">
                 اضافه
@@ -1922,7 +1902,6 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                 الغاء
               </button>
             </div>
-
           </div>
         </form>
       </div>
