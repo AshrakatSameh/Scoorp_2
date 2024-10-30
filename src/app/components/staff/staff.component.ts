@@ -15,6 +15,8 @@ import { environment } from 'src/environments/environment.development';
 })
 export class StaffComponent {
 
+
+  
 tenp = environment.apiUrl
 private apiUrl = `${this.tenp}Employees/CreateEmployee`;
 
@@ -43,7 +45,7 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
 
   constructor(private employeeService: EmployeeService, private fb: FormBuilder,
     private departmentService: DepartmentService, private supervisorService: SupervisorService,
-    private managerService: ManagerService, private http:HttpClient, private toast: ToastrService
+    private managerService: ManagerService, private http:HttpClient, private toast: ToastrService,
   ) {
 
     this.employeeForm = this.fb.group({
@@ -63,6 +65,8 @@ private apiUrl = `${this.tenp}Employees/CreateEmployee`;
     this.getAllDepartmesnts();
     this.getAllManagers();
     this.getAllSupervisors();
+
+    
   }
 
   isDropdownOpen: boolean = false;

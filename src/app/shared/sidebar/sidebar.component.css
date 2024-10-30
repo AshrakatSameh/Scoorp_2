@@ -1,3 +1,48 @@
+/* sidebar.component.css */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #333;
+  color: #fff;
+  transition: transform 0.3s ease;
+  transform: translateX(100%); /* Initially hidden */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+}
+
+.sidebar.open {
+  transform: translateX(0); /* Slide in when open */
+}
+
+.toggle-button {
+  position: absolute;
+  left: -40px;
+  top: 10px;
+  background-color: #224273;
+  color: #fff;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.content {
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+
 .sidebar {
    
   background-color: #224273;
@@ -117,6 +162,16 @@ tr, th, tr {
   margin-bottom: 20px;
 }
 
+/* for toggle button */
+
+
+
+
+.gray-line {
+  border: none;
+  border-top: 2px solid gray;
+  margin: 0px 0 30px 8px; /* Adjust margin as needed */
+}
 /* for toggle button */
 
 
