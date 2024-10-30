@@ -12,6 +12,8 @@ import { environment } from 'src/environments/environment.development';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ToastrService } from 'ngx-toastr';
+import { ItemsService } from 'src/app/services/getAllServices/Items/items.service';
+import { DeliveryStatus } from 'src/app/enums/DeliveryStatus ';
 
 @Component({
   selector: 'app-goods-voucher',
@@ -29,11 +31,16 @@ export class GoodsVoucherComponent implements OnInit {
   clientData:any;
   deliveryVoucherForm!:FormGroup;
   // locationForm!:FormGroup;
+
+  deliveryStatus = DeliveryStatus;  // Access the PaymentType enum
+// Convert enum to an array for dropdown
+deliveryStatusList: { key: string, value: string }[] = [];
   
   constructor(private salesService:SalesService,private clientService:ClientsService,
     private representServece:RepresentativeService, private fb: FormBuilder, private  http:HttpClient,
     private teamService: TeamsService, private costCenterService:CostCenterService,
     private warehouseService:WarehouseService,private locationService:LocationService,
+    private itemService: ItemsService,
     private toast: ToastrService
   ){
     this.deliveryVoucherForm= this.fb.group({
@@ -44,8 +51,9 @@ export class GoodsVoucherComponent implements OnInit {
     purchaseOrderNumber: ['', Validators.required],
     costCenterId: ['', Validators.required],
     warehouseId: ['', Validators.required],
-    locationLinkIds: this.fb.array([])
+    locationLinkIds: this.fb.array([]),
 
+    items:fb.array([]),
     
     });
 
@@ -56,6 +64,11 @@ export class GoodsVoucherComponent implements OnInit {
     //   latitude: ['', Validators.required],
     //   linelongitude3: ['', Validators.required]
     // }) 
+
+    this.deliveryStatusList = Object.keys(this.deliveryStatus).map(key => ({
+      key: key,
+      value: this.deliveryStatus[key as keyof typeof DeliveryStatus]
+    }));
   }
 
  
@@ -68,7 +81,7 @@ export class GoodsVoucherComponent implements OnInit {
     this.getAllCostCenters();
     this.getAllWarehouses();
     this.getAllLocationss();
-
+    this.getAllItems();
     
   }
   // buttons=['الأصناف','الملاحظات','المهام' ,'مرفقات']
@@ -101,17 +114,28 @@ export class GoodsVoucherComponent implements OnInit {
   clientN: any[] = [];  //arrNames:any ;
   clientName:any;
   getAllDeliveryVouchers() {
-    this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe(response => {
-      this.deliveryVouchers = response;
-      const x =this.deliveryVouchers.map(dVouche=> 
-      {
-        this.ClientById(dVouche.clientId);
+    this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe({
+      next: (data) => {
+        this.deliveryVouchers = data;
+        // Map client names only when both invoices and clients are loaded
+        this.mapDeliveryStatus();
+        // this.mapDeliveryStatus();
+      },
+      error: (err) => {
+        console.error('Error fetching invoices:', err);
+        // this.sales = []; // Ensure it's initialized as an empty array
       }
-      );
-    }, error => {
-      console.error('Error fetching delivery vouchers data:', error)
-    })
-  }
+    });
+    }
+    //   this.deliveryVouchers = response;
+    //   const x =this.deliveryVouchers.map(dVouche=> 
+    //   {
+    //     this.ClientById(dVouche.clientId);
+    //   }
+    //   );
+    // }, error => {
+    //   console.error('Error fetching delivery vouchers data:', error)
+    // })
 
 
   cliName:any;
@@ -232,62 +256,103 @@ onSubmit() {
   } else {
     console.log('Form is invalid');
   }
-  // const formData = new FormData();
-  // const clientId = this.deliveryVoucherForm.get('clientId')!.value;
-  // const representativeId = this.deliveryVoucherForm.get('representativeId')!.value;
-  // const code = this.deliveryVoucherForm.get('code')!.value;
-  // const teamId = this.deliveryVoucherForm.get('teamId')!.value;
-  // const purchaseOrderNumber = this.deliveryVoucherForm.get('purchaseOrderNumber')!.value;
-  // const costCenterId = this.deliveryVoucherForm.get('costCenterId')!.value;
-  // const warehouseId = this.deliveryVoucherForm.get('warehouseId')!.value;
-  // // const locationLinkIds = this.deliveryVoucherForm.get('locationLinkIds')!.value;
-  // if (code) {
-  //   formData.append('clientId', clientId);
-  //   formData.append('representativeId', representativeId);
-  //   formData.append('code', code);
-  //   formData.append('teamId', teamId);
-  //   formData.append('purchaseOrderNumber', purchaseOrderNumber);
-  //   formData.append('costCenterId', costCenterId);
-  //   formData.append('warehouseId', warehouseId);
-  //   // formData.append('locationLinkIds', locationLinkIds);
-    
-  //   const locationLinks = this.deliveryVoucherForm.get('locationLinkIds')?.value;
-  // if (locationLinks && locationLinks.length > 0) {
-  //     locationLinks.forEach((linkId:string) => {
-  //         formData.append('locationLinkIds', linkId); // Append each location ID
-  //     });}
-    
-  // } else {
-  //   console.error('One or more form fields are null');
-  //   return;
-  // }
 
-  // const tenantId = localStorage.getItem('tenant');
-  // const headers = new HttpHeaders({
-  //   tenant: tenantId || '', // Set tenantId header if available
-  //   'Content-Type': 'application/json',
-  // });
-  // //const url = `${this.apiUrl}?Name=${encodeURIComponent(name)}&LocalName=${encodeURIComponent(localName)}&JobTitle=${encodeURIComponent(jobTitle)}&DepartmentManagerId=${encodeURIComponent(departmentManagerId)}&DepartmentSupervisorId=${encodeURIComponent(departmentSupervisorId)}&StartDate=${encodeURIComponent(startDate)}&EndDate=${encodeURIComponent(endDate)}`;
-  // this.http.post<any>(this.apiUrl, formData,{headers}).subscribe(
-  //   (response) => {
-  //     alert('Done');
-  //     console.log('Delivery voucher created successfully:', response);
-  //     // Reset form after successful submission
-  //     this.deliveryVoucherForm.reset();
-  //   },
-  //   (error: HttpErrorResponse) => {
-  //     console.error('Error creating delivery voucher:', error.error);
-  //     // Handle error
-  //   }
-  // );
 }
 
 // Update Delivery note
 storesSec:any[] =[];
   isModalOpen = false;
   selectedCategory: any = null;
-onCheckboxChange(category: any) {
-  this.selectedCategory = category;  // Store the selected category data
+
+// onCheckboxChange(category: any) {
+//   this.selectedCategory = category;  // Store the selected category data
+//   console.log(this.selectedCategory);
+ 
+// }
+onCheckboxChange(category: any, event: any) {
+  if (event.target.checked) { // Check if the checkbox is checked
+    this.selectedCategory = category; // Store the selected category data
+    console.log(this.selectedCategory);
+  } else {
+    // Optionally, handle unchecking behavior here if needed
+    this.selectedCategory = null; // Clear the selection if unchecked
+    console.log('Checkbox unchecked, category deselected');
+  }
+}
+item:any
+ItemsById(id: number){
+  this.itemService.getItemDetails(id).subscribe(
+    (data) => {
+      this.item = data;
+      console.log('Fetched item:', this.item);
+    },
+    (error) => {
+      console.error('Error fetching item:', error);
+    }
+  );
+}
+itemList:any[]=[];
+getAllItems(){
+  this.itemService.getAllItems().subscribe(response => {
+    this.itemList = response.item1;
+    console.log(this.itemList);
+  }, error => {
+    console.error('Error fetching  items:', error)
+  })
+}
+
+// items tabke
+// Method to remove an item from the FormArray
+get items(): FormArray {
+  return this.deliveryVoucherForm.get('items') as FormArray;
+}
+tableData = [
+  {
+    selectedItemId: null,
+    code: '',
+    unit: '',
+    unitPrice: 0,
+    tax: 0,
+    discount: 0,
+    total: 0,
+  },
+];
+removeItem(index: number) {
+  this.items.removeAt(index);
+}
+addItem() {
+  const itemGroup = this.fb.group({
+    itemId: [''],
+    quantity: [0, Validators.required],
+    unitPrice: [0, Validators.required],
+    discount: [0],
+    salesTax: [0],
+    unit: [''],
+    notes: [''],
+  });
+
+  this.items.push(itemGroup);
+}
+
+// items table methods
+onItemSelect(event: any, rowIndex: number) {
+  const selectedItemId = event.target.value;
+
+  // Fetch details for the selected item
+  this.itemService.getItemDetails(selectedItemId).subscribe((itemDetails: any) => {
+    // Update the specific row with the item details
+    this.tableData[rowIndex].code = itemDetails.code;
+    this.tableData[rowIndex].unit = itemDetails.unit;
+    this.tableData[rowIndex].unitPrice = itemDetails.unitPrice;
+    this.tableData[rowIndex].tax = itemDetails.tax;
+    this.tableData[rowIndex].discount = itemDetails.discount;
+    this.tableData[rowIndex].total = this.calculateTotal(itemDetails);
+  });
+}
+
+calculateTotal(itemDetails: any) {
+  // Example calculation of total price (modify based on your logic)
+  return itemDetails.unitPrice - itemDetails.discount + itemDetails.tax;
 }
 
 openModalForSelected() {
@@ -377,4 +442,93 @@ changePage(newPageNumber: number): void {
 }
 
 
+mapDeliveryStatus() {
+  this.deliveryVouchers.forEach(offer => {
+    // Assuming each offer has a `requestStage` property that is a number
+    offer.delivetStatusName = this.getDeliveryStatusName(offer.deliveryStatus);
+  });
+}
+
+// Get the name of the request stage from the number
+getDeliveryStatusName(stageNumber: number): string {
+  // Define a mapping array for the numeric indices to the enum values
+  const stageMapping: string[] = [
+    DeliveryStatus.Draft,        // 0
+    DeliveryStatus.InProgress,   // 1
+    DeliveryStatus.Completed,    // 2
+    DeliveryStatus.Canceled ,     // 3
+  ];
+
+  return stageMapping[stageNumber] || 'Unknown';
+}
+
+// Change Status
+
+showItemPopup = false; // Controls the visibility of the item popup
+  selectedStatuses: (DeliveryStatus | null)[] = []; // Array to hold selected statuses for each row
+  itemss: { value: string }[] = []; // Array to hold item values
+  selectedItemId: number | null = null; // To hold the selected item ID
+  // deliveryStatusList = Object.keys(DeliveryStatus).map(key => ({ key, value: DeliveryStatus[key] })); // Get enum keys and values for dropdown
+
+
+  onStatusChange(index: number, status: string | null) {
+    if (status) {
+      this.selectedStatuses[index] = DeliveryStatus[status as keyof typeof DeliveryStatus]; // Map string to enum
+
+      // Check if the selected status requires showing the popup
+      if (this.selectedStatuses[index] === DeliveryStatus.InProgress || this.selectedStatuses[index] === DeliveryStatus.Canceled) {
+        this.showItemPopup = true;
+        this.itemss = []; // Reset items for new entry
+      }
+    }else{
+      console.log(this.selectedStatuses[index])
+    }
+  }
+
+  openPopup(id: number) {
+    this.selectedItemId = id; // Set the selected item ID
+    this.showItemPopup = true; // Show the popup
+    this.itemss = []; // Reset items for new entry
+  }
+
+  addItem2() {
+    this.items.push({ value: '' }); // Add a new item input
+  }
+
+submitStatusChange() {
+  if (this.selectedItemId === null || this.selectedItemId === undefined) {
+    console.error('No item selected');
+    return;
+  }
+
+  // Check if selectedStatuses is defined and contains the selectedItemId
+  const selectedStatus = this.selectedStatuses?.[this.selectedItemId];
+
+  // Ensure selectedStatus is not null or undefined before converting to string
+  const newStatusString = selectedStatus ? selectedStatus.toString() : '';
+
+  const payload = {
+    newStatus: newStatusString, // Now always a string
+    items: this.itemss.map(item => item.value) // Extract item values
+  };
+
+  this.salesService.updateStatus(this.selectedItemId, payload).subscribe({
+    next: (response) => {
+      console.log('Status changed successfully:', response);
+      // Handle successful response
+    },
+    error: (err) => {
+      console.error('Error changing status:', err);
+    }
+  });
+
+  this.closePopup(); // Close the popup after submitting
+}
+
+
+  closePopup() {
+    this.showItemPopup = false; // Hide the popup
+    this.selectedItemId = null; // Reset the selected item ID
+    this.itemss = []; // Reset items array
+  }
 }

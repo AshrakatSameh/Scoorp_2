@@ -13,6 +13,7 @@ import { InvoiceType } from 'src/app/enums/InvoiceType';
 import { PriceListService } from 'src/app/services/getAllServices/PriceList/price-list.service';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment.development';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-sales-invoices',
@@ -48,7 +49,7 @@ export class SalesInvoicesComponent implements OnInit {
     private representService: RepresentativeService, private fb:FormBuilder, private payService:PaymentPeriodsService,
     private teamService:TeamsService, private itemServices:ItemsService,
     private costService:CostCenterService,private priceService:PriceListService,
-    private http:HttpClient
+    private http:HttpClient, private toast: ToastrService
   ){
     this.salesForm= this.fb.group({
       code: ['', Validators.required],
@@ -197,13 +198,106 @@ onSubmit() {
   this.http.post(this.apiUrl+'SalesInvoice', formData, { headers })
     .subscribe(response => {
       console.log('Response:', response);
-      alert('submit successfully');
+      // alert('submit successfully');
+      this.toast.success(('submit successfully'))
     }, error => {
       console.error('Error:', error);
+      this.toast.error('Error accurred', error)
     });
 }
 
   apiUrl=environment.apiUrl;
+
+  // Update invoice
+  storesSec:any[] =[];
+  isModalOpen = false;
+  selectedCategory: any = null;
+  onCheckboxChange(category: any) {
+    this.selectedCategory = category;  // Store the selected category data
+  }
+  
+  openModalForSelected() {
+    if (this.selectedCategory) {
+      this.salesForm.patchValue({
+        name: this.selectedCategory.name,
+        localName: this.selectedCategory.localName,
+        note: this.selectedCategory.note,
+        code: this.selectedCategory.code,
+      });
+  
+      this.isModalOpen = true;
+    } else {
+      alert('Please select a category to update.');
+    }
+  }
+  
+  closeModal() {
+    this.isModalOpen = false;
+  }
+  
+  updateCategory() {
+    if (this.salesForm.valid) {
+      const updatedCategory = { ...this.salesForm.value, id: this.selectedCategory.id };
+  
+      // Call the update service method using the category's id
+      this.salesInvoiceService.updateSalesInvoice(this.selectedCategory.id, updatedCategory).subscribe(
+        (response) => {
+          console.log('Sales invoice updated successfully:', response);
+          this.toast.success('Sales invoice updated successfully')
+          // Update the local categories array if necessary
+          const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
+          if (index !== -1) {
+            this.storesSec[index] = updatedCategory;
+          }
+  
+          this.getAllSaleIncoices();
+          this.closeModal();  // Close the modal after successful update
+        },
+        (error: HttpErrorResponse) => {
+          console.error('Error updating sales invoice:', error);
+          console.log('Updated sales invoice Data:', updatedCategory);
+          // alert('An error occurred while updating the item type .');
+          this.toast.error('An error occurred while updating the sales invoice .')
+        }
+      );
+      }
+    }
+  
+  deleteItemType(){
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this record?'
+    );
+    if (confirmed){
+      this.salesInvoiceService.deleteSalesInvoiceById(this.selectedCategory.id).subscribe(
+        (response)=>{
+          console.log('Sales invoice deleted successfully:', response);
+          this.toast.success('Sales invoice deleted successfully');
+          this.getAllSaleIncoices();
+          this.closeModal(); 
+        },error => {
+          console.error('Error delete sales invoice category:', error);
+          console.log(this.selectedCategory.id);
+          // alert('An error occurred while updating the sales invoice .');
+          this.toast.error('An error occurred while deleting the sales invoice .')
+        }
+      )
+    }else {
+        // User canceled the deletion
+        console.log('Deletion canceled');
+      }
+    
+  }
+
+  isDropdownOpen: boolean = false;
+
+toggleDropdown() {
+  this.isDropdownOpen = !this.isDropdownOpen;
+}
+
+closeDropdown() {
+  this.isDropdownOpen = false;
+}
+
 
   changePage(newPageNumber: number): void {
     this.pageNumber = newPageNumber;
@@ -212,30 +306,4 @@ onSubmit() {
   }
 
 
-  // onSubmit() {
-  //   const formData = new FormData();
-  //   formData.append('code', this.salesForm.get('code')?.value);
-  //   formData.append('clientId', this.salesForm.get('clientId')?.value);
-  //   formData.append('representativeId', this.salesForm.get('representativeId')?.value);
-  //   formData.append('teamId', this.salesForm.get('teamId')?.value);
-  //   formData.append('invoiceNumber', this.salesForm.get('invoiceNumber')?.value);
-  //   formData.append('priceListId', this.salesForm.get('priceListId')?.value);
-  //   formData.append('paymentPeriodId', this.salesForm.get('paymentPeriodId')?.value);
-  //   formData.append('invoiceType', this.salesForm.get('invoiceType')?.value);
-  //   formData.append('costCenterId', this.salesForm.get('costCenterId')?.value);
-  //   formData.append('driver', this.salesForm.get('driver')?.value);
-
-    
-  //   const headers = new HttpHeaders({
-  //     'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
-  //   });
-  
-  //   this.http.post(this.apiUrl+'CovenantBox', formData, { headers })
-  //     .subscribe(response => {
-  //       console.log('Response:', response);
-  //       alert('submit successfully');
-  //     }, error => {
-  //       console.error('Error:', error);
-  //     });
-  // }
 }

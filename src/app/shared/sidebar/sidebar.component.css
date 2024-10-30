@@ -21,12 +21,13 @@
   text-decoration: none; /* Remove underline */
 }
 
-.nav-item a:hover {
+.nav-item a:hover , a:focus{
   /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
   background-color: #4875a9;
   color: #f1f4f8;
   border: 1px solid #4875a9;
   border-radius: 10px;
+  width: 100%;
 }
 .sub-item2 a:hover {
   /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
@@ -98,3 +99,22 @@ tr, th, tr {
   background-color: #4875a9;
   color: #f7fbff;
 } */
+
+.search-icon {
+  right: 49px;
+  top: 23.5%;
+  transform: translateY(-50%);
+  font-size: 1.3rem !important;
+  color: #224273;
+  ;
+  pointer-events: none; /* Ensure the icon is non-clickable */
+}
+.search-input {
+  padding-right: 2.5rem; /* Add padding to make space for the icon */
+  /* margin-top: 15px; */
+  border-radius: 12px;
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+/* for toggle button */

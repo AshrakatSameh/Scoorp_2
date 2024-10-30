@@ -105,4 +105,13 @@ export class ItemcategoryService {
       // API call with PUT method using the FormData and headers
       return this.http.put(`${this.apiUrl}Items/${id}`, formData, { headers });
     }
+
+    deleteCategoryById(id: number): Observable<void> {
+      const tenantId = localStorage.getItem('tenant'); 
+      const headers = new HttpHeaders({
+        tenant: tenantId || '',
+        // 'Content-Type': 'application/json',
+      });
+      return this.http.delete<void>(`${this.apiUrl}Items/${id}`,{headers});
+    }
 }

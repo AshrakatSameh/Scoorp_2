@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -8,7 +8,8 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SidebarComponent {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,    private renderer: Renderer2,
+  ) {}
 
   logout() {
     const tenant = localStorage.getItem('tenant');
@@ -71,6 +72,8 @@ export class SidebarComponent {
     this.isCollapsed[section] = !this.isCollapsed[section];
   }
 
+  
+
  
 
 
@@ -80,6 +83,44 @@ export class SidebarComponent {
   }
 
 
-  
+   // Track collapsed states
+   isCollapsed3: { [key: string]: boolean } = {
+    mainMenu: true,
+    projectsMovementSub: true,
+    contractsMovementSub: true
+  };
 
+  // Toggle collapse based on section key
+  toggleCollapse3(section: string) {
+    this.isCollapsed3[section] = !this.isCollapsed3[section];
+  }
+
+  // Track collapsed states
+  isCollapsed4: { [key: string]: boolean } = {
+    charts: true,
+
+    warehouseMovementSub: true,
+    warehouseManagersSub: true,
+    typeSub: true,
+    warehouseReportsSub: true,
+    settingsSub2: true,
+  };
+
+  // Toggle collapse based on section key
+  toggleCollapse4(section: string) {
+    this.isCollapsed4[section] = !this.isCollapsed4[section];
+  }
+
+  // isSidebarVisible: boolean = true;
+
+  // toggleSidebar() {
+  //   this.isSidebarVisible = !this.isSidebarVisible;
+
+  //   const contentElement = document.getElementById('main-content');
+  //   if (this.isSidebarVisible) {
+  //     this.renderer.addClass(contentElement, 'expanded');
+  //   } else {
+  //     this.renderer.removeClass(contentElement, 'expanded');
+  //   }
+  // }
 }

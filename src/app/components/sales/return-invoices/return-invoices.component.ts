@@ -1,10 +1,16 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { ClientsService } from 'src/app/services/getAllServices/Clients/clients.service';
 import { CostCenterService } from 'src/app/services/getAllServices/CostCenter/cost-center.service';
+import { PaymentPeriodsService } from 'src/app/services/getAllServices/PaymentPeriods/payment-periods.service';
 import { PriceListService } from 'src/app/services/getAllServices/PriceList/price-list.service';
 import { ProjactService } from 'src/app/services/getAllServices/Projects/projact.service';
 import { RepresentativeService } from 'src/app/services/getAllServices/Representative/representative.service';
+import { SalesService } from 'src/app/services/getAllServices/Sales/sales.service';
 import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.service';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-return-invoices',
@@ -19,11 +25,42 @@ export class ReturnInvoicesComponent implements OnInit {
   representatives:any[]=[];
   teams:any[]=[];
   projects:any[]=[];
+
+  pageNumber =1;
+  pageSize =10;
+
+  invoiceFrom: FormGroup
   constructor(private clientServ:ClientsService,private teamServ:TeamsService,private repServ:RepresentativeService,
     private priceServ:PriceListService,private costService: CostCenterService,
-    private projectServ:ProjactService
+    private projectServ:ProjactService, private salesService:SalesService,
+    private http:HttpClient, private toast: ToastrService, private fb:FormBuilder,
+    private payPeriodService: PaymentPeriodsService
   ){
 
+    this.invoiceFrom= this.fb.group({
+      returnInvoiceNumber: ['', Validators.required],
+      clientId: ['', Validators.required],
+      representativeId: ['', Validators.required],
+      teamId: ['', Validators.required],
+      code:['',Validators.required],
+      costCenterId: ['', Validators.required],
+      clientReturnReference:['',Validators.required],
+      projectId:['',Validators.required],
+      priceListId:['',Validators.required],
+      paymentPeriodId:['', Validators.required],
+      // costCenterId:['', Validators.required],
+      // paymentPeriodId:['', Validators.required],
+      driver:['',
+         Validators.required],
+
+      // purchaseOrderNumber: ['', Validators.required],
+     
+      // note:[],
+      // AttachmentFiles:[],
+      // saleOfferId:[],
+      // deliveryNoteId:[],
+      
+      });
   }
   ngOnInit(): void {
     this.getAllClients();
@@ -32,6 +69,9 @@ export class ReturnInvoicesComponent implements OnInit {
     this.getAllRepresentatives();
     this.getAllTeams();
     this.getcostCenters();
+    // this.getAllReturnInvoices();
+    this.loadInvoices();
+    this.getPaymentPeriods();
   }
   // buttons=['الأصناف','الملاحظات','المهام' ,'مرفقات']
   buttons=['الأصناف','الملاحظات','المهام','مرفقات']
@@ -48,6 +88,15 @@ export class ReturnInvoicesComponent implements OnInit {
       //console.log(this.costCenters);
     }, error => {
       console.error('Error fetching costs data:', error)
+    })
+  }
+  payPeriods:any[]=[];
+  getPaymentPeriods() {
+    this.payPeriodService.getAllPaymentPeriods().subscribe(response => {
+      this.payPeriods = response.paymentPeriods;
+      //console.log(this.costCenters);
+    }, error => {
+      console.error('Error fetching payment data:', error)
     })
   }
   getAllPriceLists() {
@@ -86,10 +135,84 @@ export class ReturnInvoicesComponent implements OnInit {
   }
   getAllProjects() {
     this.projectServ.getProjactsWithoutPag().subscribe(response => {
-      this.projects = response.data;
+      this.projects = response.projects;
       //console.log(this.clients);
     }, error => {
       console.error('Error fetching  projects:', error)
     })
   }
+
+  invoices:any[]=[];
+
+
+clientss:any[]=[];
+loadClients() {
+  this.clientServ.getCliensts().subscribe({
+    next: (data) => {
+      this.clients = data.returnInvoices;
+      // Load invoices only after clients are successfully fetched
+      this.loadInvoices();
+    },
+    error: (err) => {
+      console.error('Error fetching clients:', err);
+      this.clients = []; // Ensure it's initialized as an empty array
+    }
+  });
+}
+
+loadInvoices() {
+  this.salesService.getReturnInvoices(this.pageNumber, this.pageSize).subscribe({
+    next: (data) => {
+      this.invoices = data.returnInvoices;
+      // Map client names only when both invoices and clients are loaded
+      this.mapClientNames();
+    },
+    error: (err) => {
+      console.error('Error fetching invoices:', err);
+      this.invoices = []; // Ensure it's initialized as an empty array
+    }
+  });
+}
+
+mapClientNames() {
+  if (this.clients.length && this.invoices.length) {
+    this.invoices.forEach(invoice => {
+      const client = this.clients.find(c => c.id === invoice.clientId);
+      invoice.clientName = client ? client.name : 'Unknown'; // Handle missing client cases
+    });
+  }
+}
+
+apiUrl= environment.apiUrl;
+onSubmit() {
+  const formData = new FormData();
+  formData.append('clientId', this.invoiceFrom.get('clientId')?.value);
+  formData.append('returnInvoiceNumber', this.invoiceFrom.get('returnInvoiceNumber')?.value);
+  formData.append('representativeId', this.invoiceFrom.get('representativeId')?.value);
+  formData.append('teamId', this.invoiceFrom.get('teamId')?.value);
+  formData.append('code', this.invoiceFrom.get('code')?.value);
+  formData.append('costCenterId', this.invoiceFrom.get('costCenterId')?.value);
+
+  formData.append('clientReturnReference', this.invoiceFrom.get('clientReturnReference')?.value);
+  formData.append('projectId', this.invoiceFrom.get('projectId')?.value);
+  formData.append('priceListId', this.invoiceFrom.get('priceListId')?.value);
+  // formData.append('costCenterId', this.invoiceFrom.get('costCenterId')?.value);
+  formData.append('paymentPeriodId', this.invoiceFrom.get('paymentPeriodId')?.value);
+  formData.append('driver', this.invoiceFrom.get('driver')?.value);
+
+  const headers = new HttpHeaders({
+    'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+  });
+
+  this.http.post(this.apiUrl+'ReturnInvoice', formData, { headers })
+    .subscribe(response => {
+      console.log('Response:', response);
+      // alert('submit successfully');
+      this.toast.success(('submit successfully'))
+    }, error => {
+      console.error('Error:', error);
+      this.toast.error('Error accurred', error)
+    });
+}
+
 }
