@@ -123,6 +123,7 @@
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr class="firstcol">
+                                            <th> تغيير الحالة</th>
                                             <th>الحالة</th>
                                             <th>المندوب</th>
                                             <th>العميل</th>
@@ -137,14 +138,30 @@
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let item of deliveryVouchers, let i = index">
-                                            <td>{{ item.deliveryStatus }}</td>
+                                            
+                                            <!-- <td>
+                                                <select [(ngModel)]="selectedStatus" (change)="onStatusChange(selectedStatus)" id="status" class="form-select form-control" style="width:90px;" >
+                                                <option selected disabled>تغيير الحالة</option>
+                                                <option *ngFor="let type of deliveryStatusList" [value]="type.key">
+                                                   {{type.value}}</option>
+                                            </select>
+                                        </td> -->
+                                        <td >
+                                            <select *ngFor="let item of itemss; let i = index" [(ngModel)]="selectedStatuses[i]" (change)="onStatusChange(i, selectedStatuses[i])" id="status-{{i}}" class="form-select form-control" style="width:90px;">
+                                              <option selected disabled>تغيير الحالة</option>
+                                              <option *ngFor="let type of deliveryStatusList" [value]="type.key">
+                                                {{ type.value }}
+                                              </option>
+                                            </select>
+                                          </td>
+                                            <td>{{ item.delivetStatusName }}</td>
                                             <td>{{item.representativeName}}</td>
                                             <td>{{item.teamName}}</td>
                                             <td>{{item.code}}</td>
                                             <td>Nothing</td>
                                             <td>1/1/2024</td>
                                             <td>{{ i+1 }}</td>
-                                            <td> <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                                            <td> <input type="checkbox" (change)="onCheckboxChange(item, $event)" class="large-checkbox" />
                                             </td>
                                         </tr>
 
@@ -1143,4 +1160,17 @@
 </div>
 
 
-<!-- Update -->
+<!-- Update status -->
+<div *ngIf="showItemPopup" class="modal">
+    <div class="modal-content">
+      <h2>Enter Items</h2>
+      <div *ngFor="let item of itemss; let i = index">
+        <label for="item-{{i}}">Item {{ i + 1 }}:</label>
+        <input id="item-{{i}}" [(ngModel)]="item.value" placeholder="Enter item details" />
+      </div>
+      <button (click)="addItem()">Add More Item</button>
+      <button (click)="submitStatusChange()">Submit</button>
+      <button (click)="closePopup()">Cancel</button> <!-- Ensure this calls closePopup -->
+    </div>
+  </div>
+  

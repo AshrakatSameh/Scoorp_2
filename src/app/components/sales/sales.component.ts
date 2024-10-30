@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { DeliveryStatus } from 'src/app/enums/DeliveryStatus ';
 import { PaymentType } from 'src/app/enums/PaymentType';
 import { RequestStage } from 'src/app/enums/RequestStage';
 
@@ -206,13 +207,23 @@ apiUrl=environment.apiUrl;
   }
 
   getAllSaleOffers(){
-    this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response=>{
-        this.salesOffers= response.saleOffers;
+    // this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response=>{
+    //     this.salesOffers= response.saleOffers;
+    //     console.log(this.salesOffers);
+    //   }, error =>{
+    //     console.error('Error fetching salesOffers data:' , error)
+    //   })
+    this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe({
+      next: (response) => {
+        this.salesOffers = response.saleOffers;
+        this.mapRequestStage();
         console.log(this.salesOffers);
-      }, error =>{
-        console.error('Error fetching salesOffers data:' , error)
-      })
-      
+      },
+      error: (err) => {
+        console.error('Error fetching salesOffers data:', err);
+        this.salesOffers = []; // Ensure it's initialized as an empty array
+      }
+    });
     }
 
 getAllClients() {
@@ -299,22 +310,6 @@ getAllTeams() {
     formData.append('paymentType', this.saleOfferForm.get('paymentType')?.value);
 
 
-      // Access the items FormArray
-  // const itemsArray = this.saleOfferForm.get('items') as FormArray;
-
-  // // Loop through the items FormArray to append each item to FormData
-  // itemsArray.controls.forEach((itemGroup: AbstractControl, index: number) => {
-  //   const item = itemGroup as FormGroup;
-
-  //   // Append each property of the item with index-based keys
-  //   formData.append(`items[${index}][id]`, item.get('id')?.value);
-  //   formData.append(`items[${index}][quantity]`, item.get('quantity')?.value);
-  //   formData.append(`items[${index}][unitPrice]`, item.get('unitPrice')?.value);
-  //   formData.append(`items[${index}][discount]`, item.get('discount')?.value);
-  //   formData.append(`items[${index}][salesTax]`, item.get('salesTax')?.value);
-  //   formData.append(`items[${index}][unit]`, item.get('unit')?.value);
-  //   formData.append(`items[${index}][notes]`, item.get('notes')?.value);
-  // });
     //  // Convert items FormArray to JSON string and append it
      const itemsArray = this.saleOfferForm.get('items')?.value;
      formData.append('items', JSON.stringify(itemsArray));
@@ -426,8 +421,97 @@ updateCategory() {
         this.toast.error('An error occurred while updating the delivery note .')
       }
     );
+    }else{
+      console.log(this.saleOfferForm)
+    }
+  }
+
+  deleteItemType(){
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this record?'
+    );
+    if (confirmed){
+      this.salesService.deleteById(this.selectedCategory.id).subscribe(
+        (response)=>{
+          console.log('Delivery note deleted successfully:', response);
+          this.toast.success('Delivery note deleted successfully');
+          this.getAllSaleOffers();
+          this.closeModal(); 
+        },error => {
+          console.error('Error delete delivery note category:', error);
+          console.log(this.selectedCategory.id);
+          // alert('An error occurred while updating the delivery note .');
+          this.toast.error('An error occurred while deleting the delivery note .')
+        }
+      )
+    }else {
+        // User canceled the deletion
+        console.log('Deletion canceled');
+      }
+    
+  }
+
+
+  loadClients() {
+    this.clientService.getCliensts().subscribe({
+      next: (data) => {
+        this.clients = data.returnInvoices;
+        // Load invoices only after clients are successfully fetched
+        this.loadSalesOffer();
+      },
+      error: (err) => {
+        console.error('Error fetching clients:', err);
+        this.clients = []; // Ensure it's initialized as an empty array
+      }
+    });
+  }
+  
+  sales:any[]=[]
+  loadSalesOffer() {
+    this.salesService.getSalesOfferWithoutPaging().subscribe({
+      next: (data) => {
+        this.sales = data.returnInvoices;
+        // Map client names only when both invoices and clients are loaded
+        this.mapClientNames();
+        // this.mapDeliveryStatus();
+      },
+      error: (err) => {
+        console.error('Error fetching invoices:', err);
+        this.sales = []; // Ensure it's initialized as an empty array
+      }
+    });
+  }
+  
+  mapClientNames() {
+    if (this.clients.length && this.sales.length) {
+      this.sales.forEach(sale => {
+        const client = this.clients.find(c => c.id === sale.clientId);
+        sale.clientName = client ? client.name : 'Unknown'; // Handle missing client cases
+      });
     }
   }
 
 
+
+
+  mapRequestStage() {
+    this.salesOffers.forEach(offer => {
+      // Assuming each offer has a `requestStage` property that is a number
+      offer.requestStageName = this.getRequestStageName(offer.requestStage);
+    });
+  }
+
+  // Get the name of the request stage from the number
+  getRequestStageName(stageNumber: number): string {
+    // Define a mapping array for the numeric indices to the enum values
+    const stageMapping: string[] = [
+      RequestStage.PriceOffer,        // 0
+      RequestStage.SalesOrder,   // 1
+      RequestStage.GoodsDelivery,    // 2
+      RequestStage.Canceld ,     // 3
+      RequestStage.Invoiced   // 4
+    ];
+
+    return stageMapping[stageNumber] || 'Unknown';
+  }
 }

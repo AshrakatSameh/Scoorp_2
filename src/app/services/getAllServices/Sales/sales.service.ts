@@ -28,6 +28,19 @@ export class SalesService {
     return this.http.get(`${this.apiUrl}SaleOffer`, { headers, params });
 
   }
+  getSalesOfferWithoutPaging(): Observable<any> {
+    // Get tenantId from localStorage
+    const tenantId = localStorage.getItem('tenant');
+
+    // Set the custom header with the tenantId
+    const headers = new HttpHeaders({
+      tenant: tenantId || '', // Set tenantId header if available
+      'Content-Type': 'application/json',
+    });
+    // Send the GET request with headers
+    return this.http.get(`${this.apiUrl}SaleOffer`, { headers });
+
+  }
 
   getDeliveryVoucher(pageNumber: number, pageSize: number): Observable<any> {
     // Get tenantId from localStorage
@@ -91,7 +104,31 @@ export class SalesService {
     // API call with PUT method using the FormData and headers
     return this.http.put(`${this.apiUrl}SalesInvoice/${id}`, formData, { headers });
   }
+  // Update delivery note/ goods voucher status
+  updateStatus(id: number, payload: { newStatus: string; items: string[] }): Observable<any> {
+    const tenantId = localStorage.getItem('tenant');
+    
+    // Create headers with tenant info
+    const headers = new HttpHeaders({
+      tenant: tenantId || '' // Set tenantId header if available
+    });
   
+    // Prepare FormData for multipart/form-data request
+    const formData = new FormData();
+    formData.append('newStatus', payload.newStatus || ''); // Appending new status
+  
+    // Append items as an array of strings
+    payload.items.forEach((item, index) => {
+      formData.append(`items[${index}]`, item || '');
+    });
+  
+    // API call with PUT method using the FormData and headers
+    return this.http.put(`${this.apiUrl}DeliveryNotes/UpdateDeliveryNoteStatus/${id}`, formData, { headers });
+  }
+    // API call with PUT method using the FormData and headers
+    // return this.http.put(`${this.apiUrl}DeliveryNotes/UpdateDeliveryNoteStatus/${id}`, formData, { headers });
+  
+
   deleteSalesInvoiceById(id: number): Observable<void> {
     const tenantId = localStorage.getItem('tenant'); 
     const headers = new HttpHeaders({

@@ -13,6 +13,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ToastrService } from 'ngx-toastr';
 import { ItemsService } from 'src/app/services/getAllServices/Items/items.service';
+import { DeliveryStatus } from 'src/app/enums/DeliveryStatus ';
 
 @Component({
   selector: 'app-goods-voucher',
@@ -30,6 +31,10 @@ export class GoodsVoucherComponent implements OnInit {
   clientData:any;
   deliveryVoucherForm!:FormGroup;
   // locationForm!:FormGroup;
+
+  deliveryStatus = DeliveryStatus;  // Access the PaymentType enum
+// Convert enum to an array for dropdown
+deliveryStatusList: { key: string, value: string }[] = [];
   
   constructor(private salesService:SalesService,private clientService:ClientsService,
     private representServece:RepresentativeService, private fb: FormBuilder, private  http:HttpClient,
@@ -59,6 +64,11 @@ export class GoodsVoucherComponent implements OnInit {
     //   latitude: ['', Validators.required],
     //   linelongitude3: ['', Validators.required]
     // }) 
+
+    this.deliveryStatusList = Object.keys(this.deliveryStatus).map(key => ({
+      key: key,
+      value: this.deliveryStatus[key as keyof typeof DeliveryStatus]
+    }));
   }
 
  
@@ -104,17 +114,28 @@ export class GoodsVoucherComponent implements OnInit {
   clientN: any[] = [];  //arrNames:any ;
   clientName:any;
   getAllDeliveryVouchers() {
-    this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe(response => {
-      this.deliveryVouchers = response;
-      const x =this.deliveryVouchers.map(dVouche=> 
-      {
-        this.ClientById(dVouche.clientId);
+    this.salesService.getDeliveryVoucher(this.pageNumber, this.pageSize).subscribe({
+      next: (data) => {
+        this.deliveryVouchers = data;
+        // Map client names only when both invoices and clients are loaded
+        this.mapDeliveryStatus();
+        // this.mapDeliveryStatus();
+      },
+      error: (err) => {
+        console.error('Error fetching invoices:', err);
+        // this.sales = []; // Ensure it's initialized as an empty array
       }
-      );
-    }, error => {
-      console.error('Error fetching delivery vouchers data:', error)
-    })
-  }
+    });
+    }
+    //   this.deliveryVouchers = response;
+    //   const x =this.deliveryVouchers.map(dVouche=> 
+    //   {
+    //     this.ClientById(dVouche.clientId);
+    //   }
+    //   );
+    // }, error => {
+    //   console.error('Error fetching delivery vouchers data:', error)
+    // })
 
 
   cliName:any;
@@ -243,15 +264,20 @@ storesSec:any[] =[];
   isModalOpen = false;
   selectedCategory: any = null;
 
-onCheckboxChange(category: any) {
-  this.selectedCategory = category;  // Store the selected category data
-  console.log(this.selectedCategory);
-  // const categoryId = category.id;
-  // if (categoryId) {
-  //   this.ItemsById(categoryId);  // Fetch item details using the selected category ID
-  // } else {
-  //   console.error('No valid category ID provided');
-  // }
+// onCheckboxChange(category: any) {
+//   this.selectedCategory = category;  // Store the selected category data
+//   console.log(this.selectedCategory);
+ 
+// }
+onCheckboxChange(category: any, event: any) {
+  if (event.target.checked) { // Check if the checkbox is checked
+    this.selectedCategory = category; // Store the selected category data
+    console.log(this.selectedCategory);
+  } else {
+    // Optionally, handle unchecking behavior here if needed
+    this.selectedCategory = null; // Clear the selection if unchecked
+    console.log('Checkbox unchecked, category deselected');
+  }
 }
 item:any
 ItemsById(id: number){
@@ -416,4 +442,93 @@ changePage(newPageNumber: number): void {
 }
 
 
+mapDeliveryStatus() {
+  this.deliveryVouchers.forEach(offer => {
+    // Assuming each offer has a `requestStage` property that is a number
+    offer.delivetStatusName = this.getDeliveryStatusName(offer.deliveryStatus);
+  });
+}
+
+// Get the name of the request stage from the number
+getDeliveryStatusName(stageNumber: number): string {
+  // Define a mapping array for the numeric indices to the enum values
+  const stageMapping: string[] = [
+    DeliveryStatus.Draft,        // 0
+    DeliveryStatus.InProgress,   // 1
+    DeliveryStatus.Completed,    // 2
+    DeliveryStatus.Canceled ,     // 3
+  ];
+
+  return stageMapping[stageNumber] || 'Unknown';
+}
+
+// Change Status
+
+showItemPopup = false; // Controls the visibility of the item popup
+  selectedStatuses: (DeliveryStatus | null)[] = []; // Array to hold selected statuses for each row
+  itemss: { value: string }[] = []; // Array to hold item values
+  selectedItemId: number | null = null; // To hold the selected item ID
+  // deliveryStatusList = Object.keys(DeliveryStatus).map(key => ({ key, value: DeliveryStatus[key] })); // Get enum keys and values for dropdown
+
+
+  onStatusChange(index: number, status: string | null) {
+    if (status) {
+      this.selectedStatuses[index] = DeliveryStatus[status as keyof typeof DeliveryStatus]; // Map string to enum
+
+      // Check if the selected status requires showing the popup
+      if (this.selectedStatuses[index] === DeliveryStatus.InProgress || this.selectedStatuses[index] === DeliveryStatus.Canceled) {
+        this.showItemPopup = true;
+        this.itemss = []; // Reset items for new entry
+      }
+    }else{
+      console.log(this.selectedStatuses[index])
+    }
+  }
+
+  openPopup(id: number) {
+    this.selectedItemId = id; // Set the selected item ID
+    this.showItemPopup = true; // Show the popup
+    this.itemss = []; // Reset items for new entry
+  }
+
+  addItem2() {
+    this.items.push({ value: '' }); // Add a new item input
+  }
+
+submitStatusChange() {
+  if (this.selectedItemId === null || this.selectedItemId === undefined) {
+    console.error('No item selected');
+    return;
+  }
+
+  // Check if selectedStatuses is defined and contains the selectedItemId
+  const selectedStatus = this.selectedStatuses?.[this.selectedItemId];
+
+  // Ensure selectedStatus is not null or undefined before converting to string
+  const newStatusString = selectedStatus ? selectedStatus.toString() : '';
+
+  const payload = {
+    newStatus: newStatusString, // Now always a string
+    items: this.itemss.map(item => item.value) // Extract item values
+  };
+
+  this.salesService.updateStatus(this.selectedItemId, payload).subscribe({
+    next: (response) => {
+      console.log('Status changed successfully:', response);
+      // Handle successful response
+    },
+    error: (err) => {
+      console.error('Error changing status:', err);
+    }
+  });
+
+  this.closePopup(); // Close the popup after submitting
+}
+
+
+  closePopup() {
+    this.showItemPopup = false; // Hide the popup
+    this.selectedItemId = null; // Reset the selected item ID
+    this.itemss = []; // Reset items array
+  }
 }

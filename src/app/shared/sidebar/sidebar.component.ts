@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -8,7 +8,8 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SidebarComponent {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,    private renderer: Renderer2,
+  ) {}
 
   logout() {
     const tenant = localStorage.getItem('tenant');
@@ -109,4 +110,17 @@ export class SidebarComponent {
   toggleCollapse4(section: string) {
     this.isCollapsed4[section] = !this.isCollapsed4[section];
   }
+
+  // isSidebarVisible: boolean = true;
+
+  // toggleSidebar() {
+  //   this.isSidebarVisible = !this.isSidebarVisible;
+
+  //   const contentElement = document.getElementById('main-content');
+  //   if (this.isSidebarVisible) {
+  //     this.renderer.addClass(contentElement, 'expanded');
+  //   } else {
+  //     this.renderer.removeClass(contentElement, 'expanded');
+  //   }
+  // }
 }
