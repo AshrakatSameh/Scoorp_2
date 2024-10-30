@@ -48,6 +48,7 @@ import { StorehouseTransportationComponent } from './components/stock/storehouse
 import { authGuard } from './guard/auth.guard';
 import { CateogriesComponent } from './components/stock/categories/cateogries/cateogries.component';
 import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
+import { PriceListComponent } from './components/sales/clients/price-list/price-list.component';
 
 const routes: Routes = [
   {path:'forgetPassword', component: ForgetPasswordComponent,canActivate:[authGuard]},
@@ -98,6 +99,7 @@ const routes: Routes = [
   {path:'workServicesCategory', component:WorkServecesCategoryComponent,canActivate:[authGuard]},
   {path:'documentOperations' , component:DocumentOperationsComponent,canActivate:[authGuard]},
   {path:'representatives' , component: RepresentativeComponent},
+  {path:'priceLists', component:PriceListComponent},
   {path:'', component:LoginComponent},
   {path:'**', component:LoginComponent}
 ];

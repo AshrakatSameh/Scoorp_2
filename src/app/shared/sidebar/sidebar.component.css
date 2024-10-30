@@ -102,7 +102,7 @@ tr, th, tr {
 
 .search-icon {
   right: 49px;
-  top: 23.5%;
+  top: 45.5%;
   transform: translateY(-50%);
   font-size: 1.3rem !important;
   color: #224273;
@@ -118,3 +118,12 @@ tr, th, tr {
 }
 
 /* for toggle button */
+
+
+
+
+.gray-line {
+  border: none;
+  border-top: 2px solid gray;
+  margin: 0px 0 30px 8px; /* Adjust margin as needed */
+}

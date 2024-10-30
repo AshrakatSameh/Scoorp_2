@@ -63,6 +63,7 @@ import { CateogriesComponent } from './components/stock/categories/cateogries/ca
 import { RepresentativeComponent } from './components/sales/salesResponsible/representative/representative.component';
 import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { ToastrModule } from 'ngx-toastr';
+import { PriceListComponent } from './components/sales/clients/price-list/price-list.component';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import { ToastrModule } from 'ngx-toastr';
     LoginComponent,
     CateogriesComponent,
     RepresentativeComponent,
+    PriceListComponent,
     
   ],
   imports: [

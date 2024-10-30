@@ -192,11 +192,11 @@ getAllWarehouses() {
   })
 }
 
-costCenters:any[]=[]
+costCenterss:any[]=[]
 
 getAllCostCenters() {
   this.costCenterService.getAllCostCaners().subscribe(response => {
-    this.costCenters = response.costCenters;
+    this.costCenterss = response.costCenters;
     //console.log(this.costCenters);
   }, error => {
     console.error('Error fetching  costCenters:', error)
@@ -214,10 +214,10 @@ getAllRepresentatives() {
   })
 }
 
-teams:any[]=[];
+teamss:any[]=[];
 getAllTeams() {
   this.teamService.getTeams().subscribe(response => {
-    this.teams = response.teams;
+    this.teamss = response.teams;
     //console.log(this.representatives);
   }, error => {
     console.error('Error fetching  teams:', error)
