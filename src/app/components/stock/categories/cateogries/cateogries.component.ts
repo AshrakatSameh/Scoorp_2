@@ -18,12 +18,14 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class CateogriesComponent {
   storesSec: any[] = [];
+
   units: any[] = [];
   types: any[] = [];
   brands: any[] = [];
   itemCategory: any[] = [];
   costs:any[] = [];
   selectedCategory: any = null;
+
   
   isModalOpen = false;
   isDropdownOpen: boolean = false;
@@ -98,8 +100,8 @@ export class CateogriesComponent {
   }
 
   ngOnInit(): void {
+    this.getAllItems()
     this.getAllBrands();
-    this.getAllCategories();
     this.getAllItemCategory();
     this.getAllItemType();
     this.getAllUnit();
@@ -108,7 +110,7 @@ export class CateogriesComponent {
   }
 
 
-getAllCategories(){
+getAllItems(){
   this.itemServices.getAllItems().subscribe(
     (response) => {
       this.storesSec = response.item1; // Assign the fetched Warehouses
@@ -170,7 +172,7 @@ getAllcosts(){
   }
 
 
-  onSubmitAdd(): void {
+  onSubmit(): void {
     const formData = new FormData();
     formData.append('name', this.ItemsForm.get('name')?.value);
     formData.append('localName', this.ItemsForm.get('localName')?.value);
@@ -219,6 +221,31 @@ getAllcosts(){
         console.error('Error:', error);
       });
     
+  }
+
+
+  onSubmitAdd(): void {
+   
+    if (this.ItemsForm.valid) {
+      // Call the service to post the data
+      const formData = this.ItemsForm.value; // Get the form data
+      this.itemServices.creategetItems(formData).subscribe(
+        response => {
+          console.log('Job Des  created successfully!', response);
+  
+          // Handle success, show notification, etc.
+        },
+        error => {
+          console.error('Error creating Job Des :', error);
+          console.log(formData)
+          // Handle error, show notification, etc.
+        }
+      );
+    } else {
+      console.log(this.ItemsForm);
+      console.log('Form is not valid');
+      // Handle form validation errors
+    }
   }
 
   onCheckboxChange(category: any) {
@@ -279,26 +306,52 @@ toggleDropdown() {
       const updatedCategory = { ...this.ItemsForm.value, id: this.selectedCategory.id };
   
       // Call the update service method using the category's id
-      this.itemCat.updateItemType(this.selectedCategory.id, updatedCategory).subscribe(
+      this.itemServices.updateItems(this.selectedCategory.id, updatedCategory).subscribe(
         (response) => {
-          console.log('Category updated successfully:', response);
-          this.toast.success('Item type updated successfully')
+          console.log('Items updated successfully:', response);
+          this.toast.success('Items updated successfully')
           // Update the local categories array if necessary
           const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
           if (index !== -1) {
             this.storesSec[index] = updatedCategory;
           }
   
+          this.getAllItems();
           this.closeModal();  // Close the modal after successful update
         },
         (error: HttpErrorResponse) => {
-          console.error('Error updating category:', error);
-          console.log('Updated Category Data:', updatedCategory);
+          console.error('Error updating Items:', error);
+          console.log('Updated Items Data:', updatedCategory);
           // alert('An error occurred while updating the item type .');
-          this.toast.error('An error occurred while updating the item type .')
+          this.toast.error('An error occurred while updating the Items .')
         }
       );
       }
     }
+
+
+
+    deleteItem() {
+      if (this.selectedCategory) {
+          console.log('Attempting to delete item with ID:', this.selectedCategory);
+          this.itemServices.deleteItemById(this.selectedCategory).subscribe(
+              () => {
+                  console.log('Item deleted successfully');
+                  this.getAllItems(); // Reload items or update the view
+                  this.selectedCategory = null; // Reset the selected ID
+              },
+              (error) => {
+                  console.error('Error deleting item:', error);
+                  // Handle the error appropriately
+              }
+          );
+      } else {
+          console.error('No item selected for deletion');
+      }
+  }
+  
+
+
+  
   
 }
