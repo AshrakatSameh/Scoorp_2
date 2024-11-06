@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { error } from 'jquery';
 import { ToastrService } from 'ngx-toastr';
 import { JobType } from 'src/app/enums/JobType';
@@ -11,6 +11,8 @@ import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.servic
 import { TestService } from 'src/app/services/getAllServices/Test/test.service';
 import { UserTypesService } from 'src/app/services/getAllServices/UserTypes/user-types.service';
 import { environment } from 'src/environments/environment.development';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
 
 @Component({
   selector: 'app-representative',
@@ -27,11 +29,15 @@ export class RepresentativeComponent implements OnInit {
 
   jobType= JobType;  
   // Convert enum to an array for dropdown
-  jobTypeList: { key: string, value: string }[] = [];
+  jobTypeList: { key: number, value: string }[] = [];
 
   userAccessType= UserAccessType; 
   // Convert enum to an array for dropdown
-  userAccessTypeList: { key: string, value: string }[] = [];
+  userAccessTypeList: { key: number, value: string }[] = [];
+ 
+
+  dropdownSettings = {};
+
 
   
   constructor(private representService: RepresentativeService,private teamService:TeamsService,
@@ -52,15 +58,7 @@ export class RepresentativeComponent implements OnInit {
 
     });
 
-    this.jobTypeList = Object.keys(this.jobType).map(key => ({
-      key: key,
-      value: this.jobType[key as keyof typeof JobType]
-    }));
 
-    this.userAccessTypeList = Object.keys(this.userAccessType).map(key => ({
-      key: key,
-      value: this.userAccessType[key as keyof typeof UserAccessType]
-    }));
   }
   userData:any;
   ngOnInit(): void {
@@ -69,6 +67,33 @@ export class RepresentativeComponent implements OnInit {
     this.getAllUserTypes();
     this.getAllEmpoyees();
 
+    this.dropdownSettings = {
+      singleSelection: false,
+    idField: 'key',
+    textField: 'value',
+    selectAllText: 'Select All',
+    unSelectAllText: 'Unselect All',
+    itemsShowLimit: 3,
+    allowSearchFilter: true,
+    placeholder: 'قم باختيار نوع الوصول',
+    closeDropDownOnSelection: false,
+    enableCheckAll: true // Disables "Select All" option to match the standard <select> functionality
+    };
+
+    this.userAccessTypeList = [
+      { key: 0, value: 'Dashboard' },
+      { key: 1, value: 'MobileScreen1' },
+      { key: 2, value: 'MobileScreen2' }
+    ];
+
+    this.jobTypeList = [
+      { key: 0, value: 'SalesRepresentative' },
+      { key: 1, value: 'Technician' },
+      { key: 2, value: 'Merchandiser' },
+      { key: 3, value: 'SalesSupervisor' },
+      { key: 4, value: 'SalesManager' },
+      { key: 5, value: 'Accountant' }
+    ];
     
     this.testService.getTest().subscribe({
       next: (data) => {
@@ -129,34 +154,76 @@ export class RepresentativeComponent implements OnInit {
     })
   }
 
-  onSubmitAdd(): void {
-   
-    if (this.representativeForm.valid) {
-      // Call the service to post the data
-      const formData = this.representativeForm.value; // Get the form data
-      this.representService.createRepresentative(formData).subscribe(
-        response => {
-          console.log('Representative created successfully!', response);
-          // alert('Representative created successfully!')
-          this.toast.success("Representative created successfully!",'Success');
-        },
-        (error) => {
-          // const errorMessage = error.error?.message || error.message || 'An error occurred!';
-          // console.error('Error creating Representative:', error);
-          this.toast.error(error.error);
-          console.log(formData)
-          // Handle error, show notification, etc.
-        }
-      );
-    } else {
-      console.log(this.representativeForm);
-      this.toast.error('Form is not valid');
+  // Getter for easy access to the FormArray
+  get accessTypes(): FormArray {
+    return this.representativeForm.get('accessTypes') as FormArray;
+  }
 
-      console.log('Form is not valid');
-      // Handle form validation errors
+  // Method to add an item to the FormArray by key
+  addAccessType(key: string): void {
+    this.accessTypes.push(this.fb.control(key)); // Only store the key
+  }
+
+  // Method to remove an item from the FormArray by key
+  removeAccessType(key: string): void {
+    const index = this.accessTypes.controls.findIndex(
+      (control) => control.value === key // Compare with the key
+    );
+    if (index >= 0) {
+      this.accessTypes.removeAt(index);
     }
   }
 
-  
+  // Handle item selection in dropdown
+  // onItemSelect(item: any): void {
+  //   this.addAccessType(item.key); // Add only the key
+  // }
 
+  // Handle item deselection in dropdown
+  onItemDeselect(item: any): void {
+    this.removeAccessType(item.key); // Remove by the key
+  }
+
+  // Handle "Select All" action in dropdown
+  onSelectAll(items: any[]): void {
+    this.accessTypes.clear(); // Clear the FormArray before adding all items
+    items.forEach((item) => this.addAccessType(item.key)); // Add only keys
+  }
+
+  // Handle "Deselect All" action in dropdown
+  onDeselectAll(): void {
+    this.accessTypes.clear(); // Clear all items from the FormArray
+  }
+
+  
+  onSubmitAdd(): void {
+    if (this.representativeForm.valid) {
+      const formData = this.representativeForm.value; // Get the form data
+
+      console.log("Form Data before submission:", formData); // Debug log
+
+      this.representService.createRepresentative(formData).subscribe(
+        response => {
+          console.log('Representative created successfully!', response);
+          this.toast.success("Representative created successfully!", 'Success');
+        },
+        (error) => {
+          console.error('Error creating Representative:', error);
+          this.toast.error(error.error?.message || 'An error occurred!');
+        }
+      );
+    } else {
+      console.log("Form validation failed:", this.representativeForm);
+      this.toast.error('Form is not valid');
+    }
+  }
+
+    // Method for handling item selection
+    selectedItems = [];
+
+    onItemSelect(item: any): void {
+      console.log('Selected item:', item);
+    }
+  
+ 
 }

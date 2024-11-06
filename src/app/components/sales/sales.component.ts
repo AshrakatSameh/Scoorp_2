@@ -27,8 +27,12 @@ export class SalesComponent implements OnInit {
   pageNumber: number = 1;
   pageSize: number = 10;
   
+   
+
+
   costCenters:any[]=[];
   salesOffers:any[]=[];
+  
   clients:any[]=[];
   warehouses:any[]=[];
   representatives:any[]=[]
@@ -69,7 +73,7 @@ apiUrl=environment.apiUrl;
     this.saleOfferForm= this.fb.group({
       clientId: ['', Validators.required],
       representativeId: ['', Validators.required],
-      code: ['', Validators.required],
+      // code: ['', Validators.required],
       teamId: ['', Validators.required],
       clientPurchaseOrder: ['', Validators.required],
       costCenterId: ['', Validators.required],
@@ -90,7 +94,6 @@ apiUrl=environment.apiUrl;
       
       });
 
-      this.addItem(); 
       
 
     this.paymentTypeList = Object.keys(this.paymentType).map(key => ({
@@ -114,9 +117,7 @@ apiUrl=environment.apiUrl;
     this.getAllClients();
     this.getAllItems();
     }
-    get items(): FormArray {
-      return this.saleOfferForm.get('items') as FormArray;
-    }
+    
   // buttons=['المعلومات الأساسية','المواقع و الفروع','المرفقات','المهام' ,'الحساب البنكي','الأشعارات والتذكير','التقارير','معلومات التواصل','بيانات الضريبه','الاستبيانات']
   buttons=['الأصناف','الملاحظات','المهام' ,'مرفقات']
 
@@ -171,6 +172,11 @@ apiUrl=environment.apiUrl;
     console.log('File selected:', file);
     // You could upload the file to the server here using an API service
   }
+
+
+  get items(): FormArray {
+    return this.saleOfferForm.get('items') as FormArray;
+  }
   addItem() {
     const itemGroup = this.fb.group({
       itemId: [''],
@@ -184,35 +190,14 @@ apiUrl=environment.apiUrl;
 
     this.items.push(itemGroup);
   }
+ // Method to remove an item from the FormArray
+ removeItem(index: number) {
+  this.items.removeAt(index);
+}
 
-  // items table methods
-  onItemSelect(event: any, rowIndex: number) {
-    const selectedItemId = event.target.value;
 
-    // Fetch details for the selected item
-    this.itemService.getItemDetails(selectedItemId).subscribe((itemDetails: any) => {
-      // Update the specific row with the item details
-      this.tableData[rowIndex].code = itemDetails.code;
-      this.tableData[rowIndex].unit = itemDetails.unit;
-      this.tableData[rowIndex].unitPrice = itemDetails.unitPrice;
-      this.tableData[rowIndex].tax = itemDetails.tax;
-      this.tableData[rowIndex].discount = itemDetails.discount;
-      this.tableData[rowIndex].total = this.calculateTotal(itemDetails);
-    });
-  }
-
-  calculateTotal(itemDetails: any) {
-    // Example calculation of total price (modify based on your logic)
-    return itemDetails.unitPrice - itemDetails.discount + itemDetails.tax;
-  }
 
   getAllSaleOffers(){
-    // this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe(response=>{
-    //     this.salesOffers= response.saleOffers;
-    //     console.log(this.salesOffers);
-    //   }, error =>{
-    //     console.error('Error fetching salesOffers data:' , error)
-    //   })
     this.salesService.getSalesOffers(this.pageNumber, this.pageSize).subscribe({
       next: (response) => {
         this.salesOffers = response.saleOffers;
@@ -271,7 +256,6 @@ getAllTeams() {
   })
 }
 
-
   getAllPriceLists() {
     this.pricelistService.getAllPriceLists().subscribe(response => {
       this.priceLists = response.data;
@@ -280,10 +264,7 @@ getAllTeams() {
       console.error('Error fetching price lists data:', error)
     })
   }
-
-
-
-  getcostCenters() {
+getcostCenters() {
     this.costService.getAllCostCaners().subscribe(response => {
       this.costCenters = response.costCenters;
       //console.log(this.costCenters);
@@ -292,15 +273,14 @@ getAllTeams() {
     })
   }
 
-   // Method to remove an item from the FormArray
-   removeItem(index: number) {
-    this.items.removeAt(index);
-  }
+  
   onSubmit() {
     const formData = new FormData();
+  
+    // Append all other form fields individually
     formData.append('clientId', this.saleOfferForm.get('clientId')?.value);
     formData.append('representativeId', this.saleOfferForm.get('representativeId')?.value);
-    formData.append('code', this.saleOfferForm.get('code')?.value);
+    // formData.append('code', this.saleOfferForm.get('code')?.value);
     formData.append('teamId', this.saleOfferForm.get('teamId')?.value);
     formData.append('clientPurchaseOrder', this.saleOfferForm.get('clientPurchaseOrder')?.value);
     formData.append('costCenterId', this.saleOfferForm.get('costCenterId')?.value);
@@ -308,26 +288,35 @@ getAllTeams() {
     formData.append('offerExpiryDate', this.saleOfferForm.get('offerExpiryDate')?.value);
     formData.append('paymentPeriod', this.saleOfferForm.get('paymentPeriod')?.value);
     formData.append('paymentType', this.saleOfferForm.get('paymentType')?.value);
-
-
-    //  // Convert items FormArray to JSON string and append it
-     const itemsArray = this.saleOfferForm.get('items')?.value;
-     formData.append('items', JSON.stringify(itemsArray));
   
-    const headers = new HttpHeaders({
-      'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+    // Append each item in the items FormArray
+    this.items.controls.forEach((item, index) => {
+      const itemValue = item.value;
+      formData.append(`items[${index}].itemId`, itemValue.itemId);
+      formData.append(`items[${index}].quantity`, itemValue.quantity);
+      formData.append(`items[${index}].unitPrice`, itemValue.unitPrice);
+      formData.append(`items[${index}].salesTax`, itemValue.salesTax);
+      formData.append(`items[${index}].discount`, itemValue.discount);
+      formData.append(`items[${index}].unit`, itemValue.unit);
+      formData.append(`items[${index}].notes`, itemValue.notes);
     });
   
-    this.http.post(this.apiUrl+'SaleOffer', formData, { headers })
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant') || ''  // Add your tenant value here
+    });
+  
+    this.http.post(this.apiUrl + 'SaleOffer', formData, { headers })
       .subscribe(response => {
         console.log('Response:', response);
-        // alert('submit successfully');
-        this.toast.success('submit successfully')
+        this.toast.success('submit successfully');
+        this.saleOfferForm.reset();
       }, error => {
         console.error('Error:', error);
-        this.toast.error('An error accured')
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
       });
   }
+  
 changePage(newPageNumber: number): void {
   this.pageNumber = newPageNumber;
   console.log(this.pageNumber)
@@ -349,14 +338,9 @@ storesSec:any[] =[];
   selectedCategory: any = null;
 
 onCheckboxChange(category: any) {
-  this.selectedCategory = category;  // Store the selected category data
-  // console.log(this.selectedCategory);
-  // const categoryId = category.id;
-  // if (categoryId) {
-  //   this.ItemsById(categoryId);  // Fetch item details using the selected category ID
-  // } else {
-  //   console.error('No valid category ID provided');
-  // }
+  this.updateSelectAll();
+  this.getAllSaleOffers();
+  this.selectedCategory = category;  
 }
 item:any
 ItemsById(id: number){
@@ -377,11 +361,13 @@ openModalForSelected() {
       clientId: this.selectedCategory.clientId,
       representativeId: this.selectedCategory.representativeId,
       teamId: this.selectedCategory.teamId,
-      code: this.selectedCategory.code,
+      // code: this.selectedCategory.code,
       purchaseOrderNumber: this.selectedCategory.purchaseOrderNumber,
       costCenterId: this.selectedCategory.costCenterId,
       warehouseId: this.selectedCategory.warehouseId,
-      locationLinkIds: this.selectedCategory.locationLinkIds,
+      offerExpiryDate: this.selectedCategory.offerExpiryDate,
+      paymentPeriod: this.selectedCategory.paymentPeriod,
+      paymentType: this.selectedCategory.paymentType,
     });
 
     this.isModalOpen = true;
@@ -400,10 +386,10 @@ updateCategory() {
     const updatedCategory = { ...this.saleOfferForm.value, id: this.selectedCategory.id };
 
     // Call the update service method using the category's id
-    this.salesService.update(this.selectedCategory.id, updatedCategory).subscribe(
+    this.salesService.updateSaleOffer(this.selectedCategory.id, updatedCategory).subscribe(
       (response) => {
-        console.log('Delivery note updated successfully:', response);
-        this.toast.success('Delivery note updated successfully')
+        console.log('Sale offer updated successfully:', response);
+        this.toast.success('Sale offer updated successfully')
         // Update the local categories array if necessary
         const index = this.storesSec.findIndex(cat => cat.id === updatedCategory.id);
         if (index !== -1) {
@@ -414,12 +400,12 @@ updateCategory() {
         this.closeModal();  // Close the modal after successful update
         this.saleOfferForm.reset();
       },
-      (error: HttpErrorResponse) => {
-        console.error('Error updating delivery note:', error);
-        console.log('Updated delivery note Data:', updatedCategory);
+      (error) => {
+        console.error('Error updating sale offer:', error);
+        console.log('Updated sale offer Data:', updatedCategory);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while updating the delivery note .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error');       }
     );
     }else{
       console.log(this.saleOfferForm)
@@ -431,17 +417,17 @@ updateCategory() {
       'Are you sure you want to delete this record?'
     );
     if (confirmed){
-      this.salesService.deleteById(this.selectedCategory.id).subscribe(
+      this.salesService.deleteSaleOfferById(this.selectedCategory.id).subscribe(
         (response)=>{
-          console.log('Delivery note deleted successfully:', response);
-          this.toast.success('Delivery note deleted successfully');
+          console.log('Sale offer deleted successfully:', response);
+          this.toast.success('Sale offer deleted successfully');
           this.getAllSaleOffers();
           this.closeModal(); 
         },error => {
-          console.error('Error delete delivery note category:', error);
+          console.error('Error delete sale offer category:', error);
           console.log(this.selectedCategory.id);
-          // alert('An error occurred while updating the delivery note .');
-          this.toast.error('An error occurred while deleting the delivery note .')
+          // alert('An error occurred while updating the sale offer .');
+          this.toast.error('An error occurred while deleting the sale offer .')
         }
       )
     }else {
@@ -491,9 +477,6 @@ updateCategory() {
     }
   }
 
-
-
-
   mapRequestStage() {
     this.salesOffers.forEach(offer => {
       // Assuming each offer has a `requestStage` property that is a number
@@ -514,4 +497,87 @@ updateCategory() {
 
     return stageMapping[stageNumber] || 'Unknown';
   }
+
+
+  // Update Status
+  
+  requestId: number = 0; // Store selected request ID
+  requestStag: any // Store selected request stage
+  selectedNoteId!: number;
+
+  selectNoteId(note: any) {
+    this.requestId = note.id;
+    console.log(note.id)
+  }
+  updateSaleOfferStatus(item: any) {
+    const requestId = item.id;
+    const requestStage = item.requestStage;
+
+    if (requestId && requestStage !== undefined) {
+      this.salesService.updateStatusSaleOffer(requestId, requestStage).subscribe({
+        next: (response) => {
+          console.log('Status updated successfully:', response);
+          this.toast.success('Status updated successfully!');
+        },
+        error: (error) => {
+          console.error('Error updating status:', error);
+          const errorMessage = error.error?.message || 'An unexpected error occurred.';
+          this.toast.error(errorMessage, 'Error');         }
+      });
+    } else {
+      this.toast.warning('Please select a valid Request Stage!');
+    }
+  }
+  
+  // dropdown table columns
+columns = [
+  // { name: 'id', displayName: 'المسلسل', visible: true },
+  { name: 'clientPurchaseOrder', displayName: 'طلب شراء العميل', visible: true },
+  { name: 'offerExpiryDate', displayName: 'تاريخ انتهاء العرض', visible: true },
+  { name: 'code', displayName: 'كود ', visible: true },
+  { name: 'clientName', displayName: 'اسم العميل', visible: true },
+  { name: 'representativeName', displayName: 'المندوب', visible: false },
+  { name: 'teamName', displayName: 'الفريق', visible: false },
+  { name: 'warehouseName', displayName: 'المستودع', visible: false },
+  { name: 'costCenterName', displayName: 'مركز التكلفة', visible: false }
+
+];
+showDropdownCol= false;
+toggleDropdownCol() {
+  this.showDropdownCol = !this.showDropdownCol; // Toggle the dropdown visibility
+  console.log('Dropdown visibility:', this.showDropdownCol); // Check if it’s toggling
+}
+
+isColumnVisible(columnName: string): boolean {
+  const column = this.columns.find(col => col.name === columnName);
+  return column ? column.visible : false;
+}
+
+toggleColumnVisibility(columnName: string) {
+  const column = this.columns.find(col => col.name === columnName);
+  if (column) {
+    column.visible = !column.visible;
+  }
+}
+
+  // select checkbox
+
+  selectAll = false;
+
+  selectedCount = 0;
+  
+  toggleAllCheckboxes() {
+    // Set each item's checked status to match selectAll
+    this.salesOffers.forEach(item => (item.checked = this.selectAll));
+    // Update the selected count
+    this.selectedCount = this.selectAll ? this.salesOffers.length : 0;
+  }
+  
+  updateSelectAll() {
+    // Update selectAll if all items are checked
+    this.selectAll = this.salesOffers.every(item => item.checked);
+    // Calculate the number of selected items
+    this.selectedCount = this.salesOffers.filter(item => item.checked).length;
+  }
+
 }

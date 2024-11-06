@@ -31,6 +31,7 @@
                 </ul>
 
             </div>
+            <hr class="gray-line" />
 
             <div class="row">
                 <div class="col-md-12">
@@ -49,15 +50,15 @@
                                 </button>
                                 <div class="dropdown" [class.show]="isDropdownOpen">
                                     <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
-                                      <i class="fa-solid fa-gear"></i> الاجراءات
+                                        <i class="fa-solid fa-gear"></i> الاجراءات
                                     </button>
-                                    
+
                                     <div class="dropdown-menu" [class.show]="isDropdownOpen">
-                                      <a class="dropdown-item" (click)="openModalForSelected()" >تعديل</a>
-                                      <a class="dropdown-item" >عرض</a>
-                                      <a class="dropdown-item" (click)="deleteItem()" >حذف</a>
+                                        <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                                        <!-- <a class="dropdown-item">عرض</a> -->
+                                        <a class="dropdown-item" (click)="deleteItem()">حذف</a>
                                     </div>
-                                  </div>
+                                </div>
                             </div>
                         </div>
 
@@ -78,18 +79,18 @@
                             <div class="d-flex align-items-center flex-row-reverse">
                                 <!-- Button with icon -->
                                 <button class="btn my-custom-icone me-2">
-                                  <span class="btn-label">
-                                    <i class="fa-solid fa-sliders"></i>
-                                  </span>
+                                    <span class="btn-label">
+                                        <i class="fa-solid fa-sliders"></i>
+                                    </span>
                                 </button>
-                
+
                                 <!-- Search form -->
                                 <form class="d-flex position-relative">
-                                  <input class="form-control text-end search-input" type="search" placeholder="بحث في الكل"
-                                    aria-label="Search" />
-                                  <i class="fs-4 bi-search position-absolute search-icon"></i>
+                                    <input class="form-control text-end search-input" type="search"
+                                        placeholder="بحث في الكل" aria-label="Search" />
+                                    <i class="fs-4 bi-search position-absolute search-icon"></i>
                                 </form>
-                              </div>
+                            </div>
                             <div class="icon-group d-flex align-items-center">
 
                                 <button class="btn  my-custom-icone">
@@ -123,29 +124,67 @@
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr class="firstcol">
-                                            <th> <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                                            <th>
+                                                <div>
+                                                    <!-- Icon to trigger dropdown -->
+                                                    <i class="fa-solid fa-right-left" style="cursor: pointer"
+                                                        (click)="toggleDropdownCol()"></i>
+
+                                                    <!-- Dropdown menu for selecting columns -->
+                                                    <ul *ngIf="showDropdownCol" class="dropdown-menu" style="background: #f1f1f4; border: 1px solid #ccc; padding: 10px; position: absolute; z-index: 1000;
+                                                border-radius: 15px; display: block;">
+                                                        <li *ngFor="let column of columns">
+                                                            <a class="dropdown-item">
+                                                                <div
+                                                                    class="d-flex justify-content-end align-items-center">
+                                                                    {{ column.displayName }}
+                                                                    <input class="mx-2" type="checkbox"
+                                                                        [(ngModel)]="column.visible" />
+                                                                </div>
+
+                                                            </a>
+
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </th>
-                                            <th>المندوب</th>
-                                            <th>العميل</th>
-                                            <th>تاريخ الانشاء</th>
-                                            <th>المنشأ</th>
-                                            <th>تاريخ الانشاء</th>
+
+
+                                            <th *ngIf="isColumnVisible('costCenterName')">مركز النكلفة</th>
+                                            <th *ngIf="isColumnVisible('paymentMethodName')">طريقة الدفع</th>
+                                            <th *ngIf="isColumnVisible('teamName')">الفريق</th>
+                                            <th *ngIf="isColumnVisible('representativeName')">المندوب</th>
+                                            <th *ngIf="isColumnVisible('clientName')">اسم العميل</th>
+                                            <th *ngIf="isColumnVisible('clientEmail')">الأيميل</th>
+                                            <th *ngIf="isColumnVisible('clientPhone')">رقم الهاتف</th>
+                                            <th *ngIf="isColumnVisible('code')">كود</th>
+
                                             <th>مسلسل</th>
                                             <th class="firstcolright">
-                                                <input type="checkbox" class="large-checkbox" />
+                                                <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                                                <input type="checkbox" [(ngModel)]="selectAll"
+                                                    (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let item of collections , let i= index">
                                             <td> </td>
-                                            <td>{{item.representativeName}}</td>
-                                            <td>{{item.clientName}}</td>
-                                            <td>12/11/2024</td>
-                                            <td>48</td>
-                                            <td>12/11/2024</td>
+
+                                            <td *ngIf="isColumnVisible('costCenterName')">{{ item.costCenterName }}</td>
+                                            <td *ngIf="isColumnVisible('paymentMethodName')">{{ item.paymentMethodName
+                                                }}</td>
+                                            <td *ngIf="isColumnVisible('teamName')">{{ item.teamName }}</td>
+                                            <td *ngIf="isColumnVisible('representativeName')">{{ item.representativeName
+                                                }}</td>
+                                            <td *ngIf="isColumnVisible('clientName')">{{ item.clientName }}</td>
+                                            <td *ngIf="isColumnVisible('clientEmail')">{{ item.clientEmail }}</td>
+                                            <td *ngIf="isColumnVisible('clientPhone')">{{ item.clientPhone }}</td>
+                                            <td *ngIf="isColumnVisible('code')">{{ item.code }}</td>
                                             <td>{{ i+1}}</td>
-                                            <td> <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                                            <td> <input type="checkbox" [(ngModel)]="item.checked"
+                                                    (change)="onCheckboxChange(item)" class="large-checkbox" />
                                             </td>
                                         </tr>
 
@@ -212,7 +251,7 @@
             <div class="modal-body">
                 <form [formGroup]="collectionForm" (ngSubmit)="onSubmitAdd()">
                     <div class="container">
-                     
+
 
                         <div class="row">
                             <div class="col-md-6">
@@ -274,7 +313,7 @@
                                         <select class="form-select form-control custom-input"
                                             formControlName="paymentMethodId" id="location">
                                             <option selected disabled>قم بإختيار طريقة السداد</option>
-                                            <option *ngFor="let item of paymentTypeList" [value]="item.key">{{item.value }}
+                                            <option *ngFor="let item of paymentMethod" [value]="item.id">{{item.name }}
                                             </option>
 
                                         </select>
@@ -331,6 +370,16 @@
 
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for=" text-end"> القيمة</label>
+                                    <input type="text" id="value" formControlName="value"
+                                        class="form-control custom-input" placeholder="القيمة" />
                                 </div>
                             </div>
                         </div>
@@ -682,383 +731,392 @@
 
 
 <!-- Update modal -->
-<div  class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
-aria-labelledby="staticBackdropLabel" aria-hidden="true">
-<div class="modal-dialog modal-lg">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title text-end flex-row-reverse" id="staticBackdropLabel">
-                تعديل تحصيل
-            </h5>
-        </div>
-        <div class="modal-body">
-            <form [formGroup]="collectionForm" (ngSubmit)="updateCategory()">
-                <div class="container">
-                 
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;"
+    *ngIf="isModalOpen" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-end flex-row-reverse" id="staticBackdropLabel">
+                    تعديل تحصيل
+                </h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="collectionForm" (ngSubmit)="updateCategory()">
+                    <div class="container">
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="field4 text-end"> رقم السند</label>
-                                <input type="text" id="code" formControlName="code"
-                                    class="form-control custom-input" placeholder="رقم السند" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="location" class="form-label">العميل</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input" formControlName="clientId"
-                                        id="location">
-                                        <option selected>قم بإختيار العميل</option>
-                                        <option *ngFor="let item of clients" [value]="item.id">{{item.name}}
-                                        </option>
 
-                                    </select>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="field4 text-end"> رقم السند</label>
+                                    <input type="text" id="code" formControlName="code"
+                                        class="form-control custom-input" placeholder="رقم السند" />
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- 3 fields -->
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="location" class="form-label">المندوب</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input"
-                                        formControlName="representativeId" id="location">
-                                        <option selected>قم بإختيار المندوب</option>
-                                        <option *ngFor="let item of representatives" [value]="item.id">
-                                            {{item.userName}}</option>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="location" class="form-label">العميل</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input" formControlName="clientId"
+                                            id="location">
+                                            <option selected>قم بإختيار العميل</option>
+                                            <option *ngFor="let item of clients" [value]="item.id">{{item.name}}
+                                            </option>
 
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="location" class="form-label">فريق البيع</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input" formControlName="teamId"
-                                        id="location">
-                                        <option selected disabled>قم بإختيار فريق البيع</option>
-                                        <option *ngFor="let item of team" [value]="item.id">{{item.name}}</option>
-
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">طريقة السداد</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input"
-                                        formControlName="paymentMethodId" id="location">
-                                        <option selected disabled>قم بإختيار طريقة السداد</option>
-                                        <option *ngFor="let item of paymentMethod" [value]="item.id">{{item.name}}
-                                        </option>
-
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="field9 text-end"> رقم جوال ماليه العميل
-                                </label>
-                                <input type="text" id="clientPhone" formControlName="clientPhone"
-                                    class="form-control custom-input"
-                                    placeholder="قم بكتابة رقم جوال مالية العميل" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="field8 text-end custom-input"> ايميل مالية العميل</label>
-                                <input type="text" id="clientEmail" formControlName="clientEmail"
-                                    class="form-control" placeholder="قم بادخال ايميل مالية العميل" />
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">مركز التكلفة</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input"
-                                        formControlName="costCenterId">
-                                        <option value="" disabled selected>قم باختيار مركز التكلفة</option>
-                                        <option *ngFor="let item of costCenters" [value]="item.id">{{item.name}}
-                                        </option>
-
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="location" class="form-label"> العهد/الصندوق</label>
-                                <div class="input-group">
-                                    <select class="form-select form-control custom-input"
-                                        formControlName="covenantBoxId" id="location">
-                                        <option value="" disabled selected>قم بإختيار العهد/الصندوق</option>
-                                        <option *ngFor="let item of convenants" [value]="item.id">
-                                            {{item.covenantBoxName}}</option>
-
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- show buttons -->
-                    <div class="scroll-buttons-container" dir="ltr">
-                        <button *ngFor="let btn of buttons; let i = index" [id]="'button-' + i"
-                            class="scroll-button" type="button" (click)="showContent(i)">
-                            {{ btn }}
-                        </button>
-                    </div>
-
-                    <!-- show table button 1 -->
-                    <!-- comments -->
-                    <div *ngIf="selectedButton !== null">
-                        <div *ngIf="selectedButton === 0">
-                            <div class="container comment-section mt-5">
-                                <div class="card p-3">
-                                    <!-- Add Comment Section -->
-                                    <div class="container add-comment-section mt-3">
-                                        <div class="card p-3 d-flex align-items-center">
-                                            <div class="d-flex align-items-center w-100">
-                                                <!-- User Avatar -->
-                                                <img src="../../../assets/images/images.jpg"
-                                                    class="rounded-circle border border-primary me-2"
-                                                    alt="User Avatar">
-
-                                                <!-- Comment Input Section -->
-                                                <div class="flex-grow-1">
-                                                    <input type="text" class="form-control"
-                                                        placeholder="أضف تعليقاً">
-                                                </div>
-
-                                                <!-- Icons and Post Button -->
-                                                <div class="d-flex align-items-center ms-2">
-                                                    <!-- Voice Icon -->
-                                                    <button class="btn btn-link text-muted p-1"><i
-                                                            class="fa fa-microphone"></i></button>
-
-                                                    <!-- Attachment Icon -->
-                                                    <button class="btn btn-link text-muted p-1"><i
-                                                            class="fa fa-paperclip"></i></button>
-
-                                                    <!-- Post Button -->
-                                                    <button class="btn btn-primary ms-2 px-4">نشر</button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </select>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 3 fields -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="location" class="form-label">المندوب</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="representativeId" id="location">
+                                            <option selected>قم بإختيار المندوب</option>
+                                            <option *ngFor="let item of representatives" [value]="item.id">
+                                                {{item.userName}}</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="location" class="form-label">فريق البيع</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input" formControlName="teamId"
+                                            id="location">
+                                            <option selected disabled>قم بإختيار فريق البيع</option>
+                                            <option *ngFor="let item of team" [value]="item.id">{{item.name}}</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">طريقة السداد</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="paymentMethodId" id="location">
+                                            <option selected disabled>قم بإختيار طريقة السداد</option>
+                                            <option *ngFor="let item of paymentMethod" [value]="item.id">{{item.name}}
+                                            </option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="field9 text-end"> رقم جوال ماليه العميل
+                                    </label>
+                                    <input type="text" id="clientPhone" formControlName="clientPhone"
+                                        class="form-control custom-input"
+                                        placeholder="قم بكتابة رقم جوال مالية العميل" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="field8 text-end custom-input"> ايميل مالية العميل</label>
+                                    <input type="text" id="clientEmail" formControlName="clientEmail"
+                                        class="form-control" placeholder="قم بادخال ايميل مالية العميل" />
+                                </div>
+                            </div>
+                        </div>
 
 
-                                    <!-- Comments List -->
-                                    <div class="comments-list mt-4">
-                                        <div class="comment-item p-3 mb-3">
-                                            <div class="d-flex align-items-start">
-                                                <img src="../../../assets/images/images2.jpg" class="rounded-circle"
-                                                    alt="User Avatar">
-                                                <div class="ms-3 w-100">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">خالد ابراهيم</h6>
-                                                        <span class="text-muted small">Aug 19, 2021</span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">مركز التكلفة</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="costCenterId">
+                                            <option value="" disabled selected>قم باختيار مركز التكلفة</option>
+                                            <option *ngFor="let item of costCenters" [value]="item.id">{{item.name}}
+                                            </option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="location" class="form-label"> العهد/الصندوق</label>
+                                    <div class="input-group">
+                                        <select class="form-select form-control custom-input"
+                                            formControlName="covenantBoxId" id="location">
+                                            <option value="" disabled selected>قم بإختيار العهد/الصندوق</option>
+                                            <option *ngFor="let item of convenants" [value]="item.id">
+                                                {{item.covenantBoxName}}</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for=" text-end"> القيمة</label>
+                                    <input type="text" id="value" formControlName="value"
+                                        class="form-control custom-input" placeholder="القيمة" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- show buttons -->
+                        <div class="scroll-buttons-container" dir="ltr">
+                            <button *ngFor="let btn of buttons; let i = index" [id]="'button-' + i"
+                                class="scroll-button" type="button" (click)="showContent(i)">
+                                {{ btn }}
+                            </button>
+                        </div>
+
+                        <!-- show table button 1 -->
+                        <!-- comments -->
+                        <div *ngIf="selectedButton !== null">
+                            <div *ngIf="selectedButton === 0">
+                                <div class="container comment-section mt-5">
+                                    <div class="card p-3">
+                                        <!-- Add Comment Section -->
+                                        <div class="container add-comment-section mt-3">
+                                            <div class="card p-3 d-flex align-items-center">
+                                                <div class="d-flex align-items-center w-100">
+                                                    <!-- User Avatar -->
+                                                    <img src="../../../assets/images/images.jpg"
+                                                        class="rounded-circle border border-primary me-2"
+                                                        alt="User Avatar">
+
+                                                    <!-- Comment Input Section -->
+                                                    <div class="flex-grow-1">
+                                                        <input type="text" class="form-control"
+                                                            placeholder="أضف تعليقاً">
                                                     </div>
-                                                    <p class="mt-2">المندوبين عندكم ممتازين جداً...</p>
-                                                    <div class="comment-actions d-flex">
-                                                        <button class="btn btn-link p-0"><i class="fa fa-heart"></i>
-                                                            5</button>
-                                                        <button class="btn btn-link p-0 ms-3"><i
-                                                                class="fa fa-comment"></i> 3</button>
+
+                                                    <!-- Icons and Post Button -->
+                                                    <div class="d-flex align-items-center ms-2">
+                                                        <!-- Voice Icon -->
+                                                        <button class="btn btn-link text-muted p-1"><i
+                                                                class="fa fa-microphone"></i></button>
+
+                                                        <!-- Attachment Icon -->
+                                                        <button class="btn btn-link text-muted p-1"><i
+                                                                class="fa fa-paperclip"></i></button>
+
+                                                        <!-- Post Button -->
+                                                        <button class="btn btn-primary ms-2 px-4">نشر</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Nested Reply Comment -->
-                                        <div class="comment-item p-3 mb-3 ms-5">
-                                            <div class="d-flex align-items-start">
-                                                <img src="../../../assets/images/images2.jpg" class="rounded-circle"
-                                                    alt="User Avatar">
-                                                <div class="ms-3 w-100">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <h6 class="mb-0">خالد ابراهيم</h6>
-                                                        <span class="text-muted small">Aug 19, 2021</span>
+
+                                        <!-- Comments List -->
+                                        <div class="comments-list mt-4">
+                                            <div class="comment-item p-3 mb-3">
+                                                <div class="d-flex align-items-start">
+                                                    <img src="../../../assets/images/images2.jpg" class="rounded-circle"
+                                                        alt="User Avatar">
+                                                    <div class="ms-3 w-100">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0">خالد ابراهيم</h6>
+                                                            <span class="text-muted small">Aug 19, 2021</span>
+                                                        </div>
+                                                        <p class="mt-2">المندوبين عندكم ممتازين جداً...</p>
+                                                        <div class="comment-actions d-flex">
+                                                            <button class="btn btn-link p-0"><i class="fa fa-heart"></i>
+                                                                5</button>
+                                                            <button class="btn btn-link p-0 ms-3"><i
+                                                                    class="fa fa-comment"></i> 3</button>
+                                                        </div>
                                                     </div>
-                                                    <p class="mt-2">شكراً لك على رأيك الإيجابي...</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Nested Reply Comment -->
+                                            <div class="comment-item p-3 mb-3 ms-5">
+                                                <div class="d-flex align-items-start">
+                                                    <img src="../../../assets/images/images2.jpg" class="rounded-circle"
+                                                        alt="User Avatar">
+                                                    <div class="ms-3 w-100">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0">خالد ابراهيم</h6>
+                                                            <span class="text-muted small">Aug 19, 2021</span>
+                                                        </div>
+                                                        <p class="mt-2">شكراً لك على رأيك الإيجابي...</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- View More Comments Link -->
-                                    <div class="text-center">
-                                        <a href="#" class="text-primary">باقي التعليقات</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- show table button 2-->
-                        <div *ngIf="selectedButton === 1">
-                            <div class="card-body">
-                                <div class="table-responsive">
-
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <!-- "المهام" on the far right -->
-                                        <span>المهام</span>
-
-                                        <!-- Button on the far left -->
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#Addmession">+ إضافة مهمه</button>
-
-
-
-                                    </div>
-
-                                    <table id="basic-datatables" class="display table table-striped table-hover">
-                                        <thead>
-                                            <tr class="firstcol">
-                                                <th>موكل الى</th>
-                                                <th> الاولويه</th>
-                                                <th>التاريخ</th>
-                                                <th>الحاله</th>
-                                                <th>المهمه</th>
-
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-
-                                                <td>موكل الى</td>
-                                                <td> الاولويه</td>
-                                                <td>التاريخ</td>
-                                                <td>الحاله</td>
-                                                <td>المهمه</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-                        </div>
-                        <!-- ألمرفقات -->
-
-                        <div *ngIf="selectedButton === 2">
-                            <div class="container mt-5">
-                                <h5 class="mb-3">المرفقات</h5>
-                                <button class="btn btn-link text-muted p-1"><i
-                                        class="fa fa-microphone"></i></button>
-
-                                <button class="btn btn-link text-muted p-1"><i class="fa fa-paperclip"></i></button>
-
-                                <div class="custom-file-upload">
-                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                                    <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
-                                    <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- الأرتباطات -->
-                        <div *ngIf="selectedButton === 3">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="location" class="form-label">المشروع</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار المشروع</option>
-                                                <option value="1">المشروع 1</option>
-                                                <option value="2">المشروع 2</option>
-                                                <option value="3">المشروع 3</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="location" class="form-label">العقد</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار العقود</option>
-                                                <option value="1">العقد 1</option>
-                                                <option value="2">العقد 2</option>
-                                                <option value="3">العقد 3</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="location" class="form-label">القسط</label>
-                                        <div class="input-group">
-                                            <select class="form-select form-control" id="location">
-                                                <option selected>قم بإختيار القسط المسدد</option>
-                                                <option value="1">القسط 1</option>
-                                                <option value="2">القسط 2</option>
-                                                <option value="3">القسط 3</option>
-                                            </select>
+                                        <!-- View More Comments Link -->
+                                        <div class="text-center">
+                                            <a href="#" class="text-primary">باقي التعليقات</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div *ngIf="selectedButton === 4">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <button type="button" class="btn my-button4">
-                                        اضافة توقيع
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+                            <!-- show table button 2-->
+                            <div *ngIf="selectedButton === 1">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <!-- "المهام" on the far right -->
+                                            <span>المهام</span>
+
+                                            <!-- Button on the far left -->
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#Addmession">+ إضافة مهمه</button>
+
+
+
+                                        </div>
+
+                                        <table id="basic-datatables" class="display table table-striped table-hover">
+                                            <thead>
+                                                <tr class="firstcol">
+                                                    <th>موكل الى</th>
+                                                    <th> الاولويه</th>
+                                                    <th>التاريخ</th>
+                                                    <th>الحاله</th>
+                                                    <th>المهمه</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+
+                                                    <td>موكل الى</td>
+                                                    <td> الاولويه</td>
+                                                    <td>التاريخ</td>
+                                                    <td>الحاله</td>
+                                                    <td>المهمه</td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </div>
                             </div>
-                        </div>
-                        <div *ngIf="selectedButton === 5">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <div class="form-group">
-                                        <label for="field7 text-end" class="form-label">الختم
-                                        </label>
-                                        <div class="input-group">
-                                            <input type="date" id="field7" class="form-control"
-                                                placeholder="الختم " />
+                            <!-- ألمرفقات -->
+
+                            <div *ngIf="selectedButton === 2">
+                                <div class="container mt-5">
+                                    <h5 class="mb-3">المرفقات</h5>
+                                    <button class="btn btn-link text-muted p-1"><i
+                                            class="fa fa-microphone"></i></button>
+
+                                    <button class="btn btn-link text-muted p-1"><i class="fa fa-paperclip"></i></button>
+
+                                    <div class="custom-file-upload">
+                                        <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                        <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
+                                        <small class="text-muted">JPG, PNG or PDF; file size no more than 10MB</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- الأرتباطات -->
+                            <div *ngIf="selectedButton === 3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">المشروع</label>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار المشروع</option>
+                                                    <option value="1">المشروع 1</option>
+                                                    <option value="2">المشروع 2</option>
+                                                    <option value="3">المشروع 3</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">العقد</label>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار العقود</option>
+                                                    <option value="1">العقد 1</option>
+                                                    <option value="2">العقد 2</option>
+                                                    <option value="3">العقد 3</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">القسط</label>
+                                            <div class="input-group">
+                                                <select class="form-select form-control" id="location">
+                                                    <option selected>قم بإختيار القسط المسدد</option>
+                                                    <option value="1">القسط 1</option>
+                                                    <option value="2">القسط 2</option>
+                                                    <option value="3">القسط 3</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <button type="button" class="btn my-button4">
-                                        اضف ختم
-                                    </button>
+                            </div>
+                            <div *ngIf="selectedButton === 4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn my-button4">
+                                            اضافة توقيع
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                            <div *ngIf="selectedButton === 5">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            <label for="field7 text-end" class="form-label">الختم
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="date" id="field7" class="form-control"
+                                                    placeholder="الختم " />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" class="btn my-button4">
+                                            اضف ختم
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mx-auto ">
+                            <button type="submit" class="btn my-button3">
+                                اضافه
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <button type="button" (click)="closeModal()" class="btn closebutton "
+                                data-bs-dismiss="modal">
+                                الغاء
+                            </button>
+
                         </div>
                     </div>
-                    <div class="col-md-6 mx-auto ">
-                        <button type="submit" class="btn my-button3">
-                            اضافه
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                        <button type="button" (click)="closeModal()" class="btn closebutton " data-bs-dismiss="modal">
-                            الغاء
-                        </button>
-
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>

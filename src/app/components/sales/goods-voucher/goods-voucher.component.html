@@ -31,6 +31,7 @@
                 </ul>
 
             </div>
+            <hr class="gray-line" />
 
             <div class="row">
                 <div class="col-md-12">
@@ -123,45 +124,71 @@
                                 <table id="basic-datatables" class="display table table-striped table-hover">
                                     <thead>
                                         <tr class="firstcol">
+                                            <th>
+                                                <div>
+                                                    <!-- Icon to trigger dropdown -->
+                                                    <i class="fa-solid fa-right-left" style="cursor: pointer"
+                                                        (click)="toggleDropdownCol()"></i>
+
+                                                    <!-- Dropdown menu for selecting columns -->
+                                                    <ul *ngIf="showDropdownCol" class="dropdown-menu" style="background: #f1f1f4; border: 1px solid #ccc; padding: 10px; position: absolute; z-index: 1000;
+                                                border-radius: 15px; display: block;">
+                                                        <li *ngFor="let column of columns">
+                                                            <a class="dropdown-item">
+                                                                <div
+                                                                    class="d-flex justify-content-end align-items-center">
+                                                                    {{ column.displayName }}
+                                                                    <input class="mx-2" type="checkbox"
+                                                                        [(ngModel)]="column.visible" />
+                                                                </div>
+
+                                                            </a>
+
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </th>
                                             <th> تغيير الحالة</th>
-                                            <th>الحالة</th>
-                                            <th>المندوب</th>
-                                            <th>العميل</th>
-                                            <th>الكود</th>
-                                            <th>المنشأ</th>
-                                            <th>تاريخ الانشاء</th>
+                                            <th *ngIf="isColumnVisible('costCenterName')">مركز النكلفة</th>
+                                            <th *ngIf="isColumnVisible('purchaseOrderNumber')">رقم طلب الشراء</th>
+                                            <th *ngIf="isColumnVisible('teamName')">الفريق</th>
+                                            <th *ngIf="isColumnVisible('representativeName')">المندوب</th>
+                                            <th *ngIf="isColumnVisible('clientName')">اسم العميل</th>
+                                            <th *ngIf="isColumnVisible('code')">كود</th>
                                             <th>المسلسل</th>
                                             <th class="firstcolright">
-                                                <input type="checkbox" class="large-checkbox" />
+                                                <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                                                <input type="checkbox" [(ngModel)]="selectAll"
+                                                    (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let item of deliveryVouchers, let i = index">
+                                        <tr *ngFor="let item of deliveryVouchers, let i = index" [class.selected]="item.id === selectedNoteId" (click)="selectNoteId(item)">
                                             
-                                            <!-- <td>
-                                                <select [(ngModel)]="selectedStatus" (change)="onStatusChange(selectedStatus)" id="status" class="form-select form-control" style="width:90px;" >
-                                                <option selected disabled>تغيير الحالة</option>
-                                                <option *ngFor="let type of deliveryStatusList" [value]="type.key">
-                                                   {{type.value}}</option>
-                                            </select>
-                                        </td> -->
+                                           <td> </td>
                                         <td >
-                                            <select *ngFor="let item of itemss; let i = index" [(ngModel)]="selectedStatuses[i]" (change)="onStatusChange(i, selectedStatuses[i])" id="status-{{i}}" class="form-select form-control" style="width:90px;">
-                                              <option selected disabled>تغيير الحالة</option>
+                                            <select class="form-select form-control"  [(ngModel)]="item.NewStatus" (change)="onStatusChange(item)" style="width:90px;">
+                                              <option selected disabled>{{item.delivetStatusName}}</option>
                                               <option *ngFor="let type of deliveryStatusList" [value]="type.key">
                                                 {{ type.value }}
                                               </option>
                                             </select>
                                           </td>
-                                            <td>{{ item.delivetStatusName }}</td>
-                                            <td>{{item.representativeName}}</td>
-                                            <td>{{item.teamName}}</td>
-                                            <td>{{item.code}}</td>
-                                            <td>Nothing</td>
-                                            <td>1/1/2024</td>
+                                        
+                                          <td *ngIf="isColumnVisible('costCenterName')">{{ item.costCenterName }}</td>
+                                          <td *ngIf="isColumnVisible('purchaseOrderNumber')">{{ item.purchaseOrderNumber
+                                              }}</td>
+                                          <td *ngIf="isColumnVisible('teamName')">{{ item.teamName }}</td>
+                                          <td *ngIf="isColumnVisible('representativeName')">{{ item.representativeName
+                                              }}</td>
+                                          <td *ngIf="isColumnVisible('clientName')">{{ item.clientName }}</td>
+                                       
+                                          <td *ngIf="isColumnVisible('code')">{{ item.code }}</td>
                                             <td>{{ i+1 }}</td>
-                                            <td> <input type="checkbox" (change)="onCheckboxChange(item, $event)" class="large-checkbox" />
+                                            <td> <input type="checkbox" [(ngModel)]="item.checked"
+                                                (change)="onCheckboxChange(item, $event)" class="large-checkbox" />
                                             </td>
                                         </tr>
 
@@ -227,43 +254,25 @@
             <div class="modal-body">
                 <form [formGroup]="deliveryVoucherForm" (ngSubmit)="onSubmit()">
                     <div class="container">
-                        <!-- Row with two fields -->
-                        <!-- <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="field1 text-end"> المنشأ</label>
-                                    <input type="text" id="field1"  class="form-control"
-                                        placeholder="اسم المنشأ" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="field2 text-end">تاريخ الانشاء
-                                    </label>
-                                    <input type="date" id="field2"  class="form-control"
-                                        placeholder="قم باختيار التاريخ" />
-                                </div>
-                            </div>
-                        </div> -->
+                       
 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end"> رقم الطلب</label>
-                                    <input type="text" id="code" formControlName="code"
+                                    <input type="text" id="code" disabled
                                         class="custom-input form-control" placeholder="رقم الطلب" />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label">العميل</label>
-                                    <div class="input-group">
-                                        <select class="form-select form-control custom-input"
-                                            formControlName="clientId">
+                                    <label  class="form-label">العميل</label>
+                                    <div class="input-group" >
+                                        <select class="form-select form-control custom-input" formControlName="clientId" >
                                             <option value="" disabled selected>قم باختيار العميل</option>
-                                            <option *ngFor="let item of clients" [value]="item.id">{{ item.name }}
-                                            </option>
-
+                                            <option *ngFor="let item of clients" [value]="item.id"
+                                            >{{ item.name }}</option>
+                                           
                                         </select>
                                     </div>
                                 </div>
@@ -354,10 +363,10 @@
                         <!--  -->
                         <!-- Location Section -->
                         <div class="row align-items-center">
-                            <div class="col-md-9">
+                            <!-- <div class="col-md-9" formArrayName="locationLinkIds" >
                                 <label for="location" class="form-label">الموقع</label>
                                 <div class="input-group">
-                                    <select class="form-select" name="locationLinkIds" id="locationLinkIds" formControlName="locationLinkIds">
+                                    <select class="form-select" name="locationLinkIds" id="locationLinkIds" formArrayName="locationLinkIds">
                                         <option selected>قم بإختيار الموقع</option>
                                         <option *ngFor="let item of locations" [value]="item.id">
                                             {{item.locationName}},{{item.locationAddress}},{{item.latitude}},{{item.longitude}}
@@ -365,7 +374,18 @@
 
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
+                            <div formArrayName="locationLinkIds">
+                                <div *ngFor="let locationId of locationLinkIds.controls; let j = index">
+                                  <select [formControlName]="j">
+                                    <option value="">Select Location</option>
+                                    <option *ngFor="let location of locations" [value]="location.id">{{ location.locationName }}</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <button type="button" (click)="addLocationId()">Add Location ID</button>
+                            
+
                             <div class="col-md-3 d-flex justify-content-start mt-3 mt-md-0">
                                 <button (click)="toggleCode()" class="btn btn-primary locationButton" type="button">
                                     <i class="fas fa-map-marker-alt"></i> أضف موقع
@@ -442,11 +462,13 @@
                                             <thead>
                                                 <tr class="firstcol">
                                                     <th>مسلسل</th>
-                                                    <th>الصنف</th>
-                                                    <th>وصف الصنف</th>
-                                                    <th>الوحدة</th>
-                                                    <th>الكمية المطلوبة</th>
-                                                    <th>الكمية المحمله</th>
+                                                    <th>Item ID</th>
+                                                    <th>Requested Quantity</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Sales Tax</th>
+                                                    <th>Discount</th>
+                                                    <th>Unit</th>
+                                                    <th>Notes</th>
                                                     <th> </th>
 
 
@@ -456,17 +478,19 @@
                                                 </tr>
                                             </thead>
 
-                                            <tbody formArrayName="items">
+                                            <tbody formArrayName="deliveryNoteItems">
 
-                                                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                                <tr *ngFor="let item of deliveryNoteItems.controls; let i = index" [formGroupName]="i">
                                                     <td>{{ i+1 }} </td>
-                                                    <td><select formControlName="itemId" class="form-control">
-                                                        <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
+                                                    <td ><select formControlName="itemId" class="form-control">
+                                                        <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
                                                       </select></td>
-                                                      <td><input type="number" formControlName="discount" placeholder="discount" class="form-control"></td>
-                                                  <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
-                                                  <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
-                                                  <td><input type="text" formControlName="quantity" placeholder="quantity" class="form-control"></td>
+                                                      <td><input type="number" formControlName="requestedQuantity" placeholder="requestedQuantity" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unitPrice" placeholder="Unit Price" class="form-control"></td>
+                                                  <td><input type="text" formControlName="salesTax" placeholder="Sales Tax" class="form-control"></td>
+                                                  <td><input type="text" formControlName="discount" placeholder="Discount"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="Unit"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="notes" placeholder="Notes"  class="form-control"></td>
                                                   
                                                   <td>
                                                     <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
@@ -474,14 +498,14 @@
                                                   
                                                 </tr>
                                               </tbody>
-                                              <button type="button" (click)="addItem()">اضف صنف</button>
+                                              <button type="button" (click)="addDeliveryNoteItem()">اضف صنف</button>
 
                                         </table>
                                     </div>
 
                                 </div>
                             </div>
-                        </div>
+                        
 
                         <!-- if button 2 -->
                         <!-- comments part -->
@@ -625,7 +649,7 @@
                                 </div>
                             </div>
                         </div>
-
+                    </div>
                         <!-- There was code here -->
 
                         <div  class="col-md-6 mx-auto ">
@@ -767,7 +791,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="field4 text-end"> رقم الطلب</label>
-                                    <input type="text" id="code" formControlName="code"
+                                    <input type="text" id="code" disabled
                                         class="custom-input form-control" placeholder="رقم الطلب" />
                                 </div>
                             </div>
@@ -777,7 +801,7 @@
                                     <div class="input-group">
                                         <select class="form-select form-control custom-input"
                                             formControlName="clientId">
-                                            <option value="" disabled selected>قم باختيار العميل</option>
+                                            <option value="" disabled selected>{{clientName}}</option>
                                             <option *ngFor="let item of clients" [value]="item.id">{{ item.name }}
                                             </option>
 
@@ -871,18 +895,16 @@
                         <!--  -->
                         <!-- Location Section -->
                         <div class="row align-items-center">
-                            <div class="col-md-9">
-                                <label for="location" class="form-label">الموقع</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="location" formControlName="locationLinkIds">
-                                        <option selected>قم بإختيار الموقع</option>
-                                        <option *ngFor="let item of locations" [value]="item.id">
-                                            {{item.locationName}},{{item.locationAddress}},{{item.latitude}},{{item.longitude}}
-                                        </option>
-
-                                    </select>
+                            <div formArrayName="locationLinkIds">
+                                <div *ngFor="let locationId of locationLinkIds.controls; let j = index">
+                                  <select [formControlName]="j">
+                                    <option  selected>{{locationName}}</option>
+                                    <option *ngFor="let location of locations" [value]="location.id">{{ location.locationName }}</option>
+                                  </select>
                                 </div>
-                            </div>
+                              </div>
+                              <button type="button" (click)="addLocationId()">Add Location ID</button>
+                            
                             <div class="col-md-3 d-flex justify-content-start mt-3 mt-md-0">
                                 <button (click)="toggleCode()" class="btn btn-primary locationButton" type="button">
                                     <i class="fas fa-map-marker-alt"></i> أضف موقع
@@ -959,35 +981,57 @@
                                             <thead>
                                                 <tr class="firstcol">
                                                     <th>مسلسل</th>
-                                                    <th>الصنف</th>
-                                                    <th>وصف الصنف</th>
-                                                    <th>الوحدة</th>
-                                                    <th>الكمية المطلوبة</th>
-                                                    <th>الكمية المحمله</th>
-
+                                                    <th>Item ID</th>
+                                                    <th>Requested Quantity</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Sales Tax</th>
+                                                    <th>Discount</th>
+                                                    <th>Unit</th>
+                                                    <th>Notes</th>
+                                                    <th> </th>
 
 
 
 
                                                 </tr>
                                             </thead>
-                                            <tbody formArrayName="items">
-                                                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                            <tbody formArrayName="deliveryNoteItems">
+                                                <tr *ngFor="let item of deliveryNoteItems.controls; let i = index" [formGroupName]="i">
+                                                    <td>{{ i+1 }} </td>
+                                                    <td ><select formControlName="itemId" class="form-control">
+                                                        <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
+                                                      </select></td>
+                                                      <td><input type="number" formControlName="requestedQuantity" placeholder="requestedQuantity" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unitPrice" placeholder="Unit Price" class="form-control"></td>
+                                                  <td><input type="text" formControlName="salesTax" placeholder="Sales Tax" class="form-control"></td>
+                                                  <td><input type="text" formControlName="discount" placeholder="Discount"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="Unit"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="notes" placeholder="Notes"  class="form-control"></td>
+                                                  
                                                   <td>
                                                     <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
                                                   </td>
-                                                  <td><input type="text" formControlName="note" placeholder="note" class="form-control"></td>
+                                                  
+                                                </tr>
+                                                <!-- <tr *ngFor="let item of deliveryNoteItems.controls; let i = index" [formGroupName]="i">
+                                                  <td>
+                                                    <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
+                                                  </td>
+                                                  <td><input type="text" formControlName="notes" placeholder="note" class="form-control"></td>
                                                   <td><input type="number" formControlName="discount" placeholder="discount" class="form-control"></td>
                                                   <td><input type="number" formControlName="salesTax" placeholder="salesTax" class="form-control"></td>
                                                   <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
                                                   <td><input type="number" formControlName="unitPrice" placeholder="unitPrice" class="form-control"></td>
-                                                  <td><input type="number" formControlName="quantity" placeholder="Quantity" class="form-control"></td>
-                                                  <td><select formControlName="id" class="form-control">
-                                                    <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
+                                                  <td><input type="number" formControlName="requestedQuantity" placeholder="requestedQuantity" class="form-control"></td>
+                                                  <td><select formControlName="itemId" class="form-control">
+                                                    <option selected>{{itemName}}</option>
+                                                    <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
                                                   </select></td>
-                                                </tr>
+                                                </tr> -->
                         
                                               </tbody>
+                                              <button type="button" (click)="addDeliveryNoteItem()">اضف صنف</button>
+
                                         </table>
                                     </div>
 
@@ -1142,7 +1186,7 @@
 
                         <div  class="col-md-6 mx-auto ">
                             <button type="submit" class="btn my-button3">
-                                اضافه
+                                حفظ
                                 <i class="fa-solid fa-plus"></i>
                             </button>
                             <button type="button" (click)="closeModal()" class="btn closebutton " data-bs-dismiss="modal">
@@ -1161,16 +1205,100 @@
 
 
 <!-- Update status -->
-<div *ngIf="showItemPopup" class="modal">
+
+
+<!-- Modal -->
+<!-- <div class="modal fade" [ngClass]="{'show': showPopup}" tabindex="-1" role="dialog" [ngStyle]="{'display': showPopup ? 'block' : 'none'}" aria-hidden="!showPopup">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <h2>Enter Items</h2>
-      <div *ngFor="let item of itemss; let i = index">
-        <label for="item-{{i}}">Item {{ i + 1 }}:</label>
-        <input id="item-{{i}}" [(ngModel)]="item.value" placeholder="Enter item details" />
+      <div class="modal-header">
+        <h5 class="modal-title">Enter Updated Items</h5>
+        <button type="button" class="close" (click)="closePopup()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <button (click)="addItem()">Add More Item</button>
-      <button (click)="submitStatusChange()">Submit</button>
-      <button (click)="closePopup()">Cancel</button> <!-- Ensure this calls closePopup -->
+      <div class="modal-body">
+        <div *ngFor="let item of updatedItems; let i = index" class="mb-3">
+          <div class="row">
+            <div class="col-md-6">
+                <label>الكمية المحملة :</label>
+          <input class="form-control" placeholder="Loaded Quantity" type="number" [(ngModel)]="item.loadedQuantity" required><br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+                <label>المستودع</label> 
+                <select [(ngModel)]="item.warehouseId" class="form-select form-control">
+                    <option *ngFor="let w of warehouses " [value]="w.id">{{w.name}}</option>
+                </select>
+            </div>
+        </div>
+          
+        <div class="row">
+            <div class="col-md-6">
+                <label>الصنف</label>
+                <select [(ngModel)]="item.itemId" class="form-select form-control">
+                    <option *ngFor="let w of itemList " [value]="w.id">{{w.name}}</option>
+                </select>
+            </div>
+        </div>
+          <button type="button" class="btn btn-danger" (click)="removeUpdatedItem(i)">إزالة عنصر</button>
+          <hr>
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="addUpdatedItem()">إضافة جديدة</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="submitUpdatedItems()">إضافة</button>
+        <button type="button" class="btn btn-secondary" (click)="closePopup()">إلغاء</button>
+      </div>
     </div>
   </div>
-  
+</div> -->
+
+<div class="modal fade" [ngClass]="{'show': showPopup}" tabindex="-1" role="dialog" [ngStyle]="{'display': showPopup ? 'block' : 'none'}" aria-hidden="!showPopup"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="    box-shadow: 0 2px 10px rgba(0, 0, 0, 1);
+    background-color: #f6f6f6;">
+      <div class="modal-header">
+        <h5 class="modal-title">Enter Updated Items</h5>
+        <button type="button" class="close" (click)="closePopup()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let item of updatedItems; let i = index" class="mb-3">
+          <div class="row">
+            <div class="col-md-6">
+              <label>الكمية المستلمة :</label>
+              <input class="form-control" placeholder="Loaded Quantity" type="number" [(ngModel)]="item.loadedQuantity" required><br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>المستودع</label> 
+              <select [(ngModel)]="item.warehouseId" class="form-select form-control">
+                <option *ngFor="let w of warehouses" [value]="w.id">{{w.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>الصنف</label>
+              <select [(ngModel)]="item.itemId" class="form-select form-control">
+                <option *ngFor="let w of itemList" [value]="w.id">{{w.name}}</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn btn-danger" (click)="removeUpdatedItem(i)">إزالة عنصر</button>
+          <hr>
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="addUpdatedItem()">إضافة جديدة</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="submitUpdatedItems()">إضافة</button>
+        <button type="button" class="btn btn-secondary" (click)="closePopup()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</div>

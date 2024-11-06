@@ -305,3 +305,7 @@ tr, th, tr {
   font-size: 12px;
   color: #999;
 }
+
+.form-select{
+  background-position: left;
+}

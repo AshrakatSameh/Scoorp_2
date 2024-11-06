@@ -150,21 +150,26 @@
                           <th>تاريخ الانشاء</th>
                           <th>اسم نوع الصنف باللغه المحلية</th>
                           <th>اسم نوع الصنف</th>
+                          <th>المسلسل</th>
                           <th class="firstcolright">
-                            <input type="checkbox" class="large-checkbox" />
-                          </th>
+                            <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+  
+                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />                       
+                           </th>
+                       
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let item of storesSec">
+                        <tr *ngFor="let item of storesSec, let i = index">
                           <td>{{item.note}}</td>
                         <td></td>
                         <td></td>
                           <td>{{item.localName}}</td>
                           <td>{{item.name}}</td>
-                          <td>
-                            <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
-                          </td>
+                          <td>{{ i+1 }}</td>
+                        <td>
+                          <input type="checkbox"  [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
+                        </td>
                         </tr>
                        
                       </tbody>
@@ -312,7 +317,7 @@
                     <input
                       type="text"
                       id="code"
-                      formControlName="code"
+                      disabled
                       class="form-control custom-input"
                       placeholder="قم باختيار كود نوع الصنف" 
                     />
@@ -430,34 +435,7 @@
         
 
 
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="field3"> المنشأ</label>
-                  <input
-                  disabled
-                    type="text"
-                    id="field3"
-
-                    class="form-control custom-input"
-                    placeholder="اسم المنشأ"
-                  />
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="field4"> تاريخ الانشاء</label>
-                  <input
-                  type="date"
-                  id="field2"
-                  disabled
-                  class="form-control custom-input"
-                  placeholder="قم باختيار التاريخ"
-                />
-                </div>
-              </div>
-
-            </div>
+           
 
 
             <div class="row">

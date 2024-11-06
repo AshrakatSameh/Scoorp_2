@@ -57,4 +57,32 @@ export class BrandsService {
       console.log(brand)
       return this.http.post(`${this.apiUrl}StoresSection/brand?`, brand, { headers });
     }
+
+
+    updateItemCat(id: number, updatedCategory: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      
+      // Create headers with tenant info
+      const headers = new HttpHeaders({
+        tenant: tenantId || ''  // Set tenantId header if available
+      });
+    
+      // Prepare FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('name', updatedCategory.name || '');
+      formData.append('localName', updatedCategory.localName || '');
+      formData.append('note', updatedCategory.note || '');
+    
+      // API call with PUT method using the FormData and headers
+      return this.http.put(`${this.apiUrl}StoresSection/brand/${id}`, formData, { headers });
+    }
+    
+    deleteItemTypeById(id: number): Observable<void> {
+      const tenantId = localStorage.getItem('tenant'); 
+      const headers = new HttpHeaders({
+        tenant: tenantId || '',
+        // 'Content-Type': 'application/json',
+      });
+      return this.http.delete<void>(`${this.apiUrl}StoresSection/brand/${id}`,{headers});
+    }
 }

@@ -48,4 +48,33 @@ export class StorageService {
       
     }
 
+    updateStorage(id: number, updatedCategory: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      
+      // Create headers with tenant info
+      const headers = new HttpHeaders({
+        tenant: tenantId || ''  // Set tenantId header if available
+      });
+    
+      // Prepare FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('name', updatedCategory.name || '');
+      formData.append('localName', updatedCategory.localName || '');
+      formData.append('code', updatedCategory.code || '');
+      formData.append('warehouseId', updatedCategory.warehouseId || '');
+      formData.append('description', updatedCategory.description || '');
+    
+      // API call with PUT method using the FormData and headers
+      return this.http.put(`${this.apiUrl}StoresSection/storage-place/${id}`, formData, { headers });
+    }
+    
+    deleteStorageById(id: number): Observable<void> {
+      const tenantId = localStorage.getItem('tenant'); 
+      const headers = new HttpHeaders({
+        tenant: tenantId || '',
+        // 'Content-Type': 'application/json',
+      });
+      return this.http.delete<void>(`${this.apiUrl}StoresSection/storage-place/${id}`,{headers});
+    }
+
 }

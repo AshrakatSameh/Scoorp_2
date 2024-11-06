@@ -14,6 +14,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { ToastrService } from 'ngx-toastr';
 import { ItemsService } from 'src/app/services/getAllServices/Items/items.service';
 import { DeliveryStatus } from 'src/app/enums/DeliveryStatus ';
+import { error } from 'jquery';
+import { popup } from 'leaflet';
 
 @Component({
   selector: 'app-goods-voucher',
@@ -46,14 +48,14 @@ deliveryStatusList: { key: string, value: string }[] = [];
     this.deliveryVoucherForm= this.fb.group({
     clientId: ['', Validators.required],
     representativeId: ['', Validators.required],
-    code: ['', Validators.required],
+    // code: ['', Validators.required],
     teamId: ['', Validators.required],
     purchaseOrderNumber: ['', Validators.required],
     costCenterId: ['', Validators.required],
     warehouseId: ['', Validators.required],
     locationLinkIds: this.fb.array([]),
 
-    items:fb.array([]),
+    deliveryNoteItems:this.fb.array([]),
     
     });
 
@@ -127,16 +129,6 @@ deliveryStatusList: { key: string, value: string }[] = [];
       }
     });
     }
-    //   this.deliveryVouchers = response;
-    //   const x =this.deliveryVouchers.map(dVouche=> 
-    //   {
-    //     this.ClientById(dVouche.clientId);
-    //   }
-    //   );
-    // }, error => {
-    //   console.error('Error fetching delivery vouchers data:', error)
-    // })
-
 
   cliName:any;
   ClientById(id: number){
@@ -152,12 +144,6 @@ deliveryStatusList: { key: string, value: string }[] = [];
       }
     );
 }
-
-
-
-
-
-
 clients:any[]=[]
 
 getAllClients() {
@@ -228,35 +214,54 @@ getAllTeams() {
  get locationLinkIds(): FormArray {
   return this.deliveryVoucherForm.get('locationLinkIds') as FormArray;
 }
-// Method to add new locationLink input
-// addLocationLink(): void {
-//   const locationForm = this.fb.group({
-//       locationName: ['', Validators.required],
-//       locationAddress: ['', Validators.required],
-//       latitude: ['', Validators.required],
-//       linelongitude3: ['', Validators.required]
-//   });
-//   this.locationLinkIds.push(locationForm);
-//   this.locationLinkIds.push(this.locationLinkIds);
-// }
+addLocationId() {
+  const locationIdControl = this.fb.control(''); // Create a control for a new location ID
+  this.locationLinkIds.push(locationIdControl); // Add the new control to the locationIds array
+}
 onSubmit() {
-
+   
   if (this.deliveryVoucherForm.valid) {
-    this.salesService.postDeliveryNote(this.deliveryVoucherForm.value).subscribe(
-      response => {
-        console.log('Form successfully submitted', response);
-        // alert('Form successfully submitted')
-        this.toast.success('Form successfully submitted')
-      },
-      error => {
-        console.error('Error submitting form', error);
-        this.toast.error('Error in submit form')
-      }
-    );
-  } else {
-    console.log('Form is invalid');
-  }
+    
+    const formData = new FormData();
+    formData.append('clientId', this.deliveryVoucherForm.get('clientId')?.value);
+    formData.append('representativeId', this.deliveryVoucherForm.get('representativeId')?.value);
+    // formData.append('code', this.deliveryVoucherForm.get('code')?.value);
+    formData.append('teamId', this.deliveryVoucherForm.get('teamId')?.value);
+    formData.append('purchaseOrderNumber', this.deliveryVoucherForm.get('purchaseOrderNumber')?.value);
+    formData.append('costCenterId', this.deliveryVoucherForm.get('costCenterId')?.value);
+    formData.append('warehouseId', this.deliveryVoucherForm.get('warehouseId')?.value);
+    
+   this.deliveryNoteItems.controls.forEach((item, index) => {
+    const itemValue = item.value;
+    formData.append(`Items[${index}].itemId`, itemValue.itemId);
+    formData.append(`Items[${index}].requestedQuantity`, itemValue.requestedQuantity);
+    formData.append(`Items[${index}].unitPrice`, itemValue.unitPrice);
+    formData.append(`Items[${index}].salesTax`, itemValue.salesTax);
+    formData.append(`Items[${index}].discount`, itemValue.discount);
+    formData.append(`Items[${index}].unit`, itemValue.unit);
+    formData.append(`Items[${index}].notes`, itemValue.notes);
+});
 
+  // Iterate over locationIds and append to FormData
+  this.locationLinkIds.controls.forEach(locationId => {
+    formData.append('locationLinkIds', locationId.value); // Append each location ID
+  });
+ const headers = new HttpHeaders({
+   'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
+ });
+
+ this.http.post(this.apiUrl, formData, { headers })
+   .subscribe(response => {
+     console.log('Response:', response);
+     // alert('submit successfully');
+     this.toast.success('submit successfully')
+     console.log(this.deliveryVoucherForm.value);
+     this.getAllDeliveryVouchers();
+   }, error => {
+     console.error('Error:', error);
+     const errorMessage = error.error?.message || 'An unexpected error occurred.';
+     this.toast.error(errorMessage, 'Error');    });
+  }
 }
 
 // Update Delivery note
@@ -264,19 +269,18 @@ storesSec:any[] =[];
   isModalOpen = false;
   selectedCategory: any = null;
 
-// onCheckboxChange(category: any) {
-//   this.selectedCategory = category;  // Store the selected category data
-//   console.log(this.selectedCategory);
- 
-// }
+
 onCheckboxChange(category: any, event: any) {
   if (event.target.checked) { // Check if the checkbox is checked
     this.selectedCategory = category; // Store the selected category data
+    this.updateSelectAll();
     console.log(this.selectedCategory);
   } else {
     // Optionally, handle unchecking behavior here if needed
     this.selectedCategory = null; // Clear the selection if unchecked
+    this.updateSelectAll();
     console.log('Checkbox unchecked, category deselected');
+    // this.toast.error('Checkbox unchecked, category deselected');
   }
 }
 item:any
@@ -301,78 +305,124 @@ getAllItems(){
   })
 }
 
-// items tabke
+// items table
 // Method to remove an item from the FormArray
-get items(): FormArray {
-  return this.deliveryVoucherForm.get('items') as FormArray;
+get deliveryNoteItems(): FormArray {
+  return this.deliveryVoucherForm.get('deliveryNoteItems') as FormArray;
 }
 tableData = [
   {
     selectedItemId: null,
-    code: '',
+    quantity: '',
     unit: '',
     unitPrice: 0,
     tax: 0,
     discount: 0,
-    total: 0,
+    note: '',
   },
 ];
 removeItem(index: number) {
-  this.items.removeAt(index);
+  this.deliveryNoteItems.removeAt(index);
 }
-addItem() {
-  const itemGroup = this.fb.group({
-    itemId: [''],
-    quantity: [0, Validators.required],
-    unitPrice: [0, Validators.required],
-    discount: [0],
+addDeliveryNoteItem() {
+  const item = this.fb.group({
+    itemId: [0],
+    requestedQuantity: [0],
+    unitPrice: [0],
     salesTax: [0],
+    discount: [0],
     unit: [''],
     notes: [''],
   });
-
-  this.items.push(itemGroup);
+  this.deliveryNoteItems.push(item);
 }
 
-// items table methods
-onItemSelect(event: any, rowIndex: number) {
-  const selectedItemId = event.target.value;
 
-  // Fetch details for the selected item
-  this.itemService.getItemDetails(selectedItemId).subscribe((itemDetails: any) => {
-    // Update the specific row with the item details
-    this.tableData[rowIndex].code = itemDetails.code;
-    this.tableData[rowIndex].unit = itemDetails.unit;
-    this.tableData[rowIndex].unitPrice = itemDetails.unitPrice;
-    this.tableData[rowIndex].tax = itemDetails.tax;
-    this.tableData[rowIndex].discount = itemDetails.discount;
-    this.tableData[rowIndex].total = this.calculateTotal(itemDetails);
-  });
+// For Update
+// Helper function to get client name by ID
+locationName:any;
+getClientNameById(clientId: number): string {
+  const client = this.clients.find(c => c.id === clientId);
+  return client ? client.name : 'Unknown Client';
 }
+getLocationNamesByIds(locationIds: string[] | undefined): string {
+  if (!locationIds || !Array.isArray(locationIds)) {
+    return ''; // Return empty string if locationIds is undefined or not an array
+  }
 
-calculateTotal(itemDetails: any) {
-  // Example calculation of total price (modify based on your logic)
-  return itemDetails.unitPrice - itemDetails.discount + itemDetails.tax;
+  return locationIds
+    .map(id => {
+      const location = this.locations.find(loc => loc.id === id);
+      return location ? location.locationName : 'Unknown';
+    })
+    .join(', '); // Join names with a comma for display
 }
-
+itemName: any;
+getItemNameById(itemId: number): string { 
+  const item = this.itemList.find(i => i.itemId === itemId);
+  return item ? item.itemName : '';
+}
 openModalForSelected() {
+  const clientName = this.getClientNameById(this.selectedCategory.clientId);
+  const locationName = this.getLocationNamesByIds(this.selectedCategory.locationLinkIds);
+
   if (this.selectedCategory) {
     this.deliveryVoucherForm.patchValue({
       clientId: this.selectedCategory.clientId,
+      clientName: clientName,
       representativeId: this.selectedCategory.representativeId,
       teamId: this.selectedCategory.teamId,
-      code: this.selectedCategory.code,
+      // code: this.selectedCategory.code,
       purchaseOrderNumber: this.selectedCategory.purchaseOrderNumber,
       costCenterId: this.selectedCategory.costCenterId,
       warehouseId: this.selectedCategory.warehouseId,
-      locationLinkIds: this.selectedCategory.locationLinkIds,
+      locationName:locationName,
     });
+     // Clear existing deliveryNoteItems in form array
+    // this.deliveryNoteItems.clear();
 
+     // Populate the deliveryNoteItems array with selected item's data
+     this.selectedCategory.deliveryNoteItems.forEach((item: any) => {
+      const itemName = this.getItemNameById(item.itemId); 
+       const deliveryNoteItem = this.fb.group({
+         itemId: [item.itemId],
+         itemName: itemName,
+         requestedQuantity: [item.requestedQuantity],
+         unitPrice: [item.unitPrice],
+         salesTax: [item.salesTax],
+         discount: [item.discount],
+         unit: [item.unit],
+         notes: [item.notes]
+       });
+       this.deliveryNoteItems.push(deliveryNoteItem);
+     });
     this.isModalOpen = true;
   } else {
     alert('Please select a category to update.');
   }
 }
+
+// Method to add a new delivery note item
+updateDeliveryNoteItem() {
+  const newDeliveryNoteItem = this.fb.group({
+    itemId: [null],               // Default value, can be selected later
+    itemName: [''],               // To be filled based on selection
+    requestedQuantity: [0],       // Default quantity
+    unitPrice: [0],               // Default price
+    salesTax: [0],                // Default sales tax
+    discount: [0],                 // Default discount
+    unit: [''],                   // Default unit
+    notes: [''],                  // Default notes
+  });
+  
+  this.deliveryNoteItems.push(newDeliveryNoteItem);
+}
+
+// Example of how to call addDeliveryNoteItem on a button click
+onAddItemButtonClick() {
+  this.addDeliveryNoteItem();
+}
+
 
 closeModal() {
   this.isModalOpen = false;
@@ -398,14 +448,15 @@ updateCategory() {
         this.closeModal();  // Close the modal after successful update
         this.deliveryVoucherForm.reset();
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         console.error('Error updating delivery note:', error);
         console.log('Updated delivery note Data:', updatedCategory);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while updating the delivery note .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error');       }
     );
     }
+    console.log(this.deliveryVoucherForm)
   }
 
 deleteItemType(){
@@ -423,8 +474,8 @@ deleteItemType(){
         console.error('Error delete item type category:', error);
         console.log(this.selectedCategory.id);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while deleting the item type .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error');       }
     )
   }else {
       // User canceled the deletion
@@ -462,73 +513,189 @@ getDeliveryStatusName(stageNumber: number): string {
   return stageMapping[stageNumber] || 'Unknown';
 }
 
-// Change Status
-
-showItemPopup = false; // Controls the visibility of the item popup
-  selectedStatuses: (DeliveryStatus | null)[] = []; // Array to hold selected statuses for each row
-  itemss: { value: string }[] = []; // Array to hold item values
-  selectedItemId: number | null = null; // To hold the selected item ID
-  // deliveryStatusList = Object.keys(DeliveryStatus).map(key => ({ key, value: DeliveryStatus[key] })); // Get enum keys and values for dropdown
-
-
-  onStatusChange(index: number, status: string | null) {
-    if (status) {
-      this.selectedStatuses[index] = DeliveryStatus[status as keyof typeof DeliveryStatus]; // Map string to enum
-
-      // Check if the selected status requires showing the popup
-      if (this.selectedStatuses[index] === DeliveryStatus.InProgress || this.selectedStatuses[index] === DeliveryStatus.Canceled) {
-        this.showItemPopup = true;
-        this.itemss = []; // Reset items for new entry
-      }
-    }else{
-      console.log(this.selectedStatuses[index])
-    }
+// post items
+  // Helper function to create an item form group
+  createItem(): FormGroup {
+    return this.fb.group({
+      itemId: ['', Validators.required],
+      requestedQuantity: [0, Validators.required],
+      unitPrice: [0, Validators.required],
+      salesTax: [0, Validators.required],
+      discount: [0],
+      unit: ['', Validators.required],
+      notes: ['']
+    });
   }
 
-  openPopup(id: number) {
-    this.selectedItemId = id; // Set the selected item ID
-    this.showItemPopup = true; // Show the popup
-    this.itemss = []; // Reset items for new entry
-  }
 
-  addItem2() {
-    this.items.push({ value: '' }); // Add a new item input
-  }
+ 
+// Update status
+deliveryStatuses = Object.values(DeliveryStatus);
+NewStatus: any;
+selectedNoteId!: number;
+showPopup: boolean = false;
 
-submitStatusChange() {
-  if (this.selectedItemId === null || this.selectedItemId === undefined) {
-    console.error('No item selected');
+updatedItems: any[] = [{
+  loadedQuantity: 0,
+  warehouseId: 0,
+  itemId: 0
+}];
+
+
+selectNoteId(note: any) {
+  this.selectedNoteId = note.id;
+  // Initialize updatedItems based on note.deliveryNoteItems, ensuring each entry is valid
+  this.updatedItems = (note.deliveryNoteItems || []).map((item: any) => ({
+    loadedQuantity: item?.loadedQuantity || 0,
+    warehouseId: item?.warehouseId || 0,
+    itemId: item?.itemId || 0
+  }));
+  console.log(note.id);
+}
+
+onStatusChange(note: any) {
+  this.NewStatus = note.NewStatus; // Capture the new status from the dropdown
+
+  if (note.status !== DeliveryStatus.Draft && this.NewStatus !== DeliveryStatus.Draft && 
+      this.NewStatus !== this.deliveryStatus.InProgress && 
+      note.id === this.selectedNoteId) {
+    this.showPopup = true; // Show popup for entering UpdatedItems
+    console.log(note.deliveryNoteItems);
+  } else if (note.id === this.selectedNoteId) {
+    // Call updateStatus with an empty array if status is Draft
+    this.updateStatus(note, this.NewStatus, []);
+  } else {
+    console.error('No note selected');
+  }
+}
+
+closePopup() {
+  this.showPopup = false;
+}
+
+submitUpdatedItems() {
+  const note = this.deliveryVouchers.find(n => n.id === this.selectedNoteId);
+  if (note) {
+    // Call updateStatus with the selected NewStatus and populated updatedItems
+    this.updateStatus(note, this.NewStatus, this.updatedItems);
+  }
+  this.closePopup();
+}
+
+updateStatus(note: any, newStatus: any, updatedItems: any[]) {
+  if (!note.id) {
+    console.error('Note ID is required to update status.');
     return;
   }
 
-  // Check if selectedStatuses is defined and contains the selectedItemId
-  const selectedStatus = this.selectedStatuses?.[this.selectedItemId];
+  // Create FormData object
+  const formData = new FormData();
+  formData.append('NewStatus', newStatus); // Append the new status
 
-  // Ensure selectedStatus is not null or undefined before converting to string
-  const newStatusString = selectedStatus ? selectedStatus.toString() : '';
-
-  const payload = {
-    newStatus: newStatusString, // Now always a string
-    items: this.itemss.map(item => item.value) // Extract item values
-  };
-
-  this.salesService.updateStatus(this.selectedItemId, payload).subscribe({
-    next: (response) => {
-      console.log('Status changed successfully:', response);
-      // Handle successful response
-    },
-    error: (err) => {
-      console.error('Error changing status:', err);
+  // Append each updated item only if it is defined and has necessary properties
+  updatedItems.forEach((item, index) => {
+    if (item && item.itemId !== undefined && item.loadedQuantity !== undefined && item.warehouseId !== undefined) {
+      formData.append(`UpdatedItems[${index}].itemId`, item.itemId.toString());
+      formData.append(`UpdatedItems[${index}].loadedQuantity`, item.loadedQuantity.toString());
+      formData.append(`UpdatedItems[${index}].warehouseId`, item.warehouseId.toString());
+    } else {
+      console.warn(`Skipping item at index ${index} due to missing fields.`);
     }
   });
 
-  this.closePopup(); // Close the popup after submitting
+  this.salesService.updateDeliveryNoteStatus(note.id, formData).subscribe({
+    next: (response) => {
+      console.log('Delivery note status updated:', response);
+      this.toast.success('Delivery note status updated');
+      this.resetUpdatedItems();
+      this.getAllDeliveryVouchers();
+
+    },
+    error: (error) => {
+      const errorMessage = error.error?.message || 'An unexpected error occurred.';
+      this.toast.error(errorMessage, 'Error');
+      console.log(error);
+      console.log(updatedItems);
+      this.getAllDeliveryVouchers();
+
+    }
+  });
 }
 
 
-  closePopup() {
-    this.showItemPopup = false; // Hide the popup
-    this.selectedItemId = null; // Reset the selected item ID
-    this.itemss = []; // Reset items array
+// add new inputs for new array
+addUpdatedItem() {
+  // Add a new item to the updatedItems array
+  this.updatedItems.push({
+    loadedQuantity: 0,
+    warehouseId: 0,
+    itemId: 0
+  });
+}
+
+removeUpdatedItem(index: number) {
+  // Remove the item at the specified index
+  if (this.updatedItems.length > 1) {
+    this.updatedItems.splice(index, 1);
+  } else {
+    console.log('At least one item must remain.');
   }
+}
+resetUpdatedItems() {
+  // Reset the updatedItems array to the initial state
+  this.updatedItems = [{
+    loadedQuantity: 0,
+    warehouseId: 0,
+    itemId: 0
+  }];
+}
+
+  // dropdown table columns
+  columns = [
+  
+    { name: 'code', displayName: 'كود ', visible: true },
+    { name: 'clientName', displayName: 'اسم العميل', visible: true },
+    { name: 'representativeName', displayName: 'المندوب', visible: true },
+    { name: 'teamName', displayName: 'الفريق', visible: false },
+    { name: 'purchaseOrderNumber', displayName: 'رقم طلب الشراء', visible: false },
+    { name: 'costCenterName', displayName: 'مركز التكلفة', visible: false }
+  
+  ];
+  showDropdownCol= false;
+  toggleDropdownCol() {
+    this.showDropdownCol = !this.showDropdownCol; // Toggle the dropdown visibility
+    console.log('Dropdown visibility:', this.showDropdownCol); // Check if it’s toggling
+  }
+  
+  isColumnVisible(columnName: string): boolean {
+    const column = this.columns.find(col => col.name === columnName);
+    return column ? column.visible : false;
+  }
+  
+  toggleColumnVisibility(columnName: string) {
+    const column = this.columns.find(col => col.name === columnName);
+    if (column) {
+      column.visible = !column.visible;
+    }
+  }
+  
+    // select checkbox
+  
+    selectAll = false;
+  
+    selectedCount = 0;
+    
+    toggleAllCheckboxes() {
+      // Set each item's checked status to match selectAll
+      this.deliveryVouchers.forEach(item => (item.checked = this.selectAll));
+      // Update the selected count
+      this.selectedCount = this.selectAll ? this.deliveryVouchers.length : 0;
+    }
+    
+    updateSelectAll() {
+      // Update selectAll if all items are checked
+      this.selectAll = this.deliveryVouchers.every(item => item.checked);
+      // Calculate the number of selected items
+      this.selectedCount = this.deliveryVouchers.filter(item => item.checked).length;
+    }
 }

@@ -3,11 +3,11 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 250px;
+  width: 245px;
   height: 100vh;
   background-color: #333;
   color: #fff;
-  transition: transform 0.3s ease;
+  /* transition: transform 0.3s ease; */
   transform: translateX(100%); /* Initially hidden */
   display: flex;
   flex-direction: column;
@@ -21,14 +21,16 @@
 
 .toggle-button {
   position: absolute;
-  left: -40px;
+  left: -18px;
   top: 10px;
-  background-color: #224273;
+  background-color: #fff;
   color: #fff;
-  border: none;
+  border: solid 1px #e7e7ea;
+  border-radius: 20px;
   padding: 0.5rem;
   font-size: 1.5rem;
   cursor: pointer;
+  z-index: 10;
 }
 
 .content {
@@ -47,7 +49,7 @@
    
   background-color: #224273;
   
-  direction: rtl; 
+  direction: ltr; 
  
 }
 
@@ -65,22 +67,67 @@
   color: #fff; /* Text color */
   text-decoration: none; /* Remove underline */
 }
+ .nav-item .custom-class
+ {
+   /* display: flex; */
+   flex-direction: row-reverse !important;
+   align-items: center;
+   color: #f7fbff;
+   padding: 6px 18px;
+   width: 183px;
+   font-size: 1rem;
+   margin-left: 1px;
+   font-weight: 400;
+   /* position: relative; */
+   margin-bottom: 3px;
+   text-decoration: none !important;
+   flex-wrap: nowrap;
+   /* justify-content: space-between; */
 
-.nav-item a:hover , a:focus{
-  /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
-  background-color: #4875a9;
-  color: #f1f4f8;
+}
+/* .nav-item a:hover , a:focus {
+  background-color: #f1f4f8 !important;
+
+  color: #224273 !important;
   border: 1px solid #4875a9;
   border-radius: 10px;
   width: 100%;
-}
-.sub-item2 a:hover {
-  /* background-color: rgba(255, 255, 255, 0.1); Hover effect */
-  background-color: #f7fbff;
-  color: #eaf1fa;
-  border: 1px solid #f7fbff;
+} */
+/* .custom-hover .custom-class a:hover , a:focus{
+  background-color: #4875a9 !important;
+
+  color: #f1f4f8;
+  border: 1px solid #4875a9;
   border-radius: 10px;
+  width: 90%;
+} */
+ /* Main menu item hover and active */
+.nav-item > a:hover, a:focus,
+.nav-item > a.active {
+    background-color: #f1f4f8 !important;
+    color: #224273;
+    border-radius: 1px; /* Optional: to add rounded corners */
+    width: 98% ;
 }
+
+.collapsed-item > a:hover, a:focus,
+.collapsed-item > a.active {
+    background-color: #4875a9;
+    color: #f1f4f8; 
+    border-radius: 4px; 
+    width: 183px;
+    
+}
+.hover-custom > a:hover, .hover-custom > a:focus,
+.hover-custom > a.active{
+  background-color: #4875a9 !important;
+  color: #f1f4f8 !important; 
+  border-radius: 4px; 
+  width: 177px;
+}
+
+
+
 
 .sidebar .nav-section {
   padding: 10px 15px; /* Padding for section headers */
@@ -90,12 +137,12 @@
 /* Collapse/Expand caret styling */
 .caret {
   margin-left: auto; /* Align caret to the right */
-  transition: transform 0.3s;
+  /* transition: transform 0.3s; */
 }
-
-.collapse.show + .caret {
-  transform: rotate(90deg); /* Rotate caret when expanded */
-}
+/*  Rotate caret when expanded */
+/* .collapse.show + .caret {
+  transform: rotate(90deg);
+} */
 
 
 /* for collaps */
@@ -109,15 +156,15 @@
   cursor: pointer;
 }
 
-ul .sub-nav a{
+/* ul .sub-nav a{
   transition: color 0.3s ease;
-}
+} */
 ul .sub-nav a:hover{
   color: #224273;
 }
-ul .sub-nav a:active{
+/* ul .sub-nav a:active{
   color: #224273;
-}
+} */
 
   /* font */
   h2,
@@ -146,8 +193,8 @@ tr, th, tr {
 } */
 
 .search-icon {
-  right: 49px;
-  top: 45.5%;
+  right: 44px;
+  top: 26.5%;
   transform: translateY(-50%);
   font-size: 1.3rem !important;
   color: #224273;
@@ -158,7 +205,7 @@ tr, th, tr {
   padding-right: 2.5rem; /* Add padding to make space for the icon */
   /* margin-top: 15px; */
   border-radius: 12px;
-  width: 200px;
+  width: 189px;
   margin-bottom: 20px;
 }
 
@@ -176,9 +223,3 @@ tr, th, tr {
 
 
 
-
-.gray-line {
-  border: none;
-  border-top: 2px solid gray;
-  margin: 0px 0 30px 8px; /* Adjust margin as needed */
-}

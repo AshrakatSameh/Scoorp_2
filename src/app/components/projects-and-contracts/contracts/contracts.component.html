@@ -145,85 +145,69 @@
                     <thead>
                       <tr class="firstcol">
                         <th class="firstcolleft position-relative">
-                          <i
-                            class="fa-solid fa-right-left"
-                            (click)="openDropdown()"
-                            style="cursor: pointer"
-                          ></i>
-
-                          <!-- Custom Dropdown -->
-                          <ul
-                            class="dropdown-menu"
-                            [ngClass]="{ show: isDropdownOpen }"
-                          >
-                            <li>
-                              <a class="dropdown-item" href="#">
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  تاريخ الانشاء
-                                  <input type="checkbox" />
-                                </div>
-                              </a>
-                            </li>
-                            <li>
-                              <a class="dropdown-item" href="#">
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  تاريخ التوصيل
-                                  <input type="checkbox" />
-                                </div>
-                              </a>
-                            </li>
-                            <li>
-                              <a class="dropdown-item" href="#">
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  مندوب المبيعات
-                                  <input type="checkbox" />
-                                </div>
-                              </a>
-                            </li>
-                            <li>
-                              <a class="dropdown-item" href="#">
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  الانشطه
-                                  <input type="checkbox" />
-                                </div>
-                              </a>
-                            </li>
-                          </ul>
+                          <div >
+                            <!-- Icon to trigger dropdown -->
+                            <i class="fa-solid fa-right-left" style="cursor: pointer" (click)="toggleDropdownCols()"></i>
+                          
+                            <!-- Dropdown menu for selecting columns -->
+                            <ul *ngIf="showDropdownCols" class="dropdown-menu" style="background: #f1f1f4; border: 1px solid #ccc; padding: 10px; position: absolute; z-index: 1000;
+                            border-radius: 15px;">
+                              <li *ngFor="let column of columns">
+                                <a class="dropdown-item">
+                                  <div class="d-flex justify-content-end align-items-center">
+                                    {{ column.displayName }}
+                                    <input class="mx-2" type="checkbox" [(ngModel)]="column.visible" />
+                                  </div>
+                               
+                                </a>
+                               
+                              </li>
+                            </ul>
+                          </div>
+                      
                         </th>
 
-                        <th>الفرق</th>
+                        <!-- <th>الفرق</th>
                         <th>موكل الي</th>
                         <th>العميل</th>
                         <th>موقع العقد</th>
                         <th>اسم العقد باللغه المحليه</th>
-                        <th>اسم العقد</th>
+                        <th>اسم العقد</th> -->
+                        <th *ngIf="isColumnVisible('teamName')">الفريق</th>
+                        <th *ngIf="isColumnVisible('assignedToName')">موقع العقد</th>
+                        <th *ngIf="isColumnVisible('endDate')">تاريخ الإنتهاء</th>
+                        <th *ngIf="isColumnVisible('startDate')">تاريخ البدء</th>
+                        <th *ngIf="isColumnVisible('code')">كود المشروع</th>
+                        <th *ngIf="isColumnVisible('clientName')">اسم العميل</th>
+                        <th *ngIf="isColumnVisible('localName')">اسم العقد باللغه المحليه</th>
+                        <th *ngIf="isColumnVisible('name')">اسم العقد</th>
                         <th>المسلسل</th>
                         <th class="firstcolright">
-                          <input type="checkbox" class="large-checkbox" />
-                        </th>
+                          <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of contracts, let i=index">
                         <td></td>
-
-                        <td>{{item.teamId}}</td>
+                        <td *ngIf="isColumnVisible('endDate')">{{ item.endDate |date: 'dd/MM/yy' }}</td>
+                        <td *ngIf="isColumnVisible('startDate')">{{ item.startDate | date: 'dd/MM/yy' }}</td>
+                        <td *ngIf="isColumnVisible('assignedToName')">{{ item.assignedToName }}</td>
+                        <td *ngIf="isColumnVisible('teamName')">{{ item.teamName }}</td>
+                        <td *ngIf="isColumnVisible('clientName')">{{ item.clientName }}</td>
+                        <td *ngIf="isColumnVisible('code')">{{ item.code }}</td>
+                        <td *ngIf="isColumnVisible('localName')">{{ item.localName }}</td>
+                        <td *ngIf="isColumnVisible('name')">{{ item.name }}</td>
+                        <!-- <td>{{item.teamId}}</td>
                         <td>{{item.assignedToName}}</td>
                         <td>{{item.clientName}}</td>
                         <td>{{item.singleInstallments}}</td>
                         <td>{{item.localName}}</td>
-                        <td>{{item.name}}</td>
+                        <td>{{item.name}}</td> -->
                         <td>{{i+1}}</td>
                         <td class="firstcolright">
-                          <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                          <input type="checkbox" [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
                         </td>
                       </tr>
                   
@@ -769,7 +753,7 @@
                     </div>
                   </div>
                   <div
-                    class="col-md-3 d-flex justify-content-start mt-3 mt-md-0"
+                    class="col-md-3 d-flex justify-content-start mt-4"
                   >
                     <button
                       class="btn btn-primary locationButton"
@@ -1628,7 +1612,7 @@
 
             <div class="col-md-6 mx-auto ">
               <button type="submit" class="btn my-button3">
-                اضافه
+                تعديل
                 <i class="fa-solid fa-plus"></i>
               </button>
               <button type="button" class="btn closebutton " data-bs-dismiss="modal">

@@ -6,6 +6,7 @@ import { ClientsService } from 'src/app/services/getAllServices/Clients/clients.
 import { ContactsService } from 'src/app/services/getAllServices/Contacts/contacts.service';
 import { ContractService } from 'src/app/services/getAllServices/Contracts/contract.service';
 import { LocationService } from 'src/app/services/getAllServices/Location/location.service';
+import { NationalityService } from 'src/app/services/getAllServices/Nationality/nationality.service';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
@@ -28,7 +29,7 @@ export class ContactsComponent implements OnInit {
 
   constructor(private contactService:ContactsService, private locationService:LocationService,
     private clientService:ClientsService, private fb:FormBuilder, private http:HttpClient,
-    private toast: ToastrService
+    private toast: ToastrService, private nationality: NationalityService
   ){
     
     this.contactForm = this.fb.group({
@@ -51,6 +52,7 @@ export class ContactsComponent implements OnInit {
     this.getAllContacts();
     this.getLocations();
     this.getClients();
+    this.getNationalities()
   }
 
   isDropdownOpen: boolean = false;
@@ -81,6 +83,16 @@ closeDropdown() {
         console.log(this.location);
       }, error => {
         console.error('Error fetching location data:', error);
+      });
+  }
+nationalities:any[]=[];
+  getNationalities() {
+    this.nationality.getAllNationalities()
+      .subscribe(data => {
+        this.nationalities = data;
+        // console.log(this.nationalities);
+      }, error => {
+        console.error('Error fetching nationalities data:', error);
       });
   }
 

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';  // Import HttpClient
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { DepartmentService } from 'src/app/services/getAllServices/Department/department.service';
 import { environment } from 'src/environments/environment.development';
 
@@ -22,7 +23,8 @@ export class SectionsComponent {
   constructor(
     private departmentService: DepartmentService,
     private fb: FormBuilder,
-    private http: HttpClient  // Inject HttpClient here
+    private http: HttpClient ,
+    private toast: ToastrService // Inject HttpClient here
   ) {
     this.depForm = this.fb.group({
       name: ['', Validators.required],
@@ -83,14 +85,17 @@ export class SectionsComponent {
           console.log('Update Response:', response);
           this.getAllDeps();  // Refresh the department list
           this.closeModal();  // Close the modal
-          alert('Updated successfully');
+          // alert('Updated successfully');
+          this.toast.success('Updated successfully')
         },
         (error: any) => {
           console.error('Update Error:', error);
+          const errorMessage = error.error?.message || 'An unexpected error occurred.';
+          this.toast.error(errorMessage, 'Error'); 
         }
       );
     } else {
-      alert('Please select a department to update.');
+      this.toast.error('Please select a department to update.');
     }
   }
 
@@ -147,8 +152,9 @@ export class SectionsComponent {
       .subscribe(
         (response: any) => {
           console.log('Response:', response);
+          this.toast.success('Submitted successfully ')
           this.getAllDeps();
-          alert('Submit successfully');
+          // alert('Submit successfully');
         },
         (error: any) => {
           console.error('Error:', error);

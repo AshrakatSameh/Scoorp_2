@@ -36,7 +36,7 @@ export class CollectionsService {
       'Content-Type': 'application/json',
     });
     console.log(data)
-    return this.http.post(`${this.apiUrl}Collections/Create?`, data, { headers });
+    return this.http.post(`${this.apiUrl}Collections/Create`, data, { headers });
   }
 
   updateItemType(id: number, updatedCategory: any): Observable<any> {

@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { ConvenantService } from 'src/app/services/getAllServices/Convenants/convenant.service';
 import { EmployeeService } from 'src/app/services/getAllServices/Employee/employee.service';
 import { EquipmentService } from 'src/app/services/getAllServices/Equipment/equipment.service';
@@ -22,7 +23,7 @@ export class ReceivedCovenantComponent implements OnInit {
   api = environment.apiUrl +'Covenants/CreateCovenant'
   constructor(private ConvenantService: ConvenantService, private fb:FormBuilder,
     private employeeService:EmployeeService,private equipService: EquipmentService,
-  private http: HttpClient ) {
+  private http: HttpClient , private toast:ToastrService) {
       this.convenantForm=this.fb.group({
         name:['',Validators.required],
         localName:['',Validators.required],
@@ -153,13 +154,16 @@ export class ReceivedCovenantComponent implements OnInit {
 
     this.http.post<any>(url, formData,{headers}).subscribe(
       (response) => {
-        alert('Done');
+        // alert('Done');
         console.log('Convenant created successfully:', response);
         // Reset form after successful submission
+        this.toast.success('Convenant created successfully ')
         this.convenantForm.reset();
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         console.error('Error creating Convenant:', error.error);
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
         // Handle error
       }
     );

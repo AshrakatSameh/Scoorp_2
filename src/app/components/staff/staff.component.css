@@ -51,7 +51,9 @@
     background: #f8f6ff;
   } */
 
-
+  h5{
+    font-size: 19px;
+ }
   .page-inner ,.nav-item i , .nav-home i{
     color:#4875A9;
   }

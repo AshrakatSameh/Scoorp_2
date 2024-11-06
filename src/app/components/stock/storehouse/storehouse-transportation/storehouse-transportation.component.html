@@ -63,10 +63,17 @@
                       <i class="fa-solid fa-print"></i>
                       طباعه
                     </button>
-                    <button type="button" class="btn ms-3 my-button2">
-                      <i class="fa-solid fa-gear"></i>
-                      الاجراءات
-                    </button>
+                    <div class="dropdown" [class.show]="isDropdownOpen">
+                      <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                        <i class="fa-solid fa-gear"></i> الاجراءات
+                      </button>
+                      
+                      <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                        <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                        <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                        <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
   
@@ -143,30 +150,32 @@
                          
                           <th>من المستودع</th>
                           <th>رقم الطلب</th>
-                          <th>المنشأ</th>
-                          <th>تاريخ الانشاء</th>
+                          <th>ملاحظة</th>
+                          <th>الإسم المحلى</th>
+                          <th>الإسم</th>
+                          <th>المسلسل</th>
                           <th class="firstcolright">
-                            <input type="checkbox" class="large-checkbox" />
-                          </th>
+                            <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" /> 
+                                                 </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Fiona Green</td>
-                          <td>Chief Operating Officer (COO)</td>
-                          <td>San Francisco</td>
-                          <td>48</td>
-                          <td>2010/03/11</td>
-                          <td>$850,000</td>
+                        <tr *ngFor="let item of waresTransport, let i = index">
+
+                          <td>{{item.toWarehouse}}</td>
+                          <td>{{item.fromWarehouse}}</td>
+                          <td>{{item.code}}</td>
+                          <td>{{item.note}}</td>
+                          <td>{{item.localName}}</td>
+                          <td>{{item.name}}</td>
+                          <td>{{ i+1 }}</td>
+                          <td class="firstcolright">
+                            <input type="checkbox" [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
+                          </td>
                         </tr>
-                        <tr>
-                          <td>Shou Itou</td>
-                          <td>Regional Marketing</td>
-                          <td>Tokyo</td>
-                          <td>20</td>
-                          <td>2011/08/14</td>
-                          <td>$163,000</td>
-                        </tr>
+                     
                       </tbody>
                     </table>
                   </div>
@@ -203,7 +212,7 @@
           </h5>
         </div>
         <div class="modal-body">
-          <form>
+          <form [formGroup]="transportForm" (ngSubmit)="onSubmit()">
             <div class="container">
               <!-- Row with two fields -->
 
@@ -211,25 +220,25 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="field3"> المنشأ</label>
+                    <label for="field3"> الإسم</label>
                     <input
                       type="text"
                       id="field3"
-                      
+                      formControlName="name"
                       class="form-control custom-input"
-                      placeholder="اسم المنشأ"
+                      placeholder="الإسم "
                     />
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="field4"> تاريخ الانشاء</label>
+                    <label for="field4"> الإسم المحلي</label>
                     <input
-                    type="date"
-                    id="field2"
-                    
+                    type="text"
+                    id="localName"
+                    formControlName="localName"
                     class="form-control custom-input"
-                    placeholder="قم باختيار التاريخ"
+                    placeholder="قم بكاتبة الاسم المحلي"
                   />
                   </div>
                 </div>
@@ -240,24 +249,19 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="field3"> من مستودع</label>
-                    <input
-                      type="text"
-                      id="field3"
-                      
-                      class="form-control custom-input"
-                      placeholder="من مستودع "
-                    />
+                    <select class="form-control form-select" formControlName="fromWarehouseId">
+                      <option value="">من مستودع</option>
+                      <option *ngFor="let item of warehouses" [value]="item.id">{{item.name}}</option>
+                    </select>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="field4">الي مستودع</label>
-                    <input
-                    type="text"
-                    id="field2"
-                    
-                    class="form-control custom-input"
-                    placeholder="الي مستودع "                  />
+                    <select class="form-control form-select" formControlName="toWarehouseId">
+                      <option value="">الى مستودع</option>
+                      <option *ngFor="let item of warehouses" [value]="item.id">{{item.name}}</option>
+                    </select>           
                   </div>
                 </div>
 
@@ -269,14 +273,13 @@
                     <label for="field3"> رقم الطلب </label>
                     <input
                       type="text"
-                      id="field3"
-                      
+                    disabled
                       class="form-control custom-input"
                       placeholder=" قم بطتابه رقم الطلب "
                     />
                   </div>
                 </div>
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <div class="form-group">
                     <label for="field4">حاله الطلب</label>
                     <input
@@ -286,7 +289,7 @@
                     class="form-control custom-input"
                     placeholder=" قم باختيار حاله الطلب "                  />
                   </div>
-                </div>
+                </div> -->
 
               </div>
 
@@ -295,25 +298,19 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="field3">المندوب</label>
-                    <input
-                      type="text"
-                      id="field3"
-                      
-                      class="form-control custom-input"
-                      placeholder=" قم باختيار المندوب "
-                    />
+                    <select class="form-control form-select" formControlName="representativeId">
+                      <option value="">قم باختيار المندوب</option>
+                      <option *ngFor="let item of representatives" [value]="item.id">{{item.userName}}</option>
+                    </select>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="field4">فريق البيع</label>
-                    <input
-                    type="text"
-                    id="field2"
-                    
-                    class="form-control custom-input"
-                    placeholder="قم بكتابه  باركود الصنف"
-                  />
+                    <select class="form-control form-select" formControlName="teamId">
+                      <option value="">قم باختيار الفريق</option>
+                      <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
+                    </select>
                   </div>
                 </div>
 
@@ -322,16 +319,25 @@
                       <label for="field4">رقم طلب الاستلام </label>
                       <input
                       type="text"
-                      id="field2"
-                      
+                      id="receivingRequestNumber"
+                      formControlName="receivingRequestNumber"
                       class="form-control custom-input"
-                      placeholder="قم بكتابه  رقم طلب الاستلام"
+                      placeholder=" قم بطتابه رقم الطلب "
                     />
                     </div>
                   </div>
 
               </div>
 
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="field3"> ملاحظة </label>
+                    <textarea class="form-control" formControlName="note" placeholder="ملاحظة">
+
+                    </textarea>
+                  </div>
+                </div></div>
               <div class="scroll-buttons-container">
                 <button
                   *ngFor="let btn of buttons; let i = index"
@@ -344,21 +350,65 @@
                 </button>
               </div>
 
+                  <!-- show table button 1 -->
+                  <div *ngIf="selectedButton !== null">
+                    <div *ngIf="selectedButton === 0">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="basic-datatables" class="display table table-striped table-hover">
+                                    <thead>
+                                        <tr class="firstcol">
+                                            <th>مسلسل</th>
+                                            <th>Item ID</th>
+                                            <th>Quantity</th>
+                                            <th>Unit</th>
+                                            <th> </th>
+
+
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody formArrayName="items">
+
+                                        <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                            <td>{{ i+1 }} </td>
+                                            <td ><select formControlName="itemId" class="form-control">
+                                                <option *ngFor="let dropdownItem of itemList" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
+                                              </select></td>
+                                              <td><input type="number" formControlName="transferredQuantity" placeholder="transferredQuantity" class="form-control"></td>
+                                          <td><input type="text" formControlName="unit" placeholder="Unit"  class="form-control"></td>
+                                          
+                                          <td>
+                                            <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
+                                          </td>
+                                          
+                                        </tr>
+                                      </tbody>
+                                      <button type="button" (click)="addItem()">اضف صنف</button>
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
 
               
            
   
-              <button type="button my-button3" class="btn my-button3">
-                حفظ
-              </button>
-  
-              <button
-                type="button"
-                class="btn closebutton"
-                data-bs-dismiss="modal"
-              >
-                الغاء
-              </button>
+                <div class="col-md-6 mx-auto ">
+                  <button type="submit" class="btn my-button3">
+                      اضافه
+                      <i class="fa-solid fa-plus"></i>
+                  </button>
+                  <button type="button" (click)="closeModal()" class="btn closebutton " data-bs-dismiss="modal">
+                      الغاء 
+                  </button>
+
+              </div>
             
        
     
@@ -369,3 +419,181 @@
     </div>
   </div>
   
+
+  <!-- Update -->
+  <div
+  class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title text-end flex-row-reverse"
+          id="staticBackdropLabel"
+        >
+           تعديل النقل بين المستودعات
+        </h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="transportForm" (ngSubmit)="updateCategory()">
+          <div class="container">
+            <!-- Row with two fields -->
+
+            <!-- Row with three fields -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field3"> الإسم</label>
+                  <input
+                    type="text"
+                    id="field3"
+                    formControlName="name"
+                    class="form-control custom-input"
+                    placeholder="الإسم "
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field4"> الإسم المحلي</label>
+                  <input
+                  type="text"
+                  id="localName"
+                  formControlName="localName"
+                  class="form-control custom-input"
+                  placeholder="قم بكاتبة الاسم المحلي"
+                />
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field3"> من مستودع</label>
+                  <select class="form-control form-select" formControlName="fromWarehouseId">
+                    <option value="">من مستودع</option>
+                    <option *ngFor="let item of warehouses" [value]="item.id">{{item.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field4">الي مستودع</label>
+                  <select class="form-control form-select" formControlName="toWarehouseId">
+                    <option value="">الى مستودع</option>
+                    <option *ngFor="let item of warehouses" [value]="item.id">{{item.name}}</option>
+                  </select>           
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field3"> رقم الطلب </label>
+                  <input
+                    type="text"
+                  disabled
+                    class="form-control custom-input"
+                    placeholder=" قم بطتابه رقم الطلب "
+                  />
+                </div>
+              </div>
+              <!-- <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field4">حاله الطلب</label>
+                  <input
+                  type="text"
+                  id="field2"
+                  
+                  class="form-control custom-input"
+                  placeholder=" قم باختيار حاله الطلب "                  />
+                </div>
+              </div> -->
+
+            </div>
+
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="field3">المندوب</label>
+                  <select class="form-control form-select" formControlName="representativeId">
+                    <option value="">قم باختيار المندوب</option>
+                    <option *ngFor="let item of representatives" [value]="item.id">{{item.userName}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="field4">فريق البيع</label>
+                  <select class="form-control form-select" formControlName="teamId">
+                    <option value="">قم باختيار الفريق</option>
+                    <option *ngFor="let item of teams" [value]="item.id">{{item.name}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="field4">رقم طلب الاستلام </label>
+                    <input
+                    type="text"
+                    id="receivingRequestNumber"
+                    formControlName="receivingRequestNumber"
+                    class="form-control custom-input"
+                    placeholder=" قم بطتابه رقم الطلب "
+                  />
+                  </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field3"> ملاحظة </label>
+                  <textarea class="form-control" formControlName="note" placeholder="ملاحظة">
+
+                  </textarea>
+                </div>
+              </div></div>
+            <div class="scroll-buttons-container">
+              <button
+                *ngFor="let btn of buttons; let i = index"
+                [id]="'button-' + i"
+                class="scroll-button col-md-2"
+                type="button"
+                (click)="showContent(i)"
+              >
+                {{ btn }}
+              </button>
+            </div>
+
+
+            
+         
+
+            <button  type="submit" class="btn my-button3">
+              حفظ
+            </button>
+
+            <button
+              type="button"
+              class="btn closebutton"
+              data-bs-dismiss="modal"
+            >
+              الغاء
+            </button>
+          
+     
+  
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -64,6 +64,7 @@ import { RepresentativeComponent } from './components/sales/salesResponsible/rep
 import { JWT_OPTIONS, JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { ToastrModule } from 'ngx-toastr';
 import { PriceListComponent } from './components/sales/clients/price-list/price-list.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
   declarations: [
@@ -129,6 +130,7 @@ import { PriceListComponent } from './components/sales/clients/price-list/price-
     BrowserAnimationsModule,
     MatSelectModule,
     MatFormFieldModule,
+    NgMultiSelectDropDownModule.forRoot() ,
     // JwtModule
     ToastrModule.forRoot({ // Initialize Toastr with configuration
       positionClass: 'toast-top-right', // Position of the toast

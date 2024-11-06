@@ -1,4 +1,4 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -10,8 +10,10 @@ import { ConvenantBoxService } from 'src/app/services/getAllServices/ConvenantBo
 import { ConvenantService } from 'src/app/services/getAllServices/Convenants/convenant.service';
 import { CostCenterService } from 'src/app/services/getAllServices/CostCenter/cost-center.service';
 import { PaymentMethodService } from 'src/app/services/getAllServices/PaymentMethods/payment-method.service';
+import { PriceListService } from 'src/app/services/getAllServices/PriceList/price-list.service';
 import { RepresentativeService } from 'src/app/services/getAllServices/Representative/representative.service';
 import { TeamsService } from 'src/app/services/getAllServices/Teams/teams.service';
+import { environment } from 'src/environments/environment.development';
 
 @Component({
   selector: 'app-collections',
@@ -37,18 +39,19 @@ export class CollectionsComponent implements OnInit {
 
   paymentType = PaymentType;  // Access the PaymentType enum
   // Convert enum to an array for dropdown
-  paymentTypeList: { key: string, value: string }[] = [];
-
+  paymentTypeList: { key: number; value: string }[] = [];
+ 
   collectionForm!: FormGroup;
 
   constructor(private costCenterService: CostCenterService, private representService:RepresentativeService,
      private convenantBoxService: ConvenantBoxService, private contractService:ContractService,
     private paymentService:PaymentMethodService, private clientService:ClientsService,
   private collectionService:CollectionsService, private fb:FormBuilder, private teamService:TeamsService,
+  private http:HttpClient, private priceList: PriceListService,
 private toast:ToastrService) { 
     this.collectionForm= this.fb.group({
       code:['', Validators.required],
-      clientId:1,
+      clientId:['', Validators.required],
       representativeId:['', Validators.required],
       teamId:['', Validators.required],
       paymentMethodId:['', Validators.required],
@@ -56,13 +59,15 @@ private toast:ToastrService) {
       clientEmail:['', Validators.required],
       costCenterId:['', Validators.required],
       covenantBoxId:['', Validators.required],
+      value:['']
 
     });
 
-    this.paymentTypeList = Object.keys(this.paymentType).map(key => ({
-      key: key,
-      value: this.paymentType[key as keyof typeof PaymentType]
-    }));
+    // this.paymentTypeList = Object.keys(PaymentType)
+    // .map((key, index) => ({
+    //   key: index,  // Use the index as the numeric key
+    //   value: PaymentType[key as keyof typeof PaymentType]  // Get the value from the enum
+    // }));
   }
 
   ngOnInit(): void {
@@ -74,7 +79,12 @@ private toast:ToastrService) {
     this.getAllClients();
     this.getAllCollections();
     this.getAllTeams();
-
+    
+    this.paymentTypeList = [
+      { key: 0, value: 'Cash' },
+      { key: 1, value: 'Deferred' },
+      { key: 2, value: 'CashOrDeferred' }
+    ];
   }
 
 
@@ -172,35 +182,44 @@ closeDropdown() {
 
   }
 
- 
 
-  onSubmitAdd(): void {
-   
-    if (this.collectionForm.valid) {
-      // Call the service to post the data
-      const formData = this.collectionForm.value; // Get the form data
-      this.collectionService.createCollection(formData).subscribe(
-        response => {
-          console.log('collection created successfully!', response);
-          alert('collection created successfully!')
-          // Handle success, show notification, etc.
-        },
-        error => {
-          console.error('Error creating collection:', error);
-          console.log(formData)
-          // Handle error, show notification, etc.
-        }
-      );
-    } else {
-      console.log(this.collectionForm);
-      console.log('Form is not valid');
-      // Handle form validation errors
-    }
+ 
+apiUrl = environment.apiUrl
+  onSubmitAdd() {
+    const formData = new FormData();
+    formData.append('code', this.collectionForm.get('code')?.value);
+    formData.append('clientId', this.collectionForm.get('clientId')?.value);
+    // formData.append('code', this.collectionForm.get('code')?.value);
+    formData.append('representativeId', this.collectionForm.get('representativeId')?.value);
+    formData.append('teamId', this.collectionForm.get('teamId')?.value);
+    formData.append('paymentMethodId', this.collectionForm.get('paymentMethodId')?.value);
+    formData.append('clientPhone', this.collectionForm.get('clientPhone')?.value);
+    formData.append('clientEmail', this.collectionForm.get('clientEmail')?.value);
+    formData.append('costCenterId', this.collectionForm.get('costCenterId')?.value);
+    formData.append('covenantBoxId', this.collectionForm.get('covenantBoxId')?.value);
+    formData.append('value', this.collectionForm.get('value')?.value);
+
+  
+    const headers = new HttpHeaders({
+      'tenant': localStorage.getItem('tenant') || ''  // Add your tenant value here
+    });
+  
+    this.http.post(this.apiUrl + 'Collections/Create', formData, { headers })
+      .subscribe(response => {
+        console.log('Response:', response);
+        this.toast.success('submit successfully');
+        this.collectionForm.reset();
+      }, error => {
+        console.error('Error:', error);
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
+      });
   }
 
 
   // Update
 onCheckboxChange(category: any) {
+  this.updateSelectAll();
   this.selectedCategory = category;  // Store the selected category data
 }
 
@@ -216,6 +235,7 @@ openModalForSelected() {
       clientEmail: this.selectedCategory.clientEmail,
       costCenterId: this.selectedCategory.costCenterId,
       covenantBoxId: this.selectedCategory.covenantBoxId,
+      value: this.selectedCategory.value
     });
 
     this.isModalOpen = true;
@@ -246,12 +266,12 @@ updateCategory() {
         this.getAllCollections();
         this.closeModal();  // Close the modal after successful update
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         console.error('Error updating collection:', error);
         console.log('Updated collection Data:', updatedCategory);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while updating the item type .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error');       }
     );
     }
   }
@@ -285,5 +305,57 @@ updateCategory() {
         console.log('Deletion canceled');
       }
     
+  }
+
+
+  // dropdown table columns
+columns = [
+  // { name: 'id', displayName: 'المسلسل', visible: true },
+  { name: 'clientEmail', displayName: 'ايميل العميل', visible: true },
+  { name: 'clientPhone', displayName: 'رقم الهاتف', visible: true },
+  { name: 'code', displayName: 'كود ', visible: true },
+  { name: 'clientName', displayName: 'اسم العميل', visible: true },
+  { name: 'representativeName', displayName: 'المندوب', visible: false },
+  { name: 'teamName', displayName: 'الفريق', visible: false },
+  { name: 'paymentMethodName', displayName: 'طريقة الدفع', visible: false },
+  { name: 'costCenterName', displayName: 'مركز التكلفة', visible: false }
+
+];
+showDropdownCol= false;
+toggleDropdownCol() {
+  this.showDropdownCol = !this.showDropdownCol; // Toggle the dropdown visibility
+  console.log('Dropdown visibility:', this.showDropdownCol); // Check if it’s toggling
+}
+
+isColumnVisible(columnName: string): boolean {
+  const column = this.columns.find(col => col.name === columnName);
+  return column ? column.visible : false;
+}
+
+toggleColumnVisibility(columnName: string) {
+  const column = this.columns.find(col => col.name === columnName);
+  if (column) {
+    column.visible = !column.visible;
+  }
+}
+
+  // select checkbox
+
+  selectAll = false;
+
+  selectedCount = 0;
+  
+  toggleAllCheckboxes() {
+    // Set each item's checked status to match selectAll
+    this.collections.forEach(item => (item.checked = this.selectAll));
+    // Update the selected count
+    this.selectedCount = this.selectAll ? this.collections.length : 0;
+  }
+  
+  updateSelectAll() {
+    // Update selectAll if all items are checked
+    this.selectAll = this.collections.every(item => item.checked);
+    // Calculate the number of selected items
+    this.selectedCount = this.collections.filter(item => item.checked).length;
   }
 }

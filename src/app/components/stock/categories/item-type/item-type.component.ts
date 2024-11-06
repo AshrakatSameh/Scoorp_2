@@ -25,7 +25,7 @@ export class ItemTypeComponent {
       name:['', Validators.required],
       localName:['', Validators.required],
       note:['',Validators.required],
-      code:['',Validators.required]
+      code:['']
     })
 
   }
@@ -69,7 +69,9 @@ onSubmitAdd(): void {
       },
       error => {
         console.error('Error creating types :', error);
-        console.log(formData)
+        console.log(formData);
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
         // Handle error, show notification, etc.
       }
     );
@@ -102,13 +104,14 @@ onSubmit() {
       // alert('submit successfully');
     }, error => {
       console.error('Error:', error);
-      this.toast.error('Error in submit')
-    });
+      const errorMessage = error.error?.message || 'An unexpected error occurred.';
+      this.toast.error(errorMessage, 'Error');     });
 }
 
 
 // Update
 onCheckboxChange(category: any) {
+  this.updateSelectAll();
   this.selectedCategory = category;  // Store the selected category data
 }
 
@@ -149,12 +152,13 @@ updateCategory() {
         this.getAllItemTypes();
         this.closeModal();  // Close the modal after successful update
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         console.error('Error updating category:', error);
         console.log('Updated Category Data:', updatedCategory);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while updating the item type .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
+            }
     );
     }
   }
@@ -174,8 +178,8 @@ deleteItemType(){
         console.error('Error delete item type category:', error);
         console.log(this.selectedCategory.id);
         // alert('An error occurred while updating the item type .');
-        this.toast.error('An error occurred while deleting the item type .')
-      }
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error');       }
     )
   }else {
       // User canceled the deletion
@@ -184,4 +188,22 @@ deleteItemType(){
   
 }
  
+  // select checkbox
+  selectAll = false;
+
+  selectedCount = 0;
+  
+  toggleAllCheckboxes() {
+    // Set each item's checked status to match selectAll
+    this.storesSec.forEach(item => (item.checked = this.selectAll));
+    // Update the selected count
+    this.selectedCount = this.selectAll ? this.storesSec.length : 0;
+  }
+  
+  updateSelectAll() {
+    // Update selectAll if all items are checked
+    this.selectAll = this.storesSec.every(item => item.checked);
+    // Calculate the number of selected items
+    this.selectedCount = this.storesSec.filter(item => item.checked).length;
+  }
 }

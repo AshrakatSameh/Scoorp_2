@@ -32,6 +32,7 @@
         </ul>
 
       </div>
+      <hr class="gray-line" />
 
       <div class="row">
         <div class="col-md-12">
@@ -118,37 +119,74 @@
                 <table id="basic-datatables" class="display table table-striped table-hover">
                   <thead>
                     <tr class="firstcol">
-                      <th class="firstcolleft"> </th>
-                      <th> </th>
-                      <th>المندوب</th>
-                      <th>الكود</th>
-                      <th>العميل</th>
-                      <th>الفريق</th>
-                      <th>تاريخ الانشاء</th>
+                      <th>
+                        <div>
+                            <!-- Icon to trigger dropdown -->
+                            <i class="fa-solid fa-right-left" style="cursor: pointer"
+                                (click)="toggleDropdownCol()"></i>
+
+                            <!-- Dropdown menu for selecting columns -->
+                            <ul *ngIf="showDropdownCol" class="dropdown-menu" style="background: #f1f1f4; border: 1px solid #ccc; padding: 10px; position: absolute; z-index: 1000;
+                        border-radius: 15px; display: block;">
+                                <li *ngFor="let column of columns">
+                                    <a class="dropdown-item">
+                                        <div
+                                            class="d-flex justify-content-end align-items-center">
+                                            {{ column.displayName }}
+                                            <input class="mx-2" type="checkbox"
+                                                [(ngModel)]="column.visible" />
+                                        </div>
+
+                                    </a>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </th>
+                      <th>الحالة</th>
+                     
+                      <th *ngIf="isColumnVisible('costCenterName')">مركز النكلفة</th>
+                      <th *ngIf="isColumnVisible('warehouseName')">المستودع</th>
+                      <th *ngIf="isColumnVisible('teamName')">الفريق</th>
+                      <th *ngIf="isColumnVisible('representativeName')">المندوب</th>
+                      <th *ngIf="isColumnVisible('clientName')">اسم العميل</th>
+                      <th *ngIf="isColumnVisible('clientPurchaseOrder')">طلب شراء العميل</th>
+                      <th *ngIf="isColumnVisible('offerExpiryDate')">تاريخ انتهاء العرض</th>
+                      <th *ngIf="isColumnVisible('code')">كود</th>
                      
                       <th>مسلسل</th>
                       <th class="firstcolright">
-                        <input type="checkbox" class="large-checkbox" />
+                        <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                        <input type="checkbox" [(ngModel)]="selectAll"
+                            (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of salesOffers; let i =index">
+                    <tr *ngFor="let item of salesOffers; let i =index" [class.selected]="item.id === selectedNoteId" (click)="selectNoteId(item)">
                       <!-- <td>{{item.deliveryStatus}}</td> -->
-                      <td><select class="form-select form-control" style="width:90px;" >
-                        <option selected disabled>تغيير الحالة</option>
+                       <td> </td>
+                      <td><select class="form-select form-control" [(ngModel)]="item.requestStage" (change)="updateSaleOfferStatus(item)"  style="width:90px;" >
+                        <option value="" selected disabled>{{ item.requestStageName }}</option>
                         <option *ngFor="let type of requestStageList" [value]="type.key">
                            {{type.value}}</option>
                         
                     </select></td>
-                    <td>{{item.requestStageName}}</td>
-                      <td>{{item.representativeName}}</td>
-                      <td>{{item.code}}</td>
-                      <td>{{item.clientName}}</td>
-                      <td>{{item.teamName}}</td>
-                      <td>11/11/2024</td>
+                    <!-- <td>{{item.requestStageName}}</td> -->
+                    <td *ngIf="isColumnVisible('costCenterName')">{{ item.costCenterName }}</td>
+                    <td *ngIf="isColumnVisible('warehouseName')">{{ item.warehouseName
+                        }}</td>
+                    <td *ngIf="isColumnVisible('teamName')">{{ item.teamName }}</td>
+                    <td *ngIf="isColumnVisible('representativeName')">{{ item.representativeName
+                        }}</td>
+                    <td *ngIf="isColumnVisible('clientName')">{{ item.clientName }}</td>
+                    <td *ngIf="isColumnVisible('clientPurchaseOrder')">{{ item.clientPurchaseOrder }}</td>
+                    <td *ngIf="isColumnVisible('offerExpiryDate')">{{ item.offerExpiryDate }}</td>
+                    <td *ngIf="isColumnVisible('code')">{{ item.code }}</td>
                       <td>{{i + 1}}</td>
-                      <td> <input type="checkbox" (click)="onCheckboxChange(item)" class="large-checkbox" />
+                      <td> <input type="checkbox"  [(ngModel)]="item.checked"
+                        (change)="onCheckboxChange(item)" class="large-checkbox" />
                       </td>
                     </tr>
                  
@@ -235,7 +273,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field4 text-end"> رقم الطلب</label>
-                  <input type="text" id="code" formControlName="code" class="form-control" placeholder="رقم الطلب" />
+                  <input type="text" id="code" disabled class="form-control" placeholder="رقم الطلب" />
                 </div>
               </div>
               <div class="col-md-6">
@@ -402,18 +440,37 @@
                       <thead>
                         <tr class="firstcol">
                           <th class="firstcolleft"> </th>
+                          <th>ملاحظات</th>
                           <th>اجمالي فرعي</th>
                           <th>الخصم</th>
                           <th>الضريبه</th>
-                         
-                          <th> الوحدة</th>
                           <th>سعر الوحدة</th>
                           <th>الكمية</th>
                           <th>الصنف</th>
                           <th>مسلسل</th>
 
                         </tr>
-                      </thead>
+                        <tbody formArrayName="items">
+
+                                                <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                                  <td>
+                                                    <i class="fas fa-trash" style="cursor: pointer;" (click)="removeItem(i)"></i>
+                                                  </td>
+                                                  <td><input type="text" formControlName="notes" placeholder="Notes"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="unit" placeholder="Unit"  class="form-control"></td>
+                                                  <td><input type="text" formControlName="discount" placeholder="Discount"  class="form-control"></td>
+                                                  <!-- <td><input type="text" formControlName="salesTax" placeholder="Sales Tax" class="form-control"></td> -->
+                                                  <td><input type="text" formControlName="salesTax" placeholder="Sales Tax" class="form-control"></td>
+                                                  <td><input type="text" formControlName="unitPrice" placeholder="Unit Price" class="form-control"></td>
+                                                  <td><input type="number" formControlName="quantity" placeholder="quantity" class="form-control"></td>
+                                                  <td ><select formControlName="itemId" class="form-control">
+                                                    <option *ngFor="let dropdownItem of itemss" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
+                                                  </select></td>
+                                                  <td>{{ i+1 }} </td>
+                                                  
+                                                </tr>
+                                              </tbody>
+                      <!-- </thead>
                       <tbody formArrayName="items">
                         <tr *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                           <td>
@@ -425,16 +482,13 @@
                           <td><input type="text" formControlName="unit" placeholder="unit" class="form-control"></td>
                           <td><input type="number" formControlName="unitPrice" placeholder="unitPrice" class="form-control"></td>
                           <td><input type="number" formControlName="quantity" placeholder="Quantity" class="form-control"></td>
-                          <td><select formControlName="id" class="form-control">
+                          <td><select formControlName="itemId" class="form-control">
                             <option *ngFor="let dropdownItem of itemss" [value]="dropdownItem.itemId">{{ dropdownItem.name }}</option>
                           </select></td>
-                          <!-- <td>  <select (change)="onItemSelect($event, i)" [(ngModel)]="row.selectedItemId">
-                            <option *ngFor="let item of items" [value]="item.id">{{ item.name }}</option>
-                          </select></td> -->
                           <td>1</td>
                         </tr>
 
-                      </tbody>
+                      </tbody> -->
                     </table>
                     <button type="button" (click)="addItem()">اضف صنف</button>
 
@@ -744,7 +798,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label for="field4 text-end"> رقم الطلب</label>
-                <input type="text" id="code" formControlName="code" class="form-control" placeholder="رقم الطلب" />
+                <input type="text" id="code" disabled class="form-control" placeholder="رقم الطلب" />
               </div>
             </div>
             <div class="col-md-6">

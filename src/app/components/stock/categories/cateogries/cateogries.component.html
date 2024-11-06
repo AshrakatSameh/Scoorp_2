@@ -72,8 +72,8 @@
                     
                     <div class="dropdown-menu" [class.show]="isDropdownOpen">
                       <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
-                      <a class="dropdown-item" href="#">عرض</a>
-                      <a class="dropdown-item" (click)="deleteCategory()">حدف</a>
+                      <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                      <a class="dropdown-item" (click)="deleteCategory()">حذف</a>
                     </div>
                   </div>
                 </div>
@@ -157,25 +157,65 @@
                         <th>تاريخ الانشاء</th>
                         <th>اسم الصنف باللغه المحلية</th>
                         <th>اسم الصنف</th>
+                        <th>المسلسل</th>
                         <th class="firstcolright">
-                          <input type="checkbox" class="large-checkbox" />
-                        </th>
+                          <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of storesSec">
+                      <tr *ngFor="let item of storesSec, let i = index">
+                        <td></td>
+
                         <td>{{item.itemType}}</td>
                         <td>{{ item.note }}</td>
                         <td>{{item.code}}</td>
-                        <td></td>
                         <td>{{ item.localName }}</td>
                         <td>{{ item.name }}</td>
+                        <td>{{ i+1 }}</td>
                         <td>
-                          <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                          <input type="checkbox"  [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
                         </td>
                       </tr>
                     </tbody>
                   </table>
+
+                  <!-- paging -->
+                <nav aria-label="Page navigation">
+                  <ul class="pagination justify-content-end">
+                    <!-- Previous Button -->
+                    <li class="page-item" [class.disabled]="pageNumber === 1">
+                      <a class="page-link" href="#" (click)="changePage(pageNumber - 1)" tabindex="-1" [attr.aria-disabled]="pageNumber === 1 ? true : null">&laquo;</a>
+                    </li>
+                
+                    <!-- Page Numbers -->
+                    <li class="page-item" [class.active]="pageNumber === 1">
+                      <a class="page-link" (click)="changePage(1)">1</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 2">
+                      <a class="page-link" (click)="changePage(2)">2</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 3">
+                      <a class="page-link" (click)="changePage(3)">3</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 4">
+                      <a class="page-link" (click)="changePage(4)">4</a>
+                    </li>
+                    <li class="page-item" [class.active]="pageNumber === 5">
+                      <a class="page-link" (click)="changePage(5)">5</a>
+                    </li>
+                
+                    <!-- Ellipsis for more pages (can be enhanced later for large page sets) -->
+                    <li class="page-item"><a class="page-link">...</a></li>
+                
+                    <!-- Next Button -->
+                    <li class="page-item">
+                      <a class="page-link" (click)="changePage(pageNumber + 1)">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
+
                 </div>
               </div>
             </div>
@@ -239,7 +279,7 @@
             </div>
 
             <!-- Row with three fields -->
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="field3"> المنشأ</label>
@@ -262,7 +302,7 @@
                   />
                 </div>
               </div>
-            </div>
+            </div> -->
 
             
             <div class="radio-button-group">
@@ -338,7 +378,6 @@
                   <label for="field1 text-end">باركود الصنف</label>
                   <input
                     type="text"
-                    id="field1"
                     formControlName="barcode"
                     class="form-control custom-input"
                     placeholder="قم بكتابه  باركود الصنف"
@@ -352,7 +391,7 @@
                   <input
                     type="text"
                     id="field1"
-                    formControlName="code"
+                    disabled
                     class="form-control custom-input"
                     placeholder="قم بكتابه كود الصنف"
                   />
@@ -951,6 +990,70 @@
             </div>
 
 
+            <div  *ngIf="selectedButton !== null" >
+              <div *ngIf="selectedButton === 7">
+                
+                <div formArrayName="itemWarehouses">
+                  <div *ngFor="let item of itemWarehouses.controls; let i = index" [formGroupName]="i" class="item-container">
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="openingBalance">الرصيد الإفتتاحي</label>
+                          <input type="number" formControlName="openingBalance" placeholder="openingBalance" class="form-control">
+                        </div>
+                      </div>
+                
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="warehouseId">المستودع</label>
+                          <select formControlName="warehouseId" class="form-control">
+                            <option *ngFor="let dropdownItem of warehouses" [value]="dropdownItem.id">{{ dropdownItem.name }}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="openingPrice">السعر الإفتتاحي</label>
+                          <input type="number" formControlName="openingPrice" placeholder="openingPrice" class="form-control">
+                        </div>
+                      </div>
+                
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="unit">الوحدة</label>
+                          <input type="text" formControlName="unit" placeholder="unit" class="form-control">
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="unitPrice">سعر الوحدة</label>
+                          <input type="number" formControlName="unitPrice" placeholder="unitPrice" class="form-control">
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger" (click)="removeItem(i)">إزالة عنصر</button>
+                      </div>
+                    </div>
+                
+                    <hr>
+                  </div>
+                </div>
+                
+                <button type="button" (click)="addDeliveryNoteItem()">اضف رصيد جديد</button>
+
+               
+            </div>
+            </div>
+
+
 
             <!-- <div class="container mt-5">
                     <h5 class="mb-3">المرفقات</h5>
@@ -1268,7 +1371,7 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
                   <input
                     type="text"
                     id="field1"
-                    formControlName="code"
+                    disabled
                     class="form-control custom-input"
                     placeholder="قم بكتابه كود الصنف"
                   />

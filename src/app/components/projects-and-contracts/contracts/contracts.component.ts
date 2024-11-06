@@ -342,4 +342,57 @@ deleteItemType(){
     this.getcontracts();
   }
 
+
+  // dropdown table columns
+columns = [
+  // { name: 'id', displayName: 'المسلسل', visible: true },
+  { name: 'name', displayName: 'اسم القسم', visible: true },
+  { name: 'localName', displayName: 'اسم القسم باللغه المحليه', visible: true },
+  { name: 'code', displayName: 'كود المشروع', visible: true },
+  { name: 'clientName', displayName: 'اسم العميل', visible: true },
+  { name: 'startDate', displayName: 'تاريخ البدء', visible: false },
+  { name: 'endDate', displayName: 'تاريخ الإنتهاء', visible: false },
+  { name: 'teamName', displayName: 'الفريق', visible: false },
+  { name: 'assignedToName', displayName: 'موقع العقد', visible: false },
+
+];
+
+
+showDropdownCols= false;
+toggleDropdownCols() {
+  this.showDropdownCols = !this.showDropdownCols; // Toggle the dropdown visibility
+  console.log('Dropdown visibility:', this.showDropdownCols); // Check if it’s toggling
+}
+
+isColumnVisible(columnName: string): boolean {
+  const column = this.columns.find(col => col.name === columnName);
+  return column ? column.visible : false;
+}
+
+toggleColumnVisibility(columnName: string) {
+  const column = this.columns.find(col => col.name === columnName);
+  if (column) {
+    column.visible = !column.visible;
+  }
+}
+
+  // select checkbox
+
+  selectAll = false;
+
+  selectedCount = 0;
+  
+  toggleAllCheckboxes() {
+    // Set each item's checked status to match selectAll
+    this.contracts.forEach(item => (item.checked = this.selectAll));
+    // Update the selected count
+    this.selectedCount = this.selectAll ? this.contracts.length : 0;
+  }
+  
+  updateSelectAll() {
+    // Update selectAll if all items are checked
+    this.selectAll = this.contracts.every(item => item.checked);
+    // Calculate the number of selected items
+    this.selectedCount = this.contracts.filter(item => item.checked).length;
+  }
 }

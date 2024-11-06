@@ -6,26 +6,15 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root'
 })
-export class PriceListService {
+export class WarehouseTransService {
 
-  apiUrl= environment.apiUrl;
-  constructor(private http:HttpClient) { }
+  private apiUrl = environment.apiUrl;
 
-  getAllPriceLists(): Observable<any> {
-    // Get tenantId from localStorage
-    const tenantId = localStorage.getItem('tenant');
 
-    // Set the custom header with the tenantId
-    const headers = new HttpHeaders({
-      tenant: tenantId || '', // Set tenantId header if available
-      'Content-Type': 'application/json',
-    });
+  constructor(private http: HttpClient) { }
 
-    // Send the GET request with headers
-    return this.http.get(`${this.apiUrl}PriceList/GetAll`, { headers });
-
-  }
-  getPriceListsWithPaging(pageNumber: number, pageSize: number): Observable<any> {
+  // Method to fetch UserTags based on tenantId
+  getWarehouseTransport(pageNumber: number, pageSize: number): Observable<any> {
     // Get tenantId from localStorage
     const tenantId = localStorage.getItem('tenant');
 
@@ -35,15 +24,14 @@ export class PriceListService {
       'Content-Type': 'application/json',
     });
     let params = new HttpParams()
-    .set('pageNumber', pageNumber.toString())
-    .set('pageSize', pageSize.toString());
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
 
     // Send the GET request with headers
-    return this.http.get(`${this.apiUrl}PriceList/GetAll`, { headers, params });
-
+    return this.http.get(`${this.apiUrl}StoresSection/warehouse-transfers`, { headers, params });
   }
 
-  updatePriceList(id: number, updatedCategory: any): Observable<any> {
+  updateTransport(id: number, updatedCategory: any): Observable<any> {
     const tenantId = localStorage.getItem('tenant');
     
     // Create headers with tenant info
@@ -56,18 +44,22 @@ export class PriceListService {
     formData.append('name', updatedCategory.name || '');
     formData.append('localName', updatedCategory.localName || '');
     formData.append('note', updatedCategory.note || '');
-    formData.append('description', updatedCategory.description || '');
+    formData.append('fromWarehouseId', updatedCategory.fromWarehouseId || '');
+    formData.append('toWarehouseId', updatedCategory.toWarehouseId || '');
+    formData.append('receivingRequestNumber', updatedCategory.receivingRequestNumber || '');
+    formData.append('teamId', updatedCategory.teamId || '');
+    formData.append('representativeId', updatedCategory.representativeId || '');
   
     // API call with PUT method using the FormData and headers
-    return this.http.put(`${this.apiUrl}PriceList/Update/${id}`, formData, { headers });
+    return this.http.put(`${this.apiUrl}StoresSection/warehouse-transfer/${id}`, formData, { headers });
   }
   
-  deletePriceById(id: number): Observable<void> {
+  deleteTransportById(id: number): Observable<void> {
     const tenantId = localStorage.getItem('tenant'); 
     const headers = new HttpHeaders({
       tenant: tenantId || '',
       // 'Content-Type': 'application/json',
     });
-    return this.http.delete<void>(`${this.apiUrl}PriceList/${id}`,{headers});
+    return this.http.delete<void>(`${this.apiUrl}StoresSection/warehouse-transfer/${id}`,{headers});
   }
 }

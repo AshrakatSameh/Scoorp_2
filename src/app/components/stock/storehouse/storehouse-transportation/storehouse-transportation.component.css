@@ -157,6 +157,7 @@
   overflow-x: auto;
   white-space: nowrap;
   padding: 10px 0;
+  justify-content: center;
 }
 
 .scroll-button {
@@ -332,4 +333,8 @@ tr, th, tr {
 /* Optional: Hide the scrollbar in some browsers */
 .scroll-buttons-container::-webkit-scrollbar {
   display: none;
+}
+
+.form-select{
+  background-position: left;
 }

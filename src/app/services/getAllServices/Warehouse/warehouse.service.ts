@@ -47,4 +47,31 @@ export class WarehouseService {
       return this.http.get(`${this.apiUrl}Warehouses/GetAllWarehouses`, { headers });
       
     }
+
+    updateWarehouse(id: number, updatedCategory: any): Observable<any> {
+      const tenantId = localStorage.getItem('tenant');
+      
+      // Create headers with tenant info
+      const headers = new HttpHeaders({
+        tenant: tenantId || ''  // Set tenantId header if available
+      });
+      // Prepare FormData for multipart/form-data request
+      const formData = new FormData();
+      formData.append('name', updatedCategory.name || '');
+      formData.append('localName', updatedCategory.localName || '');
+      formData.append('description', updatedCategory.description || '');
+      formData.append('warehouseCategoryId', updatedCategory.warehouseCategoryId || '');
+    
+      // API call with PUT method using the FormData and headers
+      return this.http.put(`${this.apiUrl}Warehouses/UpdateWarehouse/${id}`, formData, { headers });
+    }
+    
+    deleteWarehouseById(id: number): Observable<void> {
+      const tenantId = localStorage.getItem('tenant'); 
+      const headers = new HttpHeaders({
+        tenant: tenantId || '',
+        // 'Content-Type': 'application/json',
+      });
+      return this.http.delete<void>(`${this.apiUrl}Warehouses/DeleteWarehouse/${id}`,{headers});
+    }
 }

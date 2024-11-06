@@ -65,12 +65,15 @@ onSubmitAdd(): void {
     this.jobServices.creategetJobDes(formData).subscribe(
       response => {
         console.log('Job Des  created successfully!', response);
-
+        this.toast.success('Job description created successfully');
+        this.getAllJobDes();
         // Handle success, show notification, etc.
       },
       error => {
         console.error('Error creating Job Des :', error);
-        console.log(formData)
+        console.log(formData);
+        const errorMessage = error.error?.message || 'An unexpected error occurred.';
+        this.toast.error(errorMessage, 'Error'); 
         // Handle error, show notification, etc.
       }
     );

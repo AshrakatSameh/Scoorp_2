@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ProjactService } from 'src/app/services/getAllServices/Projects/projact.service';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
@@ -140,32 +140,6 @@ export class ProjectsComponent implements OnInit {
       });
     }
 
-//     onSubmit() {
-//       const formData = new FormData();
-//     formData.append('name', this.projectForm.get('name')?.value);
-//     formData.append('localName', this.projectForm.get('localName')?.value);
-//     formData.append('clientId', this.projectForm.get('clientId')?.value);
-//     formData.append('assignedToId', this.projectForm.get('assignedToId')?.value);
-//     formData.append('teamId', this.projectForm.get('teamId')?.value);
-//     formData.append('userIds', this.projectForm.get('userIds')?.value);
-//     formData.append('startDate', this.projectForm.get('startDate')?.value);
-//     formData.append('endDate', this.projectForm.get('endDate')?.value);
-//     formData.append('priority', this.projectForm.get('priority')?.value);
-//     formData.append('size', this.projectForm.get('size')?.value);
-
-//     const headers = new HttpHeaders({
-//       'tenant': localStorage.getItem('tenant')||''  // Add your tenant value here
-//     });
-  
-//     this.http.post('https://lawersys-001-site1.etempurl.com/api/Project/CreateProject', formData, { headers })
-//       .subscribe(response => {
-//         console.log('Response:', response);
-//         alert('submit successfully');
-//       }, error => {
-//         console.error('Error:', error.error);
-//       });
-
-// }
 locations:any[]=[];
 getAllLocations(){
   this.locationServ.getLocations().subscribe(
@@ -244,6 +218,7 @@ onSubmit() {
       console.log('Response:', response);
       this.toast.success("submit successfully");
       this.getAllProjects();
+      this.projectForm.reset();
     }, error => {
       console.error('Error details:', error);
       if (error.error instanceof ErrorEvent) {
@@ -255,40 +230,63 @@ onSubmit() {
     });
 }
 
-// onSubmit() {
-//   const formData = new FormData();
-//     formData.append('name', this.projectForm.get('name')?.value);
-//     formData.append('localName', this.projectForm.get('localName')?.value);
-//     formData.append('clientId', this.projectForm.get('clientId')?.value);
-//     formData.append('assignedToId', this.projectForm.get('assignedToId')?.value);
-//     formData.append('teamId', this.projectForm.get('teamId')?.value);
-//     formData.append('userIds', this.projectForm.get('userIds')?.value);
-//     formData.append('startDate', this.projectForm.get('startDate')?.value);
-//     formData.append('endDate', this.projectForm.get('endDate')?.value);
-//     formData.append('locations', this.projectForm.get('locations')?.value);
-//     formData.append('priority', this.projectForm.get('priority')?.value);
-//     formData.append('size', this.projectForm.get('size')?.value);
-  
 
-
-//   const headers = new HttpHeaders({
-//     tenant: localStorage.getItem('tenant')||''  // Add your tenant value here
-//   });
-
-//   this.http.post(this.api, formData, { headers })
-//     .subscribe(response => {
-//       console.log('Response:', response);
-//       this.toast.success("submit successfully");
-//       this.getAllProjects();
-//       // alert('submit successfully');
-//     }, error => {
-//       console.error('Error:', error);
-//       this.toast.error('Error in submit')
-//     });
-// }
 changePage(newPageNumber: number): void {
   this.pageNumber = newPageNumber;
   console.log(this.pageNumber)
   this.getAllProjects();
 }
+
+
+// dropdown table columns
+columns = [
+  // { name: 'id', displayName: 'المسلسل', visible: true },
+  { name: 'name', displayName: 'اسم القسم', visible: true },
+  { name: 'localName', displayName: 'اسم القسم باللغه المحليه', visible: true },
+  { name: 'code', displayName: 'كود المشروع', visible: true },
+  { name: 'clientName', displayName: 'اسم العميل', visible: true },
+  { name: 'startDate', displayName: 'تاريخ البدء', visible: false },
+  { name: 'endDate', displayName: 'تاريخ الإنتهاء', visible: false }
+
+];
+showDropdown= false;
+toggleDropdown() {
+  this.showDropdown = !this.showDropdown; // Toggle the dropdown visibility
+  console.log('Dropdown visibility:', this.showDropdown); // Check if it’s toggling
+}
+
+isColumnVisible(columnName: string): boolean {
+  const column = this.columns.find(col => col.name === columnName);
+  return column ? column.visible : false;
+}
+
+toggleColumnVisibility(columnName: string) {
+  const column = this.columns.find(col => col.name === columnName);
+  if (column) {
+    column.visible = !column.visible;
+  }
+}
+
+  // select checkbox
+  onCheckboxChange(category: any) {
+    this.updateSelectAll();
+    // this.selectedCategory = category;  // Store the selected category data
+  }
+  selectAll = false;
+
+  selectedCount = 0;
+  
+  toggleAllCheckboxes() {
+    // Set each item's checked status to match selectAll
+    this.try.forEach(item => (item.checked = this.selectAll));
+    // Update the selected count
+    this.selectedCount = this.selectAll ? this.try.length : 0;
+  }
+  
+  updateSelectAll() {
+    // Update selectAll if all items are checked
+    this.selectAll = this.try.every(item => item.checked);
+    // Calculate the number of selected items
+    this.selectedCount = this.try.filter(item => item.checked).length;
+  }
 }

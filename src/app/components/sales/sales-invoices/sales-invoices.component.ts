@@ -107,6 +107,7 @@ export class SalesInvoicesComponent implements OnInit {
     this.salesInvoiceService.getSalesInvoices(this.pageNumber, this.pageSize).subscribe(response => {
       this.salesIvoices = response.salesInvoices;
       console.log(this.salesIvoices);
+      this.mapInvoiceStatus()
     }, error => {
       console.error('Error fetching sales data:', error)
     })
@@ -202,8 +203,8 @@ onSubmit() {
       this.toast.success(('submit successfully'))
     }, error => {
       console.error('Error:', error);
-      this.toast.error('Error accurred', error)
-    });
+      const errorMessage = error.error?.message || 'An unexpected error occurred.';
+      this.toast.error(errorMessage, 'Error');     });
 }
 
   apiUrl=environment.apiUrl;
@@ -253,12 +254,12 @@ onSubmit() {
           this.getAllSaleIncoices();
           this.closeModal();  // Close the modal after successful update
         },
-        (error: HttpErrorResponse) => {
+        (error) => {
           console.error('Error updating sales invoice:', error);
           console.log('Updated sales invoice Data:', updatedCategory);
           // alert('An error occurred while updating the item type .');
-          this.toast.error('An error occurred while updating the sales invoice .')
-        }
+          const errorMessage = error.error?.message || 'An unexpected error occurred.';
+          this.toast.error(errorMessage, 'Error');         }
       );
       }
     }
@@ -305,5 +306,62 @@ closeDropdown() {
     this.getAllSaleIncoices();
   }
 
+// Map the invoice status for each offer
+mapInvoiceStatus() {
+  this.salesIvoices.forEach(offer => {
+    offer.invoiceStatusName = this.getInvoiceStatusName(offer.invoiceStatus);
+    console.log(offer.invoiceStatus)
+  });
+}
 
+// Get the name of the receipt status from the numeric stage number
+getInvoiceStatusName(stageNumber: number): string {
+  // Define a mapping array for the numeric indices to the enum values
+  const stageMapping = [
+    InvoiceStatus.Draft,        // 0
+    InvoiceStatus.Approved,    // 1
+    InvoiceStatus.Staged,     // 2
+    InvoiceStatus.Closed ,      // 3
+    InvoiceStatus.Reviewed       // 4
+  ];
+
+  return stageMapping[stageNumber] ?? 'Unknown';
+}
+  // Update status
+  requestId: number = 0; // Store selected request ID
+  requestStag: any // Store selected request stage
+  selectedNoteId!: number;
+
+  selectNoteId(note: any) {
+    this.requestId = note.id;
+    console.log(note.id)
+  }
+  updatesalesInvoiceStatus(item: any) {
+    const invoiceId = item.id;
+    const invoiceStatus = item.invoiceStatus;
+
+    if (invoiceId && invoiceStatus !== undefined) {
+      this.salesInvoiceService.updateStatusSalesInvoice(invoiceId, invoiceStatus).subscribe({
+        next: (response) => {
+          console.log('Status updated successfully:', response);
+          this.toast.success('Status updated successfully!');
+        },
+        error: (error) => {
+          console.error('Error updating status:', error);
+          const errorMessage = error.error?.message || 'An unexpected error occurred.';
+          this.toast.error(errorMessage, 'Error');         }
+      });
+    } else {
+      this.toast.warning('Please select a valid Request Stage!');
+    }
+  }
+  selectAll = false;
+
+toggleAllCheckboxes() {
+  this.salesIvoices.forEach(item => (item.checked = this.selectAll));
+}
+
+updateSelectAll() {
+  this.selectAll = this.salesIvoices.every(item => item.checked);
+}
 }

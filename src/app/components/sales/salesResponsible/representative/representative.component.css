@@ -219,3 +219,43 @@ select.form-select{
   border-color: #007bff;
   background-color: #f0f8ff;
 }
+
+
+::ng-deep .multiselect-dropdown {
+  width: 100%;
+  border: 1px solid #ced4da; /* Match border with default Bootstrap styles */
+  border-radius: 0.25rem;
+}
+
+::ng-deep .multiselect-dropdown .dropdown-btn {
+  height: calc(2.25rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  color: #495057;
+  background-color: #fff;
+  border: none;
+}
+
+::ng-deep .multiselect-dropdown .dropdown-list {
+  max-height: 200px; /* Limit dropdown height */
+  overflow-y: auto;
+}
+
+::ng-deep .multiselect-dropdown .item2 {
+  font-size: 1rem;
+}
+
+::ng-deep .multiselect-dropdown .item-checkbox input[type='checkbox'] {
+  margin-right: 10px;
+}
+
+::ng-deep .multiselect-dropdown .dropdown-btn .placeholder {
+  color: #6c757d; /* Placeholder color */
+}
+
+::ng-deep .multiselect-dropdown .dropdown-btn:hover,
+::ng-deep .multiselect-dropdown .dropdown-btn:focus {
+  border-color: #80bdff; /* Match with Bootstrap hover/focus effect */
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}

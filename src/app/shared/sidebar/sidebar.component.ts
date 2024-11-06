@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  isOpen = false;
+  isOpen = true;
 
   toggleSidebar() {
     this.isOpen = !this.isOpen;

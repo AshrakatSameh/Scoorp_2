@@ -63,10 +63,17 @@
                       <i class="fa-solid fa-print"></i>
                       طباعه
                     </button>
-                    <button type="button" class="btn ms-3 my-button2">
-                      <i class="fa-solid fa-gear"></i>
-                      الاجراءات
-                    </button>
+                    <div class="dropdown" [class.show]="isDropdownOpen">
+                      <button type="button" class="btn ms-3 my-button2" (click)="toggleDropdown()">
+                        <i class="fa-solid fa-gear"></i> الاجراءات
+                      </button>
+                      
+                      <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                        <a class="dropdown-item" (click)="openModalForSelected()">تعديل</a>
+                        <!-- <a class="dropdown-item" href="#">عرض</a> -->
+                        <a class="dropdown-item" (click)="deleteItemType()">حذف</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
   
@@ -143,20 +150,24 @@
                           <th>تاريخ الانشاء</th>
                           <th>اسم الوحده باللغه المحلية</th>
                           <th>اسم الوحده</th>
+                          <th>المسلسل</th>
                           <th class="firstcolright">
-                            <input type="checkbox" class="large-checkbox mx-1" />
+                            <span class="mx-1" *ngIf="selectedCount>0">{{ selectedCount }}</span>
+
+                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox mx-1" />
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let item of storesSec">
+                        <tr *ngFor="let item of storesSec, let i = index">
                           <td>{{item.note}}</td>
                         <td></td>
                         <td></td>
                           <td>{{item.localName}}</td>
                           <td>{{item.name}}</td>
+                          <td>{{ i+1 }}</td>
                           <td>
-                            <input type="checkbox" class="large-checkbox" />
+                            <input type="checkbox" [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
                           </td>
                         </tr>
                        
@@ -225,36 +236,6 @@
               </div>
   
           
-  
-              <!-- Row with three fields -->
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="field3"> المنشأ</label>
-                    <input
-                      type="text"
-                      id="field3"
-                      
-                      class="form-control custom-input"
-                      placeholder="اسم المنشأ"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="field4"> تاريخ الانشاء</label>
-                    <input
-                    type="date"
-                    id="field2"
-                    
-                    class="form-control custom-input"
-                    placeholder="قم باختيار التاريخ"
-                  />
-                  </div>
-                </div>
-
-              </div>
-
               <div class="container mt-5">
                 <h5 class="mb-3">المرفقات</h5>
                 <button class="btn btn-link text-muted p-1">
@@ -293,13 +274,10 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="field1 text-end">فئه الوحده</label>
-                    <input
-                      type="text"
-                      id="field3"
-                      
-                      class="form-control custom-input"
-                      placeholder="قم باختيار فئه الوحده"
-                    />
+                    <select class="form-control form-select" formControlName="UnitCategoryId">
+                      <option value=""> فم باختيار فئة الوحدة</option>
+                      <option *ngFor="let item of storesSec" [value]="item.id">{{item.name}}</option>
+                    </select>
                   </div>
                 </div>
                 <div class="col-md-4">
@@ -350,3 +328,144 @@
     </div>
   </div>
   
+
+  <!-- update -->
+  <div
+  class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" style="display: block;" *ngIf="isModalOpen"
+
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title text-end flex-row-reverse"
+          id="staticBackdropLabel"
+        >
+           تعديل الوحده
+        </h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="unitForm" (ngSubmit)="updateCategory()">
+          <div class="container">
+            <!-- Row with two fields -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field1 text-end"> اسم الوحده</label>
+                  <input
+                    type="text"
+                    id="field1"
+                    formControlName="name"
+                    class="form-control custom-input"
+                    placeholder="اسم الوحده"
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="field2 text-end"
+                    >اسم الوحده باللغه المحليه
+                  </label>
+                  <input
+                    type="text"
+                    id="field2"
+                    formControlName="localName"
+                    class="form-control custom-input"
+                    placeholder="Unit"
+                  />
+                </div>
+              </div>
+            </div>
+
+        
+            <div class="container mt-5">
+              <h5 class="mb-3">المرفقات</h5>
+              <button class="btn btn-link text-muted p-1">
+                <i class="fa fa-microphone"></i>
+              </button>
+
+              <button class="btn btn-link text-muted p-1">
+                <i class="fa fa-paperclip"></i>
+              </button>
+
+              <div class="custom-file-upload">
+                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                <p>حدد ملفًا أو قم بالسحب والإسقاط هنا</p>
+                <small class="text-muted"
+                  >JPG, PNG or PDF; file size no more than 10MB</small
+                >
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="field1 text-end">وصف الوحده</label>
+                  <textarea
+                    class="form-control custom-input"
+                    formControlName="note"
+                    id="Textarea1"
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="field1 text-end">فئه الوحده</label>
+                  <select class="form-control form-select" formControlName="UnitCategoryId">
+                    <option value=""> فم باختيار فئة الوحدة</option>
+                    <option *ngFor="let item of storesSec" [value]="item.id">{{item.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="field1 text-end">نوع الوحده</label>
+                  <input
+                    type="text"
+                    id="field3"
+                    
+                    class="form-control custom-input"
+                    placeholder="قم باختيار نوع الوحده"
+                  />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="field1 text-end">النسبه</label>
+                  <input
+                    type="text"
+                    id="field3"
+                    
+                    class="form-control custom-input"
+                    placeholder="قم بكتابه النسبه"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mx-auto ">
+            <button type="button my-button3" class="btn my-button3">
+              حفظ
+            </button>
+
+            <button
+              type="button"
+              class="btn closebutton"
+              data-bs-dismiss="modal"
+            >
+              الغاء
+            </button>
+            </div>
+          
+     
+  
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -277,3 +277,9 @@ tr, th, td {
     .locationButton{
         margin-top: 2.1rem;
     }
+
+    .gray-line {
+      border: none;
+      border-top: 2px solid rgb(206, 206, 206);
+      margin: 0px 0 30px 8px; /* Adjust margin as needed */
+    }

@@ -68,24 +68,20 @@
                                 </select>
                             </div>
 
-                            <div class="icon-group d-flex align-items-center">
-                                <button class="btn my-custom-icone">
+                            <div class="d-flex align-items-center flex-row-reverse">
+                                <!-- Button with icon -->
+                                <button class="btn my-custom-icone me-2">
                                   <span class="btn-label">
-                                    <i class="fa-solid fa-table-cells-large"></i>
+                                    <i class="fa-solid fa-sliders"></i>
                                   </span>
                                 </button>
                 
-                                <button class="btn my-custom-icone" style="background-color: #224273; color: #e7e7ea">
-                                  <span class="btn-label">
-                                    <i class="fa-solid fa-list-ul"></i>
-                                  </span>
-                                </button>
-                
-                                <button class="btn my-custom-icone">
-                                  <span class="btn-label">
-                                    <i class="fa-solid fa-bag-shopping my-icone"></i>
-                                  </span>
-                                </button>
+                                <!-- Search form -->
+                                <form class="d-flex position-relative">
+                                  <input class="form-control text-end search-input" type="search" placeholder="بحث في الكل"
+                                    aria-label="Search" />
+                                  <i class="fs-4 bi-search position-absolute search-icon"></i>
+                                </form>
                               </div>
                             <div class="icon-group d-flex align-items-center">
 
@@ -235,13 +231,18 @@
                                 <div class="form-group">
                                     <label class="form-label">نوع الوصول</label>
                                     <div class="input-group">
-                                        <select class="form-select form-control custom-input"
+                                        <ng-multiselect-dropdown style="width: 100%;" [settings]="dropdownSettings"
+                                            [data]="userAccessTypeList" (onSelect)="onItemSelect($event)"
+                                            (onDeSelect)="onItemDeselect($event)" (onSelectAll)="onSelectAll($event)"
+                                            (onDeSelectAll)="onDeselectAll()">
+                                        </ng-multiselect-dropdown>
+                                        <!-- <select class="form-select form-control custom-input"
                                             formArrayName="accessTypes">
                                             <option value="" disabled selected>قم باختيار نوع الوصول</option>
                                             <option *ngFor="let item of userAccessTypeList" [value]="item.key">
                                                 {{item.value }}</option>
 
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
 

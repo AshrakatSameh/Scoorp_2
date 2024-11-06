@@ -151,20 +151,20 @@
                         <th>اسم الموظف بالعربي</th>
                         <th>مسلسل</th>
                         <th class="firstcolright">
-                          <input type="checkbox" class="large-checkbox" />
+                          <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAllCheckboxes()" class="large-checkbox" />
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of employees, let i =index ">
-                        <td>{{item.departmentManager}}</td>
-                        <td>{{item.departmentSupervisor}}</td>
+                        <td>{{item.departmentManagerName}}</td>
+                        <td>{{item.departmentSupervisorName}}</td>
                         <td>{{item.jobTitle}}</td>
                         <td>{{item.localName}}</td>
                         <td>{{item.name}}</td>
                         <td>{{i+1}}</td>
                         <td class="firstcolright">
-                          <input type="checkbox" (change)="onCheckboxChange(item)" class="large-checkbox" />
+                          <input type="checkbox" [(ngModel)]="item.checked"  (change)="onCheckboxChange(item)" class="large-checkbox" />
                         </td>
                       </tr>
                    
@@ -380,8 +380,8 @@
                       <label for="field1 text-end"> رقم الجواز</label>
                       <input
                         type="text"
-                        id="field1"
-
+                        id="passportNumber"
+                        formControlName="passportNumber"
                         class="form-control custom-input"
                         placeholder=" قم بكتابه رقم الجواز"
                       />
@@ -392,8 +392,8 @@
                       <label for="field2 text-end">تاريخ انتهاء الجواز</label>
                       <input
                       type="date"
-                      id="field2"
-
+                      id="passportExpiryDate"
+                      formControlName="passportExpiryDate"
                       class="form-control custom-input"
                       placeholder="قم باختيار التاريخ"
                     />
@@ -407,8 +407,8 @@
                       <label for="field1 text-end"> رقم رخصه السواقه</label>
                       <input
                         type="text"
-                        id="field1"
-
+                        id="driverLicenseNumber"
+                      formControlName="driverLicenseNumber"
                         class="form-control custom-input"
                         placeholder=" قم بكتابه رقم رخصه السواقه"
                       />
@@ -421,8 +421,8 @@
                       >
                       <input
                       type="date"
-                      id="field2"
-
+                      id="driverLicenseExpiryDate"
+                        formControlName="driverLicenseExpiryDate"
                       class="form-control custom-input"
                       placeholder="قم باختيار التاريخ"
                     />
@@ -433,25 +433,23 @@
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label for="field1 text-end"> الجنسيه</label>
-                      <input
-                        type="text"
-                        id="field1"
-                        
-                        class="form-control custom-input"
-                        placeholder=" قم باختيار الجنسيه"
-                      />
+                      <label for=" text-end"> الجنسيه</label>
+                      <select class="form-select form-control" formControlName="nationality">
+                        <option *ngFor="let item of nationalities , index as i" [value]="i">{{item}}</option>
+                      </select>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="field2 text-end">النوع</label>
-                      <input
-                        type="text"
-                        id="field2"
-                        class="form-control custom-input"
-                        placeholder="ذكر ام انثي"
-                      />
+                      <div class="input-group" >
+                        <select class="form-select form-control" formControlName="genderType" >
+                            <option value="" disabled selected>قم باختيار ذكر أو أنثى</option>
+                            <option value="0">ذكر</option>
+                            <option value="1">أنثى</option>
+                           
+                        </select>
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -464,6 +462,7 @@
                         type="text"
                         id="field1"
                         class="form-control custom-input"
+                        formControlName="borderNumber"
                         placeholder=" قم بكتابه رقم الحدود"
                       />
                     </div>
@@ -471,12 +470,18 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label for="field2 text-end"> موقع سكن الموظف </label>
-                      <input
+                      <ng-multiselect-dropdown style="width: 100%;" [settings]="dropdownSettings"
+                      [data]="locations" (onSelect)="onItemSelect($event)"
+                      (onDeSelect)="onItemDeselect($event)" (onSelectAll)="onSelectAll($event)"
+                      (onDeSelectAll)="onDeselectAll()">
+                  </ng-multiselect-dropdown>
+                      <!-- <input
                         type="text"
-                        id="field2"
+                        id="homeLocation"
                         class="form-control custom-input"
+                        formControlName="homeLocation"
                         placeholder="قم بكتابه موقع سكن الموظف"
-                      />
+                      /> -->
                     </div>
                   </div>
                 </div>
@@ -1216,7 +1221,7 @@ class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isModalOpen}" styl
       
           <div class="col-md-6 mx-auto ">
             <button type="submit" class="btn my-button3">
-              اضافه
+              حفظ
               <i class="fa-solid fa-plus"></i>
             </button>
             <button type="button" class="btn closebutton " data-bs-dismiss="modal">

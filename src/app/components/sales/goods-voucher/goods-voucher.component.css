@@ -317,3 +317,19 @@ tr, th, td {
 }
 
 
+/* popup status */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid black;
+  z-index: 1000;
+}
+.gray-line {
+  border: none;
+  border-top: 2px solid rgb(206, 206, 206);
+  margin: 0px 0 30px 8px; /* Adjust margin as needed */
+}

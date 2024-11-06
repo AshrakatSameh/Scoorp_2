@@ -4,3 +4,4 @@ export enum PaymentType
     Deferred='Deferred',     // آجل
     CashOrDeferred = 'CashOrDeferred' // كاش أو آجل
 }
+
